@@ -99,5 +99,5 @@ MonoBehaviour:
     OutlineShader: {fileID: 4800000, guid: 2eadaa83fbbfb60b5b632193b0bc28b6, type: 3}
     DepthLowerThreshold: 0
     DepthUpperThreshold: 0.01
-    NormalLowerThreshold: 0.1
+    NormalLowerThreshold: 0.0209
     NormalUpperThreshold: 0.1

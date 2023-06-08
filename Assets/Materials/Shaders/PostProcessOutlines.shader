@@ -89,8 +89,8 @@ Shader "Unlit/PostProcessOutlines"
                 }
                 for(int i = 3; i < 5 ; i++)
                 {
-                    diff += (depthSamples[i] - depthSamples[0]) * 0.3; // 0.3 -> sin(fov/2)
-                    biasedDiff += clamp(depthSamples[i] - depthSamples[0],0,1) * 0.3; // 0.3 -> sin(fov/2)
+                    diff += (depthSamples[i] - depthSamples[0]) * 0.5; // 0.2297 -> sin(fov/2)
+                    biasedDiff += clamp(depthSamples[i] - depthSamples[0],0,1) * 0.5; // 0.2297 -> sin(fov/2)
                 }
                 
                 diff = diff > 0;
