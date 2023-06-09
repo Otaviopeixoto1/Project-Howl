@@ -17,7 +17,7 @@ public class BiomeMapGenerator : MapGenerator
     }
 
 
-    public override float[,] GenerateMap()
+    public override float[,] GenerateMap(int mapWidth, int mapHeight)
     {
 
         

@@ -16,15 +16,10 @@ public class MapGenerator : ScriptableObject
     public bool triggerUpdate = false; 
 
     [Range(0,0.1f)]
-    public float mapScale = 1/40f;
-
-    [Range(0,241)]
-    public int mapWidth = 20;
-    [Range(0,241)]
-    public int mapHeight = 20;
+    public float mapScale = 0.0682f;
 
     [Range(0, 20)]
-    public float amplitude = 1f;
+    public float amplitude = 14.9f;
 
 
     public virtual void ApplySettings()
@@ -37,7 +32,7 @@ public class MapGenerator : ScriptableObject
         return 0f;
     }
 
-    public virtual float[,] GenerateMap()
+    public virtual float[,] GenerateMap(int mapWidth, int mapHeight)
     {
         return null;
     }
