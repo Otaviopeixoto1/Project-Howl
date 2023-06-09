@@ -4,5 +4,16 @@ using UnityEngine;
 
 public class BiomeMapGenerator : MapGenerator
 {
+    [SerializeField]
+    private int biomeSeed;
 
+
+    public override float[,] GenerateMap()
+    {
+
+        
+        
+
+        return null;
+    }
 }

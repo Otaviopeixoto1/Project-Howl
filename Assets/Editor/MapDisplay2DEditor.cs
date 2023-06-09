@@ -11,11 +11,6 @@ public class MapDisplay2DEditor : Editor
         MapDisplay2D mapDisp = (MapDisplay2D)target;
 
         DrawDefaultInspector();
-        /*
-        if (DrawDefaultInspector() && mapGen.autoUpdate)
-        {
-            mapGen.DisplayMap();
-        }*/
 
         if (GUILayout.Button("Generate"))
         {

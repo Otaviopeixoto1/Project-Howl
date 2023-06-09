@@ -84,20 +84,20 @@ Shader "Unlit/PostProcessOutlines"
                 float diff = 0;
                 for(int i = 1; i < 3 ; i++)
                 {
-                    diff += depthSamples[i] - depthSamples[0];
-                    biasedDiff += clamp(depthSamples[i] - depthSamples[0],0,1);
+                    diff += (depthSamples[i] - depthSamples[0]);
+                    biasedDiff += clamp(-(depthSamples[i] - depthSamples[0]),0,1);
                 }
                 for(int i = 3; i < 5 ; i++)
                 {
-                    diff += (depthSamples[i] - depthSamples[0]) * 0.5; // 0.2297 -> sin(fov/2)
-                    biasedDiff += clamp(depthSamples[i] - depthSamples[0],0,1) * 0.5; // 0.2297 -> sin(fov/2)
+                    diff += (depthSamples[i] - depthSamples[0]); // *0.5 perspective
+                    biasedDiff += clamp(-(depthSamples[i] - depthSamples[0]),0,1); //  *0.5 perspective
                 }
                 
-                diff = diff > 0;
-                //return diff;
+                diff = diff < 0.0;
 
                 float2 depthStrength = float2(smoothstep(_DLower , _DUpper , biasedDiff), diff);
-                return depthStrength; //expose these numbers
+                //float2 depthStrength = float2(smoothstep(_DLower , _DUpper , biasedDiff), diff);
+                return depthStrength; 
             }
 
             float GetNormalStrength(float3 normalSamples[5], float depthIndicator, float3 directionBias)
@@ -108,12 +108,11 @@ Shader "Unlit/PostProcessOutlines"
                     float sharpness = 1 - dot(normalSamples[0], normalSamples[i]);
                     float3 normaldiff = normalSamples[0] - normalSamples[i];
 
-                    //the direction bias reduces the contribution of normals pointing away from screen
                     float normalBias = smoothstep(-0.01f, 0.01f, dot(normaldiff, directionBias));
                     normalIndicator += sharpness * normalBias;
                 }
 
-                float normalStrength = smoothstep(_NLower,_NUpper, normalIndicator * depthIndicator );
+                float normalStrength = smoothstep(_NLower,_NUpper, normalIndicator * depthIndicator);
                 return normalStrength;
             }
 
@@ -138,7 +137,8 @@ Shader "Unlit/PostProcessOutlines"
 
                 for(int i = 0; i < 5 ; i++)
                 {
-                    depthSamples[i] = Linear01Depth(tex2D(_CameraDepthTexture, uvSamples[i]).r)/((1+input.uv.y));
+                    //use Linear01Depth on perspective camera
+                    depthSamples[i] = (tex2D(_CameraDepthTexture, uvSamples[i]).r);///((1+input.uv.y));
 
                     normalSamples[i] = tex2D(_GBuffer2, uvSamples[i]).rgb;
                     normalSamples[i] = normalize(mul((float3x3)UNITY_MATRIX_MV, normalSamples[i]));
@@ -147,7 +147,7 @@ Shader "Unlit/PostProcessOutlines"
                 //return float4(normalSamples[0],1);
 
                 float2 depthStrength = GetDepthStrength(depthSamples,input.uv.y);
-                //return depthStrength.x; //depthStrength.y is also a good outline (maybe even better)
+                //return depthStrength.y; //depthStrength.y is also a good outline (maybe even better)
                 //depthStrength.x = 0;
 
                 float normalStrength = GetNormalStrength(normalSamples,depthStrength.y,float3(1,1,1));
@@ -155,6 +155,8 @@ Shader "Unlit/PostProcessOutlines"
 
                 float strength = depthStrength.x * (1 - 0.5 * depthStrength.x) 
                                 +(1-depthStrength.x) * (1 + 0.5 * normalStrength);
+
+                //strength = depthStrength.y;
                 //float strength = depthStrength.x > 0 ?
                 //               (1 - 0.5 * depthStrength.x) : ( 1 + 0.5* normalStrength);
 

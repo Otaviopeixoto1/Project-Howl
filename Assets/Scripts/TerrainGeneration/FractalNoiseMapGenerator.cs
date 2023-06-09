@@ -15,17 +15,17 @@ public class FractalNoiseMapGenerator : MapGenerator
     [Range(1, 10)]
     public int octaves = 10;
 
-    [Range(0, 100)]
+    [Range(0, 20)]
     public float frequency = 1f;
     
-    [Range(0, 2)]
+    [Range(0, 10)]
     public float lacunarity = 2f;
 
-    [Range(0, 2)]
+    [Range(0, 10)]
     public float persistence = 0.5f;
 
-    [Range(0, 2)]
-    public float amplitude = 1f;
+
+    public Vector2 offset = Vector2.zero;
 
 
 
@@ -54,10 +54,10 @@ public class FractalNoiseMapGenerator : MapGenerator
         {
             for (int y = 0; y < mapHeight; y++)
             {
-                float sampleX = x/scale;
-                float sampleY = y/scale;
+                float sampleX = (x + offset.x)/scale;
+                float sampleY = (y + offset.y)/scale;
             
-                float noiseValue = (noiseGenerator.GetNoise(sampleX,sampleY) + 1) * 0.5f * amplitude;
+                float noiseValue = ((noiseGenerator.GetNoise(sampleX,sampleY) + 1) * 0.5f )* amplitude;
                 noiseMap[x,y] = noiseValue;
             }
         }
@@ -66,10 +66,6 @@ public class FractalNoiseMapGenerator : MapGenerator
     }
 
 
-    void OnValidate()
-    {
-        triggerUpdate = true;
-    }
 
 
 }

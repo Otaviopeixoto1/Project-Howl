@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Active: 1
   Settings:
     OutlineShader: {fileID: 4800000, guid: 2eadaa83fbbfb60b5b632193b0bc28b6, type: 3}
-    DepthLowerThreshold: 0
-    DepthUpperThreshold: 0.01
-    NormalLowerThreshold: 0.0209
+    DepthLowerThreshold: 0.0043
+    DepthUpperThreshold: 0.0086
+    NormalLowerThreshold: 0.0068
     NormalUpperThreshold: 0.1

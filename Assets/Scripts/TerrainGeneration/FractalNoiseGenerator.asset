@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7340c75763d5f63e88099fb2ba9d24b2, type: 3}
   m_Name: FractalNoiseGenerator
   m_EditorClassIdentifier: 
-  triggerUpdate: 0
-  mapScale: 39.77
-  mapWidth: 80
-  mapHeight: 80
+  triggerUpdate: 1
+  mapScale: 40
+  mapWidth: 100
+  mapHeight: 100
+  amplitude: 7.4
   noiseSeed: 1
   noiseType: 0
   fractalType: 1
   octaves: 2
-  frequency: 12.8
-  lacunarity: 0.18
-  persistence: 1.29
-  amplitude: 1
+  frequency: 1
+  lacunarity: 0.46
+  persistence: 10
+  offset: {x: 0, y: 0}
