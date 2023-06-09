@@ -7,6 +7,15 @@ public class BiomeMapGenerator : MapGenerator
     [SerializeField]
     private int biomeSeed;
 
+    public override float SampleMap(float x, float y)
+    {
+
+        
+        
+
+        return 0f;
+    }
+
 
     public override float[,] GenerateMap()
     {

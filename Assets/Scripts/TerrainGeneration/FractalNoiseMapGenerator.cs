@@ -25,11 +25,37 @@ public class FractalNoiseMapGenerator : MapGenerator
     public float persistence = 0.5f;
 
 
-    public Vector2 offset = Vector2.zero;
+    //public Vector2 offset = Vector2.zero;
+
+    public override void ApplySettings()
+    {
+        base.ApplySettings();
+        noiseGenerator.SetNoiseType(noiseType);
+        noiseGenerator.SetFractalType(fractalType);
+        noiseGenerator.SetFrequency(frequency);
+        noiseGenerator.SetFractalOctaves(octaves);
+        noiseGenerator.SetFractalLacunarity(lacunarity);
+        noiseGenerator.SetFractalGain(persistence);
+    }
 
 
 
+    public override float SampleMap(float x, float y)
+    {
 
+        float scale = mapScale;
+        if (scale <= 0)
+        {
+            scale = 0.01f;
+        }
+
+        float sampleX = (x) * scale; // + GlobalOffset.y
+        float sampleY = (y) * scale; // + GlobalOffset.x
+            
+        float noiseValue = ((noiseGenerator.GetNoise(sampleX,sampleY) + 1) * 0.5f )* amplitude;
+
+        return noiseValue;
+    }
 
 
     public override float[,] GenerateMap()
@@ -54,8 +80,8 @@ public class FractalNoiseMapGenerator : MapGenerator
         {
             for (int y = 0; y < mapHeight; y++)
             {
-                float sampleX = (x + offset.x)/scale;
-                float sampleY = (y + offset.y)/scale;
+                float sampleX = (x) * scale;   // + offset.y
+                float sampleY = (y) * scale;   // + offset.x
             
                 float noiseValue = ((noiseGenerator.GetNoise(sampleX,sampleY) + 1) * 0.5f )* amplitude;
                 noiseMap[x,y] = noiseValue;

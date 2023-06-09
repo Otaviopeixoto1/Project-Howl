@@ -13,15 +13,14 @@ MonoBehaviour:
   m_Name: FractalNoiseGenerator
   m_EditorClassIdentifier: 
   triggerUpdate: 1
-  mapScale: 40
-  mapWidth: 100
-  mapHeight: 100
-  amplitude: 7.4
+  mapScale: 0.0206
+  mapWidth: 241
+  mapHeight: 241
+  amplitude: 20
   noiseSeed: 1
   noiseType: 0
   fractalType: 1
-  octaves: 2
-  frequency: 1
+  octaves: 1
+  frequency: 0.2
   lacunarity: 0.46
   persistence: 10
-  offset: {x: 0, y: 0}

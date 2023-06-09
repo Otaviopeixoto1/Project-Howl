@@ -13,18 +13,25 @@ public class MapDisplay2D : MonoBehaviour
     [SerializeField]
     private MapGenerator mapGenerator;
 
+    [SerializeField]
+    [Range(0,10)]
+    private float textureScale = 1f;
+
+
 
 
     public void DrawMap()
     {
         mapRenderer = GetComponent<MeshRenderer>();
-        float[,] map = mapGenerator.GenerateMap();
-        int width = map.GetLength(0);
-        int height = map.GetLength(1);
-        Texture2D texture = TextureGenerator.GenerateTextureFromMap(map, mapGenerator.amplitude);
+        //float[,] map = mapGenerator.GenerateMap();
+        int width = mapGenerator.mapWidth;
+        int height = mapGenerator.mapHeight;
+        //Texture2D texture = TextureGenerator.GenerateTextureFromMap(map, mapGenerator.amplitude,textureScale);
+        Texture2D texture = TextureGenerator.GenerateTextureFromSampler(mapGenerator, textureScale);
+
 
         mapRenderer.sharedMaterial.mainTexture = texture;
-        mapRenderer.transform.localScale = new Vector3(width,height,1);
+        mapRenderer.transform.localScale = new Vector3(width * textureScale,height * textureScale,1);
     }
 
     void OnValidate()
