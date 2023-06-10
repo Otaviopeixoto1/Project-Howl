@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HeightMapGenerator
   m_EditorClassIdentifier: 
   triggerUpdate: 0
-  mapScale: 0.069
+  mapScale: 0.1
   amplitude: 20
   noiseSeed: 1
   noiseType: 0

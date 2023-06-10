@@ -29,4 +29,28 @@ public static class Divisors
             divisors.Sort();
             return divisors.ToArray();
         }
+
+        public static int[] GetDivisorsButN(int n)
+        {
+            if (n <= 0)
+            {
+                return null;
+            }
+            List<int> divisors = new List<int>();
+            divisors.Add(1);
+
+            for (int i = 2; i <= Math.Sqrt(n); i++)
+            {
+                if (n % i == 0)
+                {
+                    divisors.Add(i);
+                    if (i != n / i)
+                    {
+                        divisors.Add(n / i);
+                    }
+                }
+            }
+            divisors.Sort();
+            return divisors.ToArray();
+        }
     }

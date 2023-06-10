@@ -23,7 +23,7 @@ public class MapDisplay3D : MonoBehaviour
 
     [SerializeField]
     [Range(0,241)]
-    private int meshWidth = 241;
+    private int meshWidth = 241; //Make square chunks
     [SerializeField]
     [Range(0,241)]
     private int meshHeight = 241;
@@ -51,13 +51,9 @@ public class MapDisplay3D : MonoBehaviour
         {
             //float[,] map = mapGenerator.GenerateMap();
             //MeshData meshData = MeshGenerator.GenerateTerrainFromMap(map, meshScale);
-            MeshData meshData = TerrainMeshGenerator.GenerateTerrainFromSampler(mapGenerator, meshWidth, meshHeight, meshScale);
+            MeshData meshData = TerrainMeshGenerator.GenerateTerrainFromSampler(mapGenerator, meshWidth, meshHeight, meshScale, lodBias);
 
-            currentMesh = meshData.CreateMesh();//check if the mesh exists, if it does, then just update the
-                                                // vertices
-                                                //if the meshDensity changed, then we generate the mesh again
-
-
+            currentMesh = meshData.CreateMesh();
             currentMesh.MarkDynamic();
             meshFilter.sharedMesh = currentMesh;
             
