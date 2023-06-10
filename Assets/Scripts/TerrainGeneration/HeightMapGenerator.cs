@@ -23,6 +23,8 @@ public class HeightMapGenerator : MapGenerator
     [Range(0, 10)]
     public float persistence = 6.74f;
 
+    public AnimationCurve heightCurve;
+
 
     //public Vector2 offset = Vector2.zero;
 
@@ -51,7 +53,7 @@ public class HeightMapGenerator : MapGenerator
         float sampleX = (x) * scale; // + GlobalOffset.y
         float sampleY = (y) * scale; // + GlobalOffset.x
             
-        float noiseValue = ((noiseGenerator.GetNoise(sampleX,sampleY) + 1) * 0.5f )* amplitude;
+        float noiseValue = heightCurve.Evaluate((noiseGenerator.GetNoise(sampleX,sampleY) + 1) * 0.5f )* amplitude;
 
         return noiseValue;
     }

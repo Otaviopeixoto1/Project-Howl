@@ -65,7 +65,7 @@ public class MapDisplay3D : MonoBehaviour
         else
         {
             Debug.Log("updating Verts");
-            Vector3[] vertices = TerrainMeshGenerator.CalculateMeshVertices(mapGenerator, meshWidth, meshHeight, meshScale);
+            Vector3[] vertices = TerrainMeshGenerator.CalculateMeshVertices(mapGenerator, meshWidth, meshHeight, meshScale,lodBias);
             currentMesh.SetVertices(vertices);
             currentMesh.RecalculateNormals();
             meshRenderer.sharedMaterial = mapMaterial;

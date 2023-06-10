@@ -19,6 +19,39 @@ MonoBehaviour:
   noiseType: 0
   fractalType: 1
   octaves: 2
-  frequency: 0.19
-  lacunarity: 0.47
-  persistence: 6.51
+  frequency: 0.35
+  lacunarity: 0.31
+  persistence: 8.14
+  heightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.32961264
+      value: 0.10046141
+      inSlope: 0.9835534
+      outSlope: 0.9835534
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.14398146
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
