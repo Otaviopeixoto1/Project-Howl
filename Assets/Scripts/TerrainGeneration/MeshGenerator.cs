@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MeshData
@@ -17,7 +15,6 @@ public class MeshData
         triangles = new int[(width - 1) * (height - 1) * 6];
 
         //Debug.Log("total vertices: " + width * height +" total triangles, " + (width - 1) * (height - 1) * 6);
-        
     }
 
     public void AddTriangle(int a, int b, int c)
@@ -42,9 +39,7 @@ public class MeshData
 }
 
 
-//this should sample the Map generator itself. there is too much redundancy here
-//then we can generate the map with an arbitrary point density (LODS)
-public static class TerrainMeshGenerator
+public static class MeshGenerator
 {
 
     public static int CalculateLodIncrement(int dim, int lodBias)

@@ -51,7 +51,7 @@ public class MapDisplay3D : MonoBehaviour
         {
             //float[,] map = mapGenerator.GenerateMap();
             //MeshData meshData = MeshGenerator.GenerateTerrainFromMap(map, meshScale);
-            MeshData meshData = TerrainMeshGenerator.GenerateTerrainFromSampler(mapGenerator, meshWidth, meshHeight, meshScale, lodBias);
+            MeshData meshData = MeshGenerator.GenerateTerrainFromSampler(mapGenerator, meshWidth, meshHeight, meshScale, lodBias);
 
             currentMesh = meshData.CreateMesh();
             currentMesh.MarkDynamic();
@@ -65,7 +65,7 @@ public class MapDisplay3D : MonoBehaviour
         else
         {
             Debug.Log("updating Verts");
-            Vector3[] vertices = TerrainMeshGenerator.CalculateMeshVertices(mapGenerator, meshWidth, meshHeight, meshScale,lodBias);
+            Vector3[] vertices = MeshGenerator.CalculateMeshVertices(mapGenerator, meshWidth, meshHeight, meshScale,lodBias);
             currentMesh.SetVertices(vertices);
             currentMesh.RecalculateNormals();
             meshRenderer.sharedMaterial = mapMaterial;
