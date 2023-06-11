@@ -2,14 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
-public class MapDisplay2D : MonoBehaviour
+[ExecuteInEditMode]
+[RequireComponent(typeof(MeshRenderer))]
+public class MapDisplay2D : MapDisplay
 {
-    public bool autoUpdate = true;
-
-    private Renderer mapRenderer;
-
+    private MeshRenderer mapRenderer;
     [SerializeField]
     private MapGenerator mapGenerator;
 
@@ -37,15 +34,31 @@ public class MapDisplay2D : MonoBehaviour
 
 
         mapRenderer.sharedMaterial.mainTexture = texture;
-        mapRenderer.transform.localScale = new Vector3(textureWidth * textureScale,textureWidth * textureScale,1);
+        mapRenderer.transform.localScale = new Vector3(textureWidth * textureScale, textureWidth * textureScale,1);
     }
 
     void OnValidate()
     {
+        //DrawMap();
+        
+
+
+        
+    }
+    private void OnEnable()
+    {
+        // Subscribe to the event when the ScriptableObject updates
         mapGenerator.updateMap += OnMapUpdate;
     }
 
-    public void OnMapUpdate()
+    private void OnDisable()
+    {
+        // Unsubscribe from the event when the script is disabled
+        mapGenerator.updateMap -= OnMapUpdate;
+    }
+
+
+    public override void OnMapUpdate()
     {
         Debug.Log("Update Map");
         if(mapGenerator != null && autoUpdate)

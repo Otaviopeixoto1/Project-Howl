@@ -13,36 +13,54 @@ MonoBehaviour:
   m_Name: TerrainHeightMap
   m_EditorClassIdentifier: 
   triggerUpdate: 0
-  mapScale: 0.0682
-  amplitude: 14.9
-  noiseSeed: 1
-  noiseType: 0
-  fractalType: 1
-  octaves: 2
-  frequency: 0.1
-  lacunarity: 0.31
-  persistence: 6.74
-  heightCurve:
+  mapScale: 0.0837
+  amplitude: 20
+  samplingCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 34
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
+      time: 0.52377254
+      value: 0.011171494
+      inSlope: 0.033618335
+      outSlope: 0.033618335
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.7206273
+    - serializedVersion: 3
+      time: 0.64918387
+      value: 0.22077747
+      inSlope: 2.0699265
+      outSlope: 2.0699265
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.16490182
+    - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 34
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  noiseSeed: 1
+  noiseType: 0
+  fractalType: 1
+  octaves: 3
+  frequency: 0.35
+  lacunarity: 0.31
+  persistence: 8.14

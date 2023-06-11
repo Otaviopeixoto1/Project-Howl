@@ -4,10 +4,8 @@ using UnityEngine;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-public class MapDisplay3D : MonoBehaviour
+public class MapDisplay3D : MapDisplay
 {
-    public bool autoUpdate = true;
-
     private MeshRenderer meshRenderer;
     private MeshFilter meshFilter;
 
@@ -17,7 +15,6 @@ public class MapDisplay3D : MonoBehaviour
     private MapGenerator mapGenerator;
     [SerializeField]
     private Material mapMaterial;
-
 
 
 
@@ -35,7 +32,6 @@ public class MapDisplay3D : MonoBehaviour
     [SerializeField]
     [Range(0,8)]
     private int lodBias = 0; 
-
 
     private bool updateMesh = true;
 
@@ -80,17 +76,24 @@ public class MapDisplay3D : MonoBehaviour
     {
         if (autoUpdate)
         {
-            mapGenerator.updateMap += OnMeshUpdate;
             updateMesh = true;
-        }
-        else
-        {
-            mapGenerator.updateMap -= OnMeshUpdate;
         }
         currentMesh = null;
     }
 
-    public void OnMeshUpdate()
+    private void OnEnable()
+    {
+        // Subscribe to the event when the ScriptableObject updates
+        mapGenerator.updateMap += OnMapUpdate;
+    }
+
+    private void OnDisable()
+    {
+        // Unsubscribe from the event when the script is disabled
+        mapGenerator.updateMap -= OnMapUpdate;
+    }
+
+    public override void OnMapUpdate()
     {
         Debug.Log("Update Mesh");
         if(mapGenerator != null && autoUpdate)

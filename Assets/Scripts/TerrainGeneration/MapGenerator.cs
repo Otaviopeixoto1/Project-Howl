@@ -21,13 +21,15 @@ public class MapGenerator : ScriptableObject
     [Range(0, 20)]
     public float amplitude = 14.9f;
 
+    public AnimationCurve samplingCurve;
+
 
     public virtual void ApplySettings()
     {
         return;
     }
 
-    public virtual float SampleMap(float x, float y)
+    public virtual float SampleMap(float x, float y, AnimationCurve samplingCurve = null)
     {
         return 0f;
     }

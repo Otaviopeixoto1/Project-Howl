@@ -7,7 +7,7 @@ public class BiomeMapGenerator : MapGenerator
     [SerializeField]
     private int biomeSeed;
 
-    public override float SampleMap(float x, float y)
+    public override float SampleMap(float x, float y, AnimationCurve samplingCurve = null)
     {
 
         

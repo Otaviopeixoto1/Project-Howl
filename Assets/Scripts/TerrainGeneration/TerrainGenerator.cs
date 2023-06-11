@@ -52,6 +52,7 @@ public class TerrainGenerator : MonoBehaviour
     [SerializeField]
     [Range(10,240)]
     private int chunkSize = 240;
+
     [SerializeField]
     [Range(0.01f,10)]
     private float chunkScale = 1f;
@@ -127,7 +128,7 @@ public class TerrainGenerator : MonoBehaviour
         }
     }
 
-    ////////////////////////////////// Threading the mesh data calculations //////////////////////////////
+    ////////////////////////////////// Threading the mesh data calculations ////////////////////////////////////////////
     
     public void RequestMeshData(MapData mapData, Action<MeshData> callback) {
 		ThreadStart threadStart = delegate{
@@ -142,8 +143,8 @@ public class TerrainGenerator : MonoBehaviour
                                                                     mapData.chunkSize, 
                                                                     mapData.chunkSize, 
                                                                     mapData.chunkScale, 
-                                                                    mapData.lodBias
-                                                                            
+                                                                    mapData.lodBias,
+                                                                    true
                                                                     );
 
 
@@ -164,7 +165,7 @@ public class TerrainGenerator : MonoBehaviour
 		
 	}
 
-    //////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 

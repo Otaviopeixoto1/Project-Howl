@@ -60,8 +60,19 @@ public static class MeshGenerator
         return increment;
     }
 
-    public static MeshData GenerateTerrainFromSampler(MapGenerator sampler, int meshWidth, int meshHeight, float meshScale, int lodBias)
+    public static MeshData GenerateTerrainFromSampler(MapGenerator sampler, int meshWidth, int meshHeight, float meshScale, int lodBias,bool isThread = false)
     {
+        AnimationCurve heightCurve;
+        if(isThread)
+        {
+           heightCurve = new AnimationCurve(sampler.samplingCurve.keys);
+        }
+        else
+        {
+            heightCurve = sampler.samplingCurve;
+        }
+        
+
         int widthIncrement = CalculateLodIncrement(meshWidth,lodBias);
         int heightIncrement = CalculateLodIncrement(meshHeight,lodBias);
 
@@ -80,7 +91,7 @@ public static class MeshGenerator
         {
             for (int x = 0; x < meshWidth; x += widthIncrement)
             {
-                meshData.vertices[vertexIndex] = new Vector3(x, sampler.SampleMap(x - (meshWidth - 1)/2, y - (meshHeight - 1)/2), y) 
+                meshData.vertices[vertexIndex] = new Vector3(x, sampler.SampleMap(x - (meshWidth - 1)/2, y - (meshHeight - 1)/2,heightCurve), y) 
                                                 + centerOffset;
                 meshData.uvs[vertexIndex] = new Vector2(x/(float)meshWidth, y/(float)meshHeight);
 
@@ -115,7 +126,7 @@ public static class MeshGenerator
         {
             for (int x = 0; x < meshWidth; x += widthIncrement)
             {
-                vertices[vertexIndex] = new Vector3(x, sampler.SampleMap(x - (meshWidth - 1)/2, y - (meshHeight - 1)/2), y) 
+                vertices[vertexIndex] = new Vector3(x, sampler.SampleMap(x - (meshWidth - 1)/2, y - (meshHeight - 1)/2, sampler.samplingCurve), y) 
                                                 + centerOffset;
                                                 
                 vertexIndex++;
