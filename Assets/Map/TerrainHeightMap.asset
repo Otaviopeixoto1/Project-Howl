@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7340c75763d5f63e88099fb2ba9d24b2, type: 3}
-  m_Name: DisplayHeightMap
+  m_Name: TerrainHeightMap
   m_EditorClassIdentifier: 
   triggerUpdate: 0
   mapScale: 0.1
@@ -60,7 +60,7 @@ MonoBehaviour:
   noiseSeed: 1
   noiseType: 0
   fractalType: 1
-  octaves: 3
-  frequency: 0.35
-  lacunarity: 0.24
-  persistence: 8.76
+  octaves: 4
+  frequency: 1.9
+  lacunarity: 0.31
+  persistence: 8.14

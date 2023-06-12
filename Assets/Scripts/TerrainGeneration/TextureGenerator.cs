@@ -4,7 +4,30 @@ using UnityEngine;
 
 public static class TextureGenerator 
 {
-    public static Texture2D GenerateTextureFromSampler(MapGenerator sampler, int textureWidth, int textureHeight, float textureScale)
+
+    private static Color GetColor(DisplayStyle displayStyle, float value)
+    {
+        switch(displayStyle) 
+        {
+        case DisplayStyle.GrayScale:
+            return new Color(value, value, value);
+        case DisplayStyle.RandomColors:
+            Random.InitState(Mathf.FloorToInt(value * 2147483648.0f)); // Set the seed for random number generation
+            float red = Random.value;
+            float green = Random.value;
+            float blue = Random.value;
+            
+            return new Color(red, green, blue);
+        case DisplayStyle.Coordinates:
+            float v = (value* 2147483648.0f)/144f;
+            return new Color(v, v, v);
+        default:
+            return new Color(value, value, value);
+        }
+
+    }
+
+    public static Texture2D GenerateTextureFromSampler(MapGenerator sampler, int textureWidth, int textureHeight, float textureScale, DisplayStyle displayStyle = DisplayStyle.GrayScale)
     {
         Texture2D texture = new Texture2D(textureWidth, textureHeight);
         Color[] colorMap = new Color[textureWidth * textureHeight];
@@ -15,7 +38,7 @@ public static class TextureGenerator
             {
                 //colorMap[y * width + x] = Color.Lerp(Color.black,Color.white,map[x,y]);
                 float heightPercent = sampler.SampleMap(x - (textureWidth - 1)/2, y - (textureHeight - 1)/2)/sampler.amplitude;
-                colorMap[y * textureWidth + x] = new Color(heightPercent, heightPercent, heightPercent);
+                colorMap[y * textureWidth + x] = GetColor(displayStyle, heightPercent);
             }
         }
 

@@ -64,6 +64,7 @@ public class FastNoiseLite
         OpenSimplex2,
         OpenSimplex2S,
         Cellular,
+        ModifiedCellular,
         Perlin,
         ValueCubic,
         Value 
@@ -105,6 +106,18 @@ public class FastNoiseLite
         Distance2Div 
     };
 
+    public enum ModifiedCellularReturnType 
+    {
+        CellValue,
+        ModifiedCellValue, 
+        Distance, 
+        Distance2, 
+        Distance2Add, 
+        Distance2Sub, 
+        Distance2Mul, 
+        Distance2Div 
+    };
+
     public enum DomainWarpType 
     { 
         OpenSimplex2, 
@@ -137,6 +150,10 @@ public class FastNoiseLite
 
     private CellularDistanceFunction mCellularDistanceFunction = CellularDistanceFunction.EuclideanSq;
     private CellularReturnType mCellularReturnType = CellularReturnType.Distance;
+    private ModifiedCellularReturnType mModifiedCellularReturnType = ModifiedCellularReturnType.ModifiedCellValue;
+    private int mModifiedCellularGridDim = 4;
+    private int mModifiedCellularTilingX = 4;
+    private int mModifiedCellularTilingY = 4;
     private float mCellularJitterModifier = 1.0f;
 
     private DomainWarpType mDomainWarpType = DomainWarpType.OpenSimplex2;
@@ -268,6 +285,39 @@ public class FastNoiseLite
     /// </remarks>
     public void SetCellularReturnType(CellularReturnType cellularReturnType) { mCellularReturnType = cellularReturnType; }
 
+    /// <summary>
+    /// Sets return type from modified cellular noise calculations
+    /// </summary>
+    /// <remarks>
+    /// Default: EuclideanSq
+    /// </remarks>
+    public void SetModifiedCellularReturnType(ModifiedCellularReturnType modCellularReturnType) { mModifiedCellularReturnType = modCellularReturnType; }
+
+    /// <summary>
+    /// Sets return type from modified cellular noise calculations
+    /// </summary>
+    /// <remarks>
+    /// Default: EuclideanSq
+    /// </remarks>
+    public void SetModifiedCellularGridDim(int gridDim) { mModifiedCellularGridDim = gridDim; }
+
+
+    /// <summary>
+    /// Sets amount of tiles before the pattern can repeat in modified cellular
+    /// </summary>
+    /// <remarks>
+    /// Default: EuclideanSq
+    /// </remarks>
+    public void SetModifiedCellularTilingX(int cellularTilingX) { mModifiedCellularTilingX = cellularTilingX; }
+
+    /// <summary>
+    /// Sets amount of tiles before the pattern can repeat in modified cellular
+    /// </summary>
+    /// <remarks>
+    /// Default: EuclideanSq
+    /// </remarks>
+    public void SetModifiedCellularTilingY(int cellularTilingY) { mModifiedCellularTilingY = cellularTilingY; }
+    
     /// <summary>
     /// Sets the maximum distance a cellular point can move from it's grid position
     /// </summary>
@@ -724,6 +774,8 @@ public class FastNoiseLite
                 return SingleOpenSimplex2S(seed, x, y);
             case NoiseType.Cellular:
                 return SingleCellular(seed, x, y);
+            case NoiseType.ModifiedCellular:
+                return SingleModifiedCellular(seed,x,y);
             case NoiseType.Perlin:
                 return SinglePerlin(seed, x, y);
             case NoiseType.ValueCubic:
@@ -745,6 +797,8 @@ public class FastNoiseLite
                 return SingleOpenSimplex2S(seed, x, y, z);
             case NoiseType.Cellular:
                 return SingleCellular(seed, x, y, z);
+            case NoiseType.ModifiedCellular:
+                return SingleModifiedCellular(seed,x,y,z);
             case NoiseType.Perlin:
                 return SinglePerlin(seed, x, y, z);
             case NoiseType.ValueCubic:
@@ -1842,6 +1896,321 @@ public class FastNoiseLite
                 return 0;
         }
     }
+
+
+
+    // Modified Cellular Noise
+
+    private float SingleModifiedCellular(int seed, FNLfloat x, FNLfloat y)
+    {
+        int xr = FastRound(x);
+        int yr = FastRound(y);
+
+        float distance0 = float.MaxValue;
+        float distance1 = float.MaxValue;
+        int closestHash = 0;
+        int closestX = 0;
+        int closestY = 0;
+
+        float cellularJitter = 0.43701595f * mCellularJitterModifier;
+
+        int xPrimed = (xr - 1) * PrimeX;
+        int yPrimedBase = (yr - 1) * PrimeY;
+
+        switch (mCellularDistanceFunction)
+        {
+            default:
+            case CellularDistanceFunction.Euclidean:
+            case CellularDistanceFunction.EuclideanSq:
+                for (int xi = xr - 1; xi <= xr + 1; xi++)
+                {
+                    int yPrimed = yPrimedBase;
+
+                    for (int yi = yr - 1; yi <= yr + 1; yi++)
+                    {
+                        int hash = Hash(seed, xPrimed, yPrimed);
+                        int idx = hash & (255 << 1);
+
+                        float vecX = (float)(xi - x) + RandVecs2D[idx] * cellularJitter;
+                        float vecY = (float)(yi - y) + RandVecs2D[idx | 1] * cellularJitter;
+
+                        float newDistance = vecX * vecX + vecY * vecY;
+
+                        distance1 = FastMax(FastMin(distance1, newDistance), distance0);
+                        if (newDistance < distance0)
+                        {
+                            distance0 = newDistance;
+                            closestHash = hash;
+                            closestX = xi;
+                            closestY = yi;
+                        }
+                        yPrimed += PrimeY;
+                    }
+                    xPrimed += PrimeX;
+                }
+                break;
+            case CellularDistanceFunction.Manhattan:
+                for (int xi = xr - 1; xi <= xr + 1; xi++)
+                {
+                    int yPrimed = yPrimedBase;
+
+                    for (int yi = yr - 1; yi <= yr + 1; yi++)
+                    {
+                        int hash = Hash(seed, xPrimed, yPrimed);
+                        int idx = hash & (255 << 1);
+
+                        float vecX = (float)(xi - x) + RandVecs2D[idx] * cellularJitter;
+                        float vecY = (float)(yi - y) + RandVecs2D[idx | 1] * cellularJitter;
+
+                        float newDistance = FastAbs(vecX) + FastAbs(vecY);
+
+                        distance1 = FastMax(FastMin(distance1, newDistance), distance0);
+                        if (newDistance < distance0)
+                        {
+                            distance0 = newDistance;
+                            closestHash = hash;
+                            closestX = xi;
+                            closestY = yi;
+                        }
+                        yPrimed += PrimeY;
+                    }
+                    xPrimed += PrimeX;
+                }
+                break;
+            case CellularDistanceFunction.Hybrid:
+                for (int xi = xr - 1; xi <= xr + 1; xi++)
+                {
+                    int yPrimed = yPrimedBase;
+
+                    for (int yi = yr - 1; yi <= yr + 1; yi++)
+                    {
+                        int hash = Hash(seed, xPrimed, yPrimed);
+                        int idx = hash & (255 << 1);
+
+                        float vecX = (float)(xi - x) + RandVecs2D[idx] * cellularJitter;
+                        float vecY = (float)(yi - y) + RandVecs2D[idx | 1] * cellularJitter;
+
+                        float newDistance = (FastAbs(vecX) + FastAbs(vecY)) + (vecX * vecX + vecY * vecY);
+
+                        distance1 = FastMax(FastMin(distance1, newDistance), distance0);
+                        if (newDistance < distance0)
+                        {
+                            distance0 = newDistance;
+                            closestHash = hash;
+                            closestX = xi;
+                            closestY = yi;
+                        }
+                        yPrimed += PrimeY;
+                    }
+                    xPrimed += PrimeX;
+                }
+                break;
+        }
+
+        if (mCellularDistanceFunction == CellularDistanceFunction.Euclidean && mCellularReturnType >= CellularReturnType.Distance)
+        {
+            distance0 = FastSqrt(distance0);
+
+            if (mModifiedCellularReturnType >= ModifiedCellularReturnType.Distance2)
+            {
+                distance1 = FastSqrt(distance1);
+            }
+        }
+
+        switch (mModifiedCellularReturnType)
+        {
+            case ModifiedCellularReturnType.CellValue:
+                return closestHash * (1 / 2147483648.0f);
+            case ModifiedCellularReturnType.ModifiedCellValue:
+                float _x = closestX + mModifiedCellularGridDim/2f;
+                float _y = closestY + mModifiedCellularGridDim/2f;
+                return (_x + _y * (mModifiedCellularGridDim + 1)) * ( 1 /mFrequency) * (1 / 2147483648.0f);
+            case ModifiedCellularReturnType.Distance:
+                return distance0 - 1;
+            case ModifiedCellularReturnType.Distance2:
+                return distance1 - 1;
+            case ModifiedCellularReturnType.Distance2Add:
+                return (distance1 + distance0) * 0.5f - 1;
+            case ModifiedCellularReturnType.Distance2Sub:
+                return distance1 - distance0 - 1;
+            case ModifiedCellularReturnType.Distance2Mul:
+                return distance1 * distance0 * 0.5f - 1;
+            case ModifiedCellularReturnType.Distance2Div:
+                return distance0 / distance1 - 1;
+            default:
+                return 0;
+        }
+    }
+
+    private float SingleModifiedCellular(int seed, FNLfloat x, FNLfloat y, FNLfloat z)
+    {
+        int xr = FastRound(x);
+        int yr = FastRound(y);
+        int zr = FastRound(z);
+
+        float distance0 = float.MaxValue;
+        float distance1 = float.MaxValue;
+        int closestHash = 0;
+        int closestX = 0;
+        int closestY = 0;
+        int closestZ = 0;
+
+        float cellularJitter = 0.39614353f * mCellularJitterModifier;
+
+        int xPrimed = (xr - 1) * PrimeX;
+        int yPrimedBase = (yr - 1) * PrimeY;
+        int zPrimedBase = (zr - 1) * PrimeZ;
+
+        switch (mCellularDistanceFunction)
+        {
+            case CellularDistanceFunction.Euclidean:
+            case CellularDistanceFunction.EuclideanSq:
+                for (int xi = xr - 1; xi <= xr + 1; xi++)
+                {
+                    int yPrimed = yPrimedBase;
+
+                    for (int yi = yr - 1; yi <= yr + 1; yi++)
+                    {
+                        int zPrimed = zPrimedBase;
+
+                        for (int zi = zr - 1; zi <= zr + 1; zi++)
+                        {
+                            int hash = Hash(seed, xPrimed, yPrimed, zPrimed);
+                            int idx = hash & (255 << 2);
+
+                            float vecX = (float)(xi - x) + RandVecs3D[idx] * cellularJitter;
+                            float vecY = (float)(yi - y) + RandVecs3D[idx | 1] * cellularJitter;
+                            float vecZ = (float)(zi - z) + RandVecs3D[idx | 2] * cellularJitter;
+
+                            float newDistance = vecX * vecX + vecY * vecY + vecZ * vecZ;
+
+                            distance1 = FastMax(FastMin(distance1, newDistance), distance0);
+                            if (newDistance < distance0)
+                            {
+                                distance0 = newDistance;
+                                closestHash = hash;
+                                closestX = xi;
+                                closestY = yi;
+                                closestZ = zi;
+                            }
+                            zPrimed += PrimeZ;
+                        }
+                        yPrimed += PrimeY;
+                    }
+                    xPrimed += PrimeX;
+                }
+                break;
+            case CellularDistanceFunction.Manhattan:
+                for (int xi = xr - 1; xi <= xr + 1; xi++)
+                {
+                    int yPrimed = yPrimedBase;
+
+                    for (int yi = yr - 1; yi <= yr + 1; yi++)
+                    {
+                        int zPrimed = zPrimedBase;
+
+                        for (int zi = zr - 1; zi <= zr + 1; zi++)
+                        {
+                            int hash = Hash(seed, xPrimed, yPrimed, zPrimed);
+                            int idx = hash & (255 << 2);
+
+                            float vecX = (float)(xi - x) + RandVecs3D[idx] * cellularJitter;
+                            float vecY = (float)(yi - y) + RandVecs3D[idx | 1] * cellularJitter;
+                            float vecZ = (float)(zi - z) + RandVecs3D[idx | 2] * cellularJitter;
+
+                            float newDistance = FastAbs(vecX) + FastAbs(vecY) + FastAbs(vecZ);
+
+                            distance1 = FastMax(FastMin(distance1, newDistance), distance0);
+                            if (newDistance < distance0)
+                            {
+                                distance0 = newDistance;
+                                closestHash = hash;
+                                closestX = xi;
+                                closestY = yi;
+                                closestZ = zi;
+                            }
+                            zPrimed += PrimeZ;
+                        }
+                        yPrimed += PrimeY;
+                    }
+                    xPrimed += PrimeX;
+                }
+                break;
+            case CellularDistanceFunction.Hybrid:
+                for (int xi = xr - 1; xi <= xr + 1; xi++)
+                {
+                    int yPrimed = yPrimedBase;
+
+                    for (int yi = yr - 1; yi <= yr + 1; yi++)
+                    {
+                        int zPrimed = zPrimedBase;
+
+                        for (int zi = zr - 1; zi <= zr + 1; zi++)
+                        {
+                            int hash = Hash(seed, xPrimed, yPrimed, zPrimed);
+                            int idx = hash & (255 << 2);
+
+                            float vecX = (float)(xi - x) + RandVecs3D[idx] * cellularJitter;
+                            float vecY = (float)(yi - y) + RandVecs3D[idx | 1] * cellularJitter;
+                            float vecZ = (float)(zi - z) + RandVecs3D[idx | 2] * cellularJitter;
+
+                            float newDistance = (FastAbs(vecX) + FastAbs(vecY) + FastAbs(vecZ)) + (vecX * vecX + vecY * vecY + vecZ * vecZ);
+
+                            distance1 = FastMax(FastMin(distance1, newDistance), distance0);
+                            if (newDistance < distance0)
+                            {
+                                distance0 = newDistance;
+                                closestHash = hash;
+                                closestX = xi;
+                                closestY = yi;
+                                closestZ = zi;
+                            }
+                            zPrimed += PrimeZ;
+                        }
+                        yPrimed += PrimeY;
+                    }
+                    xPrimed += PrimeX;
+                }
+                break;
+            default:
+                break;
+        }
+
+        if (mCellularDistanceFunction == CellularDistanceFunction.Euclidean && mCellularReturnType >= CellularReturnType.Distance)
+        {
+            distance0 = FastSqrt(distance0);
+
+            if (mModifiedCellularReturnType >= ModifiedCellularReturnType.Distance2)
+            {
+                distance1 = FastSqrt(distance1);
+            }
+        }
+
+        switch (mModifiedCellularReturnType)
+        {
+            case ModifiedCellularReturnType.CellValue:
+                return closestHash * (1 / 2147483648.0f);
+            case ModifiedCellularReturnType.ModifiedCellValue:
+                return (closestX*mModifiedCellularTilingX + closestY* mModifiedCellularTilingY +closestZ) * (1 / 2147483648.0f);
+            case ModifiedCellularReturnType.Distance:
+                return distance0 - 1;
+            case ModifiedCellularReturnType.Distance2:
+                return distance1 - 1;
+            case ModifiedCellularReturnType.Distance2Add:
+                return (distance1 + distance0) * 0.5f - 1;
+            case ModifiedCellularReturnType.Distance2Sub:
+                return distance1 - distance0 - 1;
+            case ModifiedCellularReturnType.Distance2Mul:
+                return distance1 * distance0 * 0.5f - 1;
+            case ModifiedCellularReturnType.Distance2Div:
+                return distance0 / distance1 - 1;
+            default:
+                return 0;
+        }
+    }
+
+
+
 
 
     // Perlin Noise

@@ -54,6 +54,7 @@ public class HeightMapGenerator : MapGenerator
         float sampleY = (y) * scale; // + GlobalOffset.x
         
         float noiseValue;
+        
         if (heightCurve != null)
         {
             noiseValue = heightCurve.Evaluate((noiseGenerator.GetNoise(sampleX,sampleY) + 1) * 0.5f )* amplitude;
