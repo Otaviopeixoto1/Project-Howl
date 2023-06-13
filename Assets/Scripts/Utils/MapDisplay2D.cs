@@ -8,7 +8,7 @@ public enum DisplayStyle //Grayscale or random colors
     Disabled,
     GrayScale,
     RandomColors,
-    Coordinates
+    Gradient
 }
 
 
@@ -18,7 +18,7 @@ public class MapDisplay2D : MapDisplay
 {
     private static Dictionary<Type, DisplayStyle[]> allowedStyles = new Dictionary<Type, DisplayStyle[]>()
     {
-        {typeof(BiomeMapGenerator), new DisplayStyle[]{DisplayStyle.GrayScale, DisplayStyle.RandomColors, DisplayStyle.Coordinates}},
+        {typeof(BiomeMapGenerator), new DisplayStyle[]{DisplayStyle.GrayScale, DisplayStyle.RandomColors, DisplayStyle.Gradient}},
         {typeof(HeightMapGenerator), new DisplayStyle[]{DisplayStyle.GrayScale}}
     };
 
@@ -41,6 +41,14 @@ public class MapDisplay2D : MapDisplay
     [SerializeField]
     [Range(0,10)]
     private float textureScale = 1f;
+
+    void Start()
+    {
+        if (mapGenerator is BiomeMapGenerator) 
+        {
+            (mapGenerator as BiomeMapGenerator).GetBiomeMap(2,1.5f);
+        }
+    }
 
 
     public static bool IsValidStyle(MapGenerator mapGenerator, DisplayStyle displayStyle)

@@ -15,7 +15,7 @@ public class MapGenerator : ScriptableObject
     [HideInInspector]
     public bool triggerUpdate = false; 
 
-    [Range(0,0.1f)]
+    [Range(0.01f,0.1f)]
     public float mapScale = 0.0682f;
 
     [Range(0, 20)]

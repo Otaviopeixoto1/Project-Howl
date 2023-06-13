@@ -12,14 +12,14 @@ public static class TextureGenerator
         case DisplayStyle.GrayScale:
             return new Color(value, value, value);
         case DisplayStyle.RandomColors:
-            Random.InitState(Mathf.FloorToInt(value * 2147483648.0f)); // Set the seed for random number generation
+            Random.InitState(Mathf.FloorToInt(value)); // Set the seed for random number generation
             float red = Random.value;
             float green = Random.value;
             float blue = Random.value;
             
             return new Color(red, green, blue);
-        case DisplayStyle.Coordinates:
-            float v = (value* 2147483648.0f)/144f;
+        case DisplayStyle.Gradient:
+            float v = (value)/144f;
             return new Color(v, v, v);
         default:
             return new Color(value, value, value);
