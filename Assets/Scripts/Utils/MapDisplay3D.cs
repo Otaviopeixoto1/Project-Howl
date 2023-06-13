@@ -20,7 +20,7 @@ public class MapDisplay3D : MapDisplay
 
     [SerializeField]
     [Range(0,241)]
-    private int meshWidth = 241; //Make square chunks
+    private int meshWidth = 241; 
     [SerializeField]
     [Range(0,241)]
     private int meshHeight = 241;
@@ -95,7 +95,6 @@ public class MapDisplay3D : MapDisplay
 
     public override void OnMapUpdate()
     {
-        Debug.Log("Update Mesh");
         if(mapGenerator != null && autoUpdate)
         {
             updateMesh = true;

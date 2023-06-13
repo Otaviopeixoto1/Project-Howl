@@ -47,5 +47,5 @@ MonoBehaviour:
   lacunarity: 0
   persistence: 0
   distanceFunction: 3
-  modCellularReturnType: 5
+  modCellularReturnType: 1
   cellularJitter: 0.5

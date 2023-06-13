@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-public enum DisplayStyle //Grayscale or random colors
+public enum DisplayStyle //deprecate this displayStyle, use delegates. Rename to MapDecoder
 {
     Disabled,
     GrayScale,
@@ -46,7 +46,8 @@ public class MapDisplay2D : MapDisplay
     {
         if (mapGenerator is BiomeMapGenerator) 
         {
-            (mapGenerator as BiomeMapGenerator).GetBiomeMap(2,1.5f);
+            (mapGenerator as BiomeMapGenerator).GetSingleBiomeMap(7,1.5f);
+            (mapGenerator as BiomeMapGenerator).GetBiomeIndexMap();
         }
     }
 
@@ -113,7 +114,6 @@ public class MapDisplay2D : MapDisplay
 
     public override void OnMapUpdate()
     {
-        Debug.Log("Update Map");
         if(mapGenerator != null && autoUpdate)
         {
             DrawMap();

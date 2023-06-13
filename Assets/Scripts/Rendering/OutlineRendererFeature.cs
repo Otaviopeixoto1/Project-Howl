@@ -54,7 +54,7 @@ public class OutlineRendererFeature : ScriptableRendererFeature
 
 
         m_OutlinePass.ConfigureInput(ScriptableRenderPassInput.Color);
-        m_OutlinePass.SetTarget(renderer.cameraColorTarget);
+        //m_OutlinePass.SetTarget(renderer.cameraColorTarget);
         renderer.EnqueuePass(m_OutlinePass);
     }
     

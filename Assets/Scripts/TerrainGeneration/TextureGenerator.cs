@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class TextureGenerator 
 {
-
+    //turn this into a delegate that each map provides
     private static Color GetColor(DisplayStyle displayStyle, float value)
     {
         switch(displayStyle) 
@@ -38,7 +38,8 @@ public static class TextureGenerator
             {
                 //colorMap[y * width + x] = Color.Lerp(Color.black,Color.white,map[x,y]);
                 float heightPercent = sampler.SampleMap(x - (textureWidth - 1)/2, y - (textureHeight - 1)/2)/sampler.amplitude;
-                colorMap[y * textureWidth + x] = GetColor(displayStyle, heightPercent);
+                colorMap[x + y * textureWidth] = GetColor(displayStyle, heightPercent);
+                                                //add a delegate for this getColor
             }
         }
 
