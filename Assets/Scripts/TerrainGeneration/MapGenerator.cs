@@ -11,7 +11,6 @@ public class MapGenerator : ScriptableObject
     [HideInInspector]
     public UpdateTrigger updateMap;
 
-
     [HideInInspector]
     public bool triggerUpdate = false; 
 

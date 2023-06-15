@@ -146,9 +146,6 @@ public class BiomeMapGenerator : MapGenerator
         singleBiomeMap.filterMode = FilterMode.Point; 
         singleBiomeMap.wrapMode = TextureWrapMode.Clamp; 
 
-        singleBiomeMap.Apply();
-        System.IO.File.WriteAllBytes(Application.dataPath+ "/Map/BiomeMaps/map.png" , singleBiomeMap.EncodeToPNG());
-
         noiseGenerator.SetModifiedCellularReturnType(modCellularReturnType);
         return singleBiomeMap;
     }
@@ -184,7 +181,7 @@ public class BiomeMapGenerator : MapGenerator
             for (int x = -newSize/2; x <= newSize/2; x++)
             {
                                             //use a decoder delegate instead of this hardcoded value
-                float cellVal = cellIndexSampler.Sample((x + newSize/2) * scaleDif , (y + newSize/2) * scaleDif) * 24f;
+                float cellVal = cellIndexSampler.SampleBiome((x + newSize/2) * scaleDif , (y + newSize/2) * scaleDif) * 24f;
                 if (Mathf.RoundToInt(cellVal) == index)
                 {
                     int finalX = x + mSize/2 - pixelXOffset;

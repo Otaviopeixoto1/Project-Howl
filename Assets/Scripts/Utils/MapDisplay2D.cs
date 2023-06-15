@@ -44,11 +44,7 @@ public class MapDisplay2D : MapDisplay
 
     void Start()
     {
-        if (mapGenerator is BiomeMapGenerator) 
-        {
-            (mapGenerator as BiomeMapGenerator).GetSingleBiomeMap(7,1.5f);
-            (mapGenerator as BiomeMapGenerator).GetBiomeIndexMap();
-        }
+        
     }
 
 

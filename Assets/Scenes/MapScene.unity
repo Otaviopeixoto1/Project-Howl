@@ -268,156 +268,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &438506048
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 438506049}
-  - component: {fileID: 438506050}
-  m_Layer: 0
-  m_Name: WorldMap
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &438506049
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 438506048}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 200, y: 0, z: -346}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &438506050
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 438506048}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 49b6c7fe36b99ec2e85b3e0223709424, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  biomeGenerator: {fileID: 11400000, guid: ecf591a7939e1ec968a0b9dc12c107a7, type: 2}
-  heightMap: {fileID: 11400000, guid: 834f5098bc2a9568da1eef36f5eff1c0, type: 2}
---- !u!1 &726340364
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 726340365}
-  - component: {fileID: 726340368}
-  - component: {fileID: 726340367}
-  - component: {fileID: 726340366}
-  m_Layer: 0
-  m_Name: 3DMap
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &726340365
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 726340364}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -250, y: 0, z: -500}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &726340366
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 726340364}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812beca6cf29394a8ae0754a2689b5d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  autoUpdate: 1
-  mapGenerator: {fileID: 11400000, guid: a9edab8d86ef035d59659b1b15ded535, type: 2}
-  mapMaterial: {fileID: 2100000, guid: a8c4f450b4a96dce0b161d187b1eae03, type: 2}
-  meshWidth: 241
-  meshHeight: 241
-  meshScale: 1
-  lodBias: 8
---- !u!23 &726340367
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 726340364}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: a8c4f450b4a96dce0b161d187b1eae03, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &726340368
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 726340364}
-  m_Mesh: {fileID: 769573971}
---- !u!43 &769573971
+--- !u!43 &394373641
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -582,6 +433,155 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1 &438506048
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 438506049}
+  - component: {fileID: 438506050}
+  m_Layer: 0
+  m_Name: WorldMap
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &438506049
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 438506048}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 200, y: 0, z: -346}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &438506050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 438506048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49b6c7fe36b99ec2e85b3e0223709424, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  biomeGenerator: {fileID: 11400000, guid: ecf591a7939e1ec968a0b9dc12c107a7, type: 2}
+  heightMap: {fileID: 11400000, guid: 834f5098bc2a9568da1eef36f5eff1c0, type: 2}
+--- !u!1 &726340364
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 726340365}
+  - component: {fileID: 726340368}
+  - component: {fileID: 726340367}
+  - component: {fileID: 726340366}
+  m_Layer: 0
+  m_Name: 3DMap
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &726340365
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 726340364}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -250, y: 0, z: -500}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &726340366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 726340364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 812beca6cf29394a8ae0754a2689b5d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoUpdate: 1
+  mapGenerator: {fileID: 11400000, guid: a9edab8d86ef035d59659b1b15ded535, type: 2}
+  mapMaterial: {fileID: 2100000, guid: a8c4f450b4a96dce0b161d187b1eae03, type: 2}
+  meshWidth: 241
+  meshHeight: 241
+  meshScale: 1
+  lodBias: 8
+--- !u!23 &726340367
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 726340364}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a8c4f450b4a96dce0b161d187b1eae03, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &726340368
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 726340364}
+  m_Mesh: {fileID: 394373641}
 --- !u!1 &835031419
 GameObject:
   m_ObjectHideFlags: 0
@@ -680,7 +680,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoUpdate: 1
   mapGenerator: {fileID: 11400000, guid: 4d8be01233a7afc778c1f8bcc836376f, type: 2}
-  displayStyle: 3
+  displayStyle: 2
   textureWidth: 240
   textureHeight: 240
   textureScale: 1
@@ -697,7 +697,7 @@ GameObject:
   - component: {fileID: 1017324831}
   - component: {fileID: 1017324828}
   m_Layer: 0
-  m_Name: Quad
+  m_Name: BiomeMap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -723,7 +723,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 68d6e2daea376a4cc99513bf78caa6e1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -878,81 +878,81 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   biomeMapGenerator: {fileID: 11400000, guid: 4d8be01233a7afc778c1f8bcc836376f, type: 2}
   biomeScale: 1.242
-  currentDisplay: 0
+  currentDisplay: 24
   bakedBiomes:
-  - name: 
+  - name: map0
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map1
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map2
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map3
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map4
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map5
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map6
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map7
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map8
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map9
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map10
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map11
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map12
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map13
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map14
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map15
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map16
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map17
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map18
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map19
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map20
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map21
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map22
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map23
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: 
+  - name: map24
     heightMap: {fileID: 0}
     displayColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &1433882815
