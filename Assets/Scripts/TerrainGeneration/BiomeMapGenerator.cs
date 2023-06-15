@@ -64,6 +64,16 @@ public class BiomeMapGenerator : MapGenerator
         return noiseValue;
     }
 
+    public float indexMapDecoder(float indexSample, int gridSize) //use these for dynamic map gen
+    {
+        return indexSample * gridSize *(gridSize + 2);
+    }
+
+    public float indexMapEncoder(float indexSample, int gridSize)
+    {
+        return indexSample * gridSize *(gridSize + 2);
+    }
+
     public Texture2D GetBiomeIndexMap()
     {
         noiseGenerator.SetModifiedCellularReturnType(FastNoiseLite.ModifiedCellularReturnType.ModifiedCellValue);
@@ -180,9 +190,9 @@ public class BiomeMapGenerator : MapGenerator
         {
             for (int x = -newSize/2; x <= newSize/2; x++)
             {
-                                            //use a decoder delegate instead of this hardcoded value
-                float cellVal = cellIndexSampler.SampleBiome((x + newSize/2) * scaleDif , (y + newSize/2) * scaleDif) * 24f;
-                if (Mathf.RoundToInt(cellVal) == index)
+                float cellVal = cellIndexSampler.SampleBiomeNearest((x + newSize/2) * scaleDif , (y + newSize/2) * scaleDif).r;
+                //use a decoder delegate instead of this hardcoded value 24f
+                if (Mathf.RoundToInt(cellVal * 24f) == index)
                 {
                     int finalX = x + mSize/2 - pixelXOffset;
                     int finalY = y + mSize/2 - pixelYOffset;
@@ -191,7 +201,8 @@ public class BiomeMapGenerator : MapGenerator
                     {
 
                         float cellSDF = SampleMap(x * scaleDif , y * scaleDif)/amplitude;
-                        colorMap[finalY * (mSize+1) + finalX] =  Color.white * cellSDF;
+
+                        colorMap[finalY * (mSize+1) + finalX] =  new Color(cellSDF, cellVal,0,1);
                         
                     }
                 }

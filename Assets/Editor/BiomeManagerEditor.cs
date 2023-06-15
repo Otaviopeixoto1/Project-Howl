@@ -18,5 +18,9 @@ public class BiomeManagerEditor : Editor
         {
             mapDisp.Save();
         }
+        if (GUILayout.Button("Display"))
+        {
+            mapDisp.DisplayMap();
+        }
     }
 }

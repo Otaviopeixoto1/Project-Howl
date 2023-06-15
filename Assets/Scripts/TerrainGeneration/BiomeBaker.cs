@@ -10,7 +10,7 @@ using UnityEngine;
 [Serializable]
 public class BiomeSampler
 {
-    public readonly int id;
+    public readonly int id; //id must be unique. Create a static variable that takes care of that
     public string name;
 
     private string heightMapPath;
@@ -60,9 +60,13 @@ public class BiomeSampler
         
     }
 
-    public float SampleBiome(float x, float y)
+    public Color SampleBiome(float x, float y)
     {
-        return biomeMap.GetPixel(Mathf.RoundToInt(x),Mathf.RoundToInt(y)).r;
+        return biomeMap.GetPixel(Mathf.RoundToInt(x),Mathf.RoundToInt(y));
+    }
+    public Color SampleBiomeNearest(float x, float y)
+    {
+        return biomeMap.GetPixel(Mathf.RoundToInt(x),Mathf.RoundToInt(y));
     }
 
     public Texture2D GetMap()
