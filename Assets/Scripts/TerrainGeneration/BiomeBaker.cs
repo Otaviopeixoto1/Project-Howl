@@ -42,20 +42,18 @@ public class BiomeSampler
         Texture2D tex = null;
         byte[] fileData;
 
-        if (System.IO.File.Exists(biomeMapPath))
+        if (System.IO.File.Exists(Application.dataPath + biomeMapPath))
         {
-            fileData = System.IO.File.ReadAllBytes(biomeMapPath);
-            tex = new Texture2D(2, 2);
-            tex.LoadImage(fileData); //..this will auto-resize the texture dimensions.
+            fileData = System.IO.File.ReadAllBytes(Application.dataPath + biomeMapPath);
+            tex = new Texture2D(2, 2); //texture dimensions are resized.
+            tex.LoadImage(fileData); 
         }
         else
         {
             Debug.Log("missing texture for biome: " + id);
         }
         
-        this.biomeMap = tex; //check if file exists before assign map
-
-
+        this.biomeMap = tex;
 
         this.name = bData.name;
         this.displayColor = bData.displayColor;
@@ -85,14 +83,12 @@ public class BiomeSampler
         }
         if (biomeMap != null)
         {
-            biomeMapPath = Application.dataPath + "/Map/BiomeMaps/map" + id + ".png";
-            System.IO.File.WriteAllBytes(biomeMapPath, biomeMap.EncodeToPNG());
-            //return SerializeToJSON();
+            biomeMapPath = "/Map/BiomeMaps/map" + id + ".png";
+            System.IO.File.WriteAllBytes(Application.dataPath + biomeMapPath, biomeMap.EncodeToPNG());
         }
         else
         {
             Debug.Log("Null Map texture for sampler id = " + id);
-            //return "";
         }
 
         BiomeData bData = new BiomeData(id, name, heightMapPath, biomeMapPath, displayColor);
@@ -112,77 +108,76 @@ public class BiomeSampler
 
 
 
-
-
-
-
-public class BiomeBaker : MonoBehaviour
+public class BiomeSamplerData
 {
-    [SerializeField]
-    private BiomeMapGenerator biomeMapGenerator;
+    public readonly int gridSize;
+    public readonly BiomeSampler fullBiomeMapSampler;
+    public readonly List<BiomeSampler> singleBiomeSamplers;
 
-    [SerializeField]
-    [Range(1,2)]
-    private float biomeScale = 1.5f;
-
-    [SerializeField]
-    private int currentDisplay = 0;
-
-    [NonReorderable]
-    [SerializeField]
-    private List<BiomeSampler> bakedBiomes = new List<BiomeSampler>();
-    private BiomeSampler fullBiomeMap = null;
-
-
-    void Start()
+    public BiomeSamplerData(int gridSize, BiomeSampler fullBiomeMapSampler, List<BiomeSampler> singleBiomeSamplers)
     {
-        //LoadBaked();
+        this.gridSize = gridSize;
+        this.fullBiomeMapSampler = fullBiomeMapSampler;
+        this.singleBiomeSamplers = singleBiomeSamplers;
     }
 
-    public void LoadBaked()
-    {
-        bakedBiomes.Clear();
-        string biomesString = File.ReadAllText(Application.dataPath + "/Map/BiomeMaps/mapdata.json");
-        BiomeMapData biomeMapData = JsonUtility.FromJson<BiomeMapData>(biomesString);
 
-        fullBiomeMap = new BiomeSampler(biomeMapData.fullbiomeMapData);
+}
+
+//biome baker should be a simple static class with satic methods
+
+public static class BiomeBaker
+{
+    public static BiomeSamplerData LoadBaked()
+    {
+        if (!System.IO.File.Exists(Application.dataPath + "/Map/BiomeMaps/mapdata.json"))
+        {
+            return null;
+        }
+
+        string json = File.ReadAllText(Application.dataPath + "/Map/BiomeMaps/mapdata.json");
+        BiomeMapData biomeMapData = JsonUtility.FromJson<BiomeMapData>(json);
+
+        int gridSize = biomeMapData.biomeGridSize;
+        BiomeSampler fullBiomeMapSampler = new BiomeSampler(biomeMapData.fullbiomeMapData);
+        List<BiomeSampler> singleBiomeSamplers = new List<BiomeSampler>();
+
 
         foreach (BiomeData biomeData in biomeMapData.biomeMaps)
         {
-            bakedBiomes.Add(new BiomeSampler(biomeData));
+            singleBiomeSamplers.Add(new BiomeSampler(biomeData));
         }
 
+
+        return new BiomeSamplerData(gridSize, fullBiomeMapSampler, singleBiomeSamplers);
     }
 
 
-    public void BakeBiomeCells()
+    public static BiomeSampler BakeBiomeCells(BiomeMapGenerator biomeMapGenerator)
     {
-        if (biomeMapGenerator == null)
-        {
-            return;
-        }
         Texture2D fullMap = biomeMapGenerator.GetBiomeIndexMap();
 
 
-        fullBiomeMap = new BiomeSampler(-1,fullMap);
+        BiomeSampler fullMapSampler = new BiomeSampler(-1,fullMap);
+
+        return fullMapSampler;
     }
 
-    public void BakeSingleBiomes()
+    public static List<BiomeSampler> BakeSingleBiomes(BiomeMapGenerator biomeMapGenerator, BiomeSampler fullBiomeMap, float biomeStretch)
     {
-        bakedBiomes.Clear();
-        if (biomeMapGenerator != null && fullBiomeMap != null)
+        List<BiomeSampler> bakedBiomes = new List<BiomeSampler>();
+        int size = biomeMapGenerator.gridDimension;
+        for (int i = 0; i <= size * (size + 2); i++)
         {
-            int size = biomeMapGenerator.gridDimension;
-            for (int i = 0; i <= size * (size + 2); i++)
-            {
-                Texture2D singleMap = biomeMapGenerator.GetSingleBiomeMap(i, biomeScale, fullBiomeMap);
-                bakedBiomes.Add(new BiomeSampler(i, singleMap));
-            }
-            
+            Texture2D singleMap = biomeMapGenerator.GetSingleBiomeMap(i, biomeStretch, fullBiomeMap);
+            bakedBiomes.Add(new BiomeSampler(i, singleMap));
         }
+        
+        return bakedBiomes;
+        
     }
 
-    public void SaveBaked()
+    public static void SaveBaked(int biomeGridSize, BiomeSampler fullBiomeMap, List<BiomeSampler> bakedBiomes)
     {
         BiomeData fullBiomeMapData;
 
@@ -203,52 +198,10 @@ public class BiomeBaker : MonoBehaviour
             biomeMaps[i] = bakedBiomes[i].Save();
         }
         
-        BiomeMapData bmd = new BiomeMapData(biomeMapGenerator.gridDimension,fullBiomeMapData,biomeMaps);
+        BiomeMapData bmd = new BiomeMapData(biomeGridSize,fullBiomeMapData,biomeMaps);
 
-        File.WriteAllText(Application.dataPath + "/Map/BiomeMaps/mapdata.json", JsonUtility.ToJson(bmd));
+        File.WriteAllText(Application.dataPath + "/Map/BiomeMaps/mapdata.json", JsonUtility.ToJson(bmd,true));
 
-
-    }
-
-    public void DisplayMap(int index)
-    {
-        MeshRenderer mapRenderer = GetComponent<MeshRenderer>();
-        if (mapRenderer == null || bakedBiomes.Count == 0 || bakedBiomes[index] == null)
-        {
-            return;
-        }
-        Texture2D texture = bakedBiomes[index].GetMap();
-
-        if (texture != null)
-        {
-           texture.Apply();
-            mapRenderer.sharedMaterial.mainTexture = texture; 
-        }
-        
-    }
-    private void OnEnable()
-    {
-        bakedBiomes.Clear();
-        currentDisplay = 0;
-    }
-
-    private void OnDisable()
-    {
-        bakedBiomes.Clear();
-        currentDisplay = 0;
-    }
-
-    void OnValidate()
-    {
-        if (currentDisplay >=0 && currentDisplay < bakedBiomes.Count)
-        {
-            DisplayMap(currentDisplay);
-        }
-        else
-        {
-            currentDisplay = Mathf.Min(Mathf.Max(0,currentDisplay),bakedBiomes.Count - 1);
-            DisplayMap(currentDisplay);
-        }
 
     }
 

@@ -7,7 +7,7 @@ public class MapComposer : MonoBehaviour
     [SerializeField]
     private BiomeMapGenerator biomeGenerator;
     [SerializeField]
-    HeightMapGenerator heightMap; // add multiple heightmaps in a dict with biome types
+    HeightMapGenerator heightMap; 
 
     void Start()
     {

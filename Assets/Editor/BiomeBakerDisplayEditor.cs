@@ -1,29 +1,28 @@
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(BiomeBaker))]
-public class BiomeBakerEditor : Editor
+[CustomEditor(typeof(BiomeBakerDisplay))]
+public class BiomeBakerDisplayEditor : Editor
 {
     public override void OnInspectorGUI()
     {
-        BiomeBaker mapDisp = (BiomeBaker)target;
+        BiomeBakerDisplay mapDisp = (BiomeBakerDisplay)target;
 
         DrawDefaultInspector();
 
         if (GUILayout.Button("Load"))
         {
-            mapDisp.LoadBaked();
+            mapDisp.Load();
             mapDisp.DisplayMap(0);
         }
         if (GUILayout.Button("Bake"))
         {
-            mapDisp.BakeBiomeCells();
-            mapDisp.BakeSingleBiomes();
+            mapDisp.Bake();
             mapDisp.DisplayMap(0);
         }
         if (GUILayout.Button("Save"))
         {
-            mapDisp.SaveBaked();
+            mapDisp.Save();
         }
     }
 }

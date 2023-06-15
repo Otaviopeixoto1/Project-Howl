@@ -1,1 +1,317 @@
-{"biomeGridSize":4,"fullbiomeMapData":{"id":-1,"name":"map-1","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map-1.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},"biomeMaps":[{"id":0,"name":"map0","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map0.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":1,"name":"map1","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map1.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":2,"name":"map2","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map2.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":3,"name":"map3","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map3.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":4,"name":"map4","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map4.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":5,"name":"map5","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map5.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":6,"name":"map6","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map6.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":7,"name":"map7","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map7.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":8,"name":"map8","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map8.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":9,"name":"map9","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map9.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":10,"name":"map10","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map10.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":11,"name":"map11","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map11.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":12,"name":"map12","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map12.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":13,"name":"map13","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map13.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":14,"name":"map14","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map14.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":15,"name":"map15","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map15.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":16,"name":"map16","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map16.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":17,"name":"map17","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map17.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":18,"name":"map18","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map18.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":19,"name":"map19","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map19.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":20,"name":"map20","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map20.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":21,"name":"map21","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map21.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":22,"name":"map22","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map22.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":23,"name":"map23","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map23.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}},{"id":24,"name":"map24","heightMapPath":"","biomeMapPath":"/home/otavio/howl/Assets/Map/BiomeMaps/map24.png","displayColor":{"r":0.0,"g":0.0,"b":0.0,"a":0.0}}]}
+{
+    "biomeGridSize": 4,
+    "fullbiomeMapData": {
+        "id": -1,
+        "name": "map-1",
+        "heightMapPath": "",
+        "biomeMapPath": "/Map/BiomeMaps/map-1.png",
+        "displayColor": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+        }
+    },
+    "biomeMaps": [
+        {
+            "id": 0,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map0.png",
+            "displayColor": {
+                "r": 0.9027637839317322,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 1,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map1.png",
+            "displayColor": {
+                "r": 0.9592331051826477,
+                "g": 0.8938505053520203,
+                "b": 0.8938505053520203,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 2,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map2.png",
+            "displayColor": {
+                "r": 0.1138174831867218,
+                "g": 0.1425783783197403,
+                "b": 0.9472448825836182,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 3,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map3.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 4,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map4.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 5,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map5.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 6,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map6.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 7,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map7.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 8,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map8.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 9,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map9.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 10,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map10.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 11,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map11.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 12,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map12.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 13,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map13.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 14,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map14.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 15,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map15.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 16,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map16.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 17,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map17.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 18,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map18.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 19,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map19.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 20,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map20.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 21,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map21.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 22,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map22.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 23,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map23.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        },
+        {
+            "id": 24,
+            "name": "",
+            "heightMapPath": "",
+            "biomeMapPath": "/Map/BiomeMaps/map24.png",
+            "displayColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.0
+            }
+        }
+    ]
+}

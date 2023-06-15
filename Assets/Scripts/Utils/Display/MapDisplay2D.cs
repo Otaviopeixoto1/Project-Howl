@@ -22,9 +22,6 @@ public class MapDisplay2D : MapDisplay
         {typeof(HeightMapGenerator), new DisplayStyle[]{DisplayStyle.GrayScale}}
     };
 
-
-    //private MeshRenderer mapRenderer;
-
     [SerializeField]
     private MapGenerator mapGenerator;
 
