@@ -43,6 +43,8 @@ public class MapDisplay3D : MapDisplay
         meshRenderer = GetComponent<MeshRenderer>();
         meshFilter = GetComponent<MeshFilter>();
 
+        //meshRenderer.transform.localScale = new Vector3(meshScale, meshScale, meshScale);
+
         if (currentMesh == null) //check if the mesh has to be generated from scratch
         {
             //float[,] map = mapGenerator.GenerateMap();
@@ -60,7 +62,7 @@ public class MapDisplay3D : MapDisplay
         }
         else
         {
-            Debug.Log("updating Verts");
+            //Debug.Log("updating Verts");
             Vector3[] vertices = MeshGenerator.CalculateMeshVertices(mapGenerator, meshWidth, meshHeight, meshScale,lodBias);
             currentMesh.SetVertices(vertices);
             currentMesh.RecalculateNormals();
@@ -69,7 +71,7 @@ public class MapDisplay3D : MapDisplay
                             = TextureGenerator.GenerateTextureFromSampler(mapGenerator, meshWidth, meshHeight, meshScale);
             
         }
-        meshRenderer.transform.localScale = new Vector3(meshScale, meshScale, meshScale);
+        
     }
 
     void OnValidate()

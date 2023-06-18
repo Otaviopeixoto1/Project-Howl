@@ -15,10 +15,10 @@ public class MapGenerator : ScriptableObject
     public bool triggerUpdate = false; 
 
     [Range(0.01f,0.1f)]
-    public float mapScale = 0.0682f;
+    public float mapScale = 0.1f;
 
     [Range(0, 20)]
-    public float amplitude = 14.9f;
+    public float amplitude = 20f;
 
     public AnimationCurve samplingCurve;
 

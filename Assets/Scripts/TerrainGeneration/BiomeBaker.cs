@@ -25,6 +25,13 @@ public class BiomeSampler
     {
         this.id = id;
         this.biomeMap = biomeMap;
+
+        UnityEngine.Random.InitState(Mathf.FloorToInt(id)); 
+        float red = UnityEngine.Random.value;
+        float green = UnityEngine.Random.value;
+        float blue = UnityEngine.Random.value;
+            
+        this.displayColor = new Color(red, green, blue);
     }
 
     public BiomeSampler(BiomeData bData)
@@ -67,6 +74,11 @@ public class BiomeSampler
     public Color SampleBiomeNearest(float x, float y)
     {
         return biomeMap.GetPixel(Mathf.RoundToInt(x),Mathf.RoundToInt(y));
+    }
+
+    public float SampleHeight(float x, float y)
+    {
+        return heightMap.SampleMap(x,y);
     }
 
     public Texture2D GetMap()

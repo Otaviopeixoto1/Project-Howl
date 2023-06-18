@@ -142,7 +142,7 @@ public class BiomeMapGenerator : MapGenerator
                     if (finalX >= 0 && finalY >= 0 && finalX <= mapSize && finalY <= mapSize)
                     {
                         noiseGenerator.SetModifiedCellularReturnType(FastNoiseLite.ModifiedCellularReturnType.Distance2Sub);
-                        float cellSDF = SampleMap(x * scaleDif , y * scaleDif)/amplitude;
+                        float cellSDF = ( SampleMap(x * scaleDif , y * scaleDif)/amplitude);
                         noiseGenerator.SetModifiedCellularReturnType(FastNoiseLite.ModifiedCellularReturnType.ModifiedCellValue);
                         //Debug.Log(finalX + " " + finalY);
                         colorMap[finalY * (mapSize+1) + finalX] =  Color.white * cellSDF;
@@ -174,13 +174,25 @@ public class BiomeMapGenerator : MapGenerator
 
 
         Vector2 offset = ((vectors[index] * scaleIncrease) - vectors[index])* mSize/(float)gridDimension;
+        //Debug.Log(offset);
+        
         int pixelXOffset = Mathf.RoundToInt(offset.x);
         int pixelYOffset = Mathf.RoundToInt(offset.y);
 
         
         int newSize = Mathf.RoundToInt(mSize * scaleIncrease);
-        float scaleDif = mSize/(float)newSize;
 
+        if (Mathf.Abs(pixelXOffset) > (newSize - mSize)/2)
+        {
+            newSize += Mathf.Abs(pixelXOffset) - (newSize - mSize)/2 + 2;
+        }
+        else if (Mathf.Abs(pixelYOffset) > (newSize - mSize)/2)
+        {
+            newSize += Mathf.Abs(pixelYOffset) - (newSize - mSize)/2 + 2;
+        }
+
+        float scaleDif = 1/scaleIncrease;
+        
 
         Texture2D singleBiomeMap = new Texture2D(mSize + 1, mSize + 1);
         
@@ -190,19 +202,23 @@ public class BiomeMapGenerator : MapGenerator
         {
             for (int x = -newSize/2; x <= newSize/2; x++)
             {
-                float cellVal = cellIndexSampler.SampleBiomeNearest((x + newSize/2) * scaleDif , (y + newSize/2) * scaleDif).r;
+                float cellId = cellIndexSampler.SampleBiomeNearest((x + newSize/2) * scaleDif , (y + newSize/2) * scaleDif).r;
                 //use a decoder delegate instead of this hardcoded value 24f
-                if (Mathf.RoundToInt(cellVal * 24f) == index)
+                if (Mathf.RoundToInt(cellId * 24f) == index)
                 {
                     int finalX = x + mSize/2 - pixelXOffset;
                     int finalY = y + mSize/2 - pixelYOffset;
 
                     if (finalX >= 0 && finalY >= 0 && finalX <= mSize && finalY <= mSize)
                     {
-
+                        //put a threshold for distance in order to better blend the maps
+                        //if high distance values are allowed, they are encoded as 1 in the texture
+                        //and therefore the biome will dominate the edges around it, making the transitions
+                        //harder and less natural
+                        
                         float cellSDF = SampleMap(x * scaleDif , y * scaleDif)/amplitude;
 
-                        colorMap[finalY * (mSize+1) + finalX] =  new Color(cellSDF, cellVal,0,1);
+                        colorMap[finalY * (mSize+1) + finalX] =  new Color(cellSDF, 0,0,1);
                         
                     }
                 }

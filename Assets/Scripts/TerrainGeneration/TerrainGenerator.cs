@@ -24,7 +24,9 @@ public struct MapData
 }
 
 
-[RequireComponent(typeof(TerrainChunkManager))]
+
+
+[RequireComponent(typeof(MapComposer))]
 public class TerrainGenerator : MonoBehaviour
 {
     //Create a chunk manager class that deals with these
@@ -223,8 +225,8 @@ public class TerrainGenerator : MonoBehaviour
         {
             float viewerDistance = Mathf.Sqrt(bounds.SqrDistance(viewerWorldPos)); //viewer distance from edge of chunk
             bool visible = viewerDistance <= maxViewDistance;
-            SetVisible(visible); //destroy the chunk instead of this. only destroy the ones that are actualy 
-                                //very far from the player. (probably wont be rendered)
+            SetVisible(visible); //Only destroy the ones that are actualy 
+                                // (probably wont be rendered)
         }
 
         public void SetVisible(bool visible)

@@ -59,6 +59,9 @@ public static class MeshGenerator
 
         return increment;
     }
+    
+
+    //Using MapGenerator as sampler:
 
     public static MeshData GenerateTerrainFromSampler(MapGenerator sampler, int meshWidth, int meshHeight, float meshScale, int lodBias,bool isThread = false)
     {
@@ -91,8 +94,8 @@ public static class MeshGenerator
         {
             for (int x = 0; x < meshWidth; x += widthIncrement)
             {
-                meshData.vertices[vertexIndex] = new Vector3(x, sampler.SampleMap(x - (meshWidth - 1)/2, y - (meshHeight - 1)/2,heightCurve), y) 
-                                                + centerOffset;
+                meshData.vertices[vertexIndex] = (new Vector3(x, sampler.SampleMap(x - (meshWidth - 1)/2, y - (meshHeight - 1)/2,heightCurve), y) 
+                                                + centerOffset) * meshScale;
                 meshData.uvs[vertexIndex] = new Vector2(x/(float)meshWidth, y/(float)meshHeight);
 
                 if (x < (meshWidth - 1) && y < (meshHeight - 1))
@@ -109,8 +112,50 @@ public static class MeshGenerator
         return meshData;
         
     }
-    
 
+    
+    //using BiomeManager as sampler:
+
+    public static MeshData GenerateTerrainFromSampler(BiomeManager sampler, int meshWidth, int meshHeight, float meshScale, int lodBias, bool isThread = false)
+    {
+        int widthIncrement = CalculateLodIncrement(meshWidth,lodBias);
+        int heightIncrement = CalculateLodIncrement(meshHeight,lodBias);
+
+
+        int widthVertices = ((meshWidth - 1)/widthIncrement) + 1;
+        int heightVertices = ((meshHeight - 1)/heightIncrement) + 1;
+        MeshData meshData = new MeshData(widthVertices, heightVertices);
+
+        Vector3 centerOffset = new Vector3(-(meshWidth - 1)/2f, 0, -(meshHeight - 1)/2f);
+
+        int vertexIndex = 0;
+
+        for (int y = 0; y < meshHeight; y += heightIncrement)
+        {
+            for (int x = 0; x < meshWidth; x += widthIncrement)
+            {
+                meshData.vertices[vertexIndex] = (new Vector3(x, sampler.SampleHeight(x, y), y) 
+                                                + centerOffset) * meshScale;
+                meshData.uvs[vertexIndex] = new Vector2(x/(float)meshWidth, y/(float)meshHeight);
+
+                if (x < (meshWidth - 1) && y < (meshHeight - 1))
+                {
+                    meshData.AddTriangle(vertexIndex, vertexIndex + widthVertices, vertexIndex + widthVertices + 1 );
+                    meshData.AddTriangle(vertexIndex, vertexIndex + widthVertices + 1, vertexIndex + 1 );
+                }
+
+
+                vertexIndex++;
+            }
+        }
+
+        return meshData;
+        
+    }
+
+
+
+    // A quicker way to just update the heightmap of the mesh:
 
     public static Vector3[] CalculateMeshVertices(MapGenerator sampler, int meshWidth, int meshHeight, float meshScale, int lodBias)
     {
@@ -126,8 +171,8 @@ public static class MeshGenerator
         {
             for (int x = 0; x < meshWidth; x += widthIncrement)
             {
-                vertices[vertexIndex] = new Vector3(x, sampler.SampleMap(x - (meshWidth - 1)/2, y - (meshHeight - 1)/2, sampler.samplingCurve), y) 
-                                                + centerOffset;
+                vertices[vertexIndex] = (new Vector3(x, sampler.SampleMap(x - (meshWidth - 1)/2, y - (meshHeight - 1)/2, sampler.samplingCurve), y) 
+                                                + centerOffset) * meshScale;
                                                 
                 vertexIndex++;
             }

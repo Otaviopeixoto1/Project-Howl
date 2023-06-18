@@ -41,7 +41,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   cellularSeed: 1
   fractalType: 0
-  MapSize: 240
+  mapSize: 240
   gridDimension: 4
   octaves: 1
   lacunarity: 0

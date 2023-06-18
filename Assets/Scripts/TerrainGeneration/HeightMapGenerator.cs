@@ -12,16 +12,16 @@ public class HeightMapGenerator : MapGenerator
     public FastNoiseLite.FractalType fractalType = FastNoiseLite.FractalType.FBm;
     
     [Range(1, 10)]
-    public int octaves = 2;
+    public int octaves = 4;
 
     [Range(0, 5)]
-    public float frequency = 0.1f;
+    public float frequency = 1.9f;
     
     [Range(0, 10)]
-    public float lacunarity = 0.31f;
+    public float lacunarity = 0.32f;
 
     [Range(0, 10)]
-    public float persistence = 6.74f;
+    public float persistence = 8f;
 
 
 
