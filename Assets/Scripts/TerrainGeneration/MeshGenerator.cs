@@ -63,7 +63,7 @@ public static class MeshGenerator
 
     //Using MapGenerator as sampler:
 
-    public static MeshData GenerateTerrainFromSampler(MapGenerator sampler, int meshWidth, int meshHeight, float meshScale, int lodBias,bool isThread = false)
+    public static MeshData GenerateTerrainFromSampler(MapGenerator sampler, int meshWidth, int meshHeight, float meshScale, int lodBias = 0,bool isThread = false)
     {
         AnimationCurve heightCurve;
         if(isThread)
@@ -116,7 +116,7 @@ public static class MeshGenerator
     
     //using BiomeManager as sampler:
 
-    public static MeshData GenerateTerrainFromSampler(BiomeManager sampler, int meshWidth, int meshHeight, float meshScale, int lodBias, bool isThread = false)
+    public static MeshData GenerateTerrainFromSampler(WorldSampler sampler, int meshWidth, int meshHeight, float meshScale, Vector2 sampleOffset, int lodBias = 0, bool isThread = false)
     {
         int widthIncrement = CalculateLodIncrement(meshWidth,lodBias);
         int heightIncrement = CalculateLodIncrement(meshHeight,lodBias);
@@ -134,7 +134,7 @@ public static class MeshGenerator
         {
             for (int x = 0; x < meshWidth; x += widthIncrement)
             {
-                meshData.vertices[vertexIndex] = (new Vector3(x, sampler.SampleHeight(x, y), y) 
+                meshData.vertices[vertexIndex] = (new Vector3(x, sampler.SampleHeight(x + sampleOffset.x, y + sampleOffset.y), y) 
                                                 + centerOffset) * meshScale;
                 meshData.uvs[vertexIndex] = new Vector2(x/(float)meshWidth, y/(float)meshHeight);
 

@@ -1,5 +1,4 @@
 using System.Collections;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,9 +7,11 @@ public enum Biomes
 
 }
 
+//save, load, assign biomes
 public class BiomeManager : MonoBehaviour
 {
     private int biomeGridSize;
+
     private BiomeSampler fullBiomeMap;
 
     [NonReorderable]
@@ -18,23 +19,33 @@ public class BiomeManager : MonoBehaviour
     private List<BiomeSampler> biomeSamplers;
     private BiomeLinks biomeLinks; // serialize and save the biome links in a file
 
+    [SerializeField]
+    [Range(0.01f,5f)]
+    private float heightMapScale = 1f;
+
+
+
     public void GenerateBiomeMap()
     {
         //Generate the biomeMapGenerator and pass to BiomeBaker to generate all biome cells 
         return;
     }
 
-    public void SetBiomeHeightMap(int index, HeightMapGenerator heightMapGenerator)
+    public void AssingBiomes()
     {
-        if ((biomeSamplers != null) && (index >= 0) && (index < biomeSamplers.Count))
-        {
-            biomeSamplers[index].heightMap = heightMapGenerator;
-        }
+        //assing random biomes to each cell, based on the map position and neighbours
     }
 
-    public int GetGridSize()
+    public void GenerateHeightMaps()
     {
-        return biomeGridSize;
+        for (int i = 0; i <= biomeGridSize * (biomeGridSize + 2); i++)
+        {
+            HeightMapGenerator heightMapGenerator = ScriptableObject.CreateInstance<HeightMapGenerator>();
+            heightMapGenerator.frequency = Random.Range(0.01f, 50.0f);
+            heightMapGenerator.amplitude = Random.Range(1f, 5.0f);
+            heightMapGenerator.mapScale = heightMapScale;
+            biomeSamplers[i].heightMap = heightMapGenerator;
+        }
     }
 
     public bool Load()
@@ -69,94 +80,20 @@ public class BiomeManager : MonoBehaviour
         return true;
     }
 
-    public void AssingBiomes()
+
+    public int[] GetNeighbours(int index)
     {
-        //assing random biomes to each cell, based on the map position and neighbours
+        return biomeLinks.neighbours[index];
     }
 
-    
-
-    //this method will be a problem in threads because of heightCurves. 
-    //Implement heightCurves from Scratch
-    public float SampleHeight(float x, float y) 
+    public BiomeSampler GetFullBiomeSampler()
     {
-                                            //use encoder/decoder for these values
-        int cellId = Mathf.RoundToInt(fullBiomeMap.SampleBiomeNearest(x,y).r * 24f);
-        float cellValue = biomeSamplers[cellId].SampleBiome(x,y).r;
-        float finalHeight = biomeSamplers[cellId].SampleHeight(x,y) * cellValue; 
-                                        //use the width and height offset for sampling heightmap
-        float totalValue = cellValue;
-
-
-        if (cellValue < 0.9)
-        {
-            foreach (int neighbourId in biomeLinks.neighbours[cellId])
-            {
-                float nCellValue = biomeSamplers[neighbourId].SampleBiome(x,y).r;
-                float nheight = biomeSamplers[neighbourId].SampleHeight(x,y) * nCellValue;
-                totalValue += nCellValue;
-                finalHeight += nheight;
-            }
-        }
-        finalHeight /= totalValue;
-
-        return finalHeight;
+        return fullBiomeMap;
     }
-
-    public Color SampleColor(float x, float y)
+    public BiomeSampler GetBiomeSampler(int index)
     {
-                                                    //use encoder/decoder for these values
-        int cellId = Mathf.RoundToInt(fullBiomeMap.SampleBiomeNearest(x,y).r * 24f);
-        float cellValue = biomeSamplers[cellId].SampleBiome(x,y).r;
-        Color finalColor = biomeSamplers[cellId].displayColor * cellValue;
-        float totalValue = cellValue;
-
-
-        if (cellValue < 0.9)
-        {
-            foreach (int neighbourId in biomeLinks.neighbours[cellId])
-            {
-                float nCellValue = biomeSamplers[neighbourId].SampleBiome(x,y).r;
-                Color nColor = biomeSamplers[neighbourId].displayColor * nCellValue;
-                totalValue += nCellValue;
-                finalColor += nColor;
-            }
-        }
-        finalColor /= totalValue;
-
-        return finalColor;
+        return biomeSamplers[index];   
     }
-
-
-
-    public void DisplayMap()
-    {
-        MeshRenderer mapRenderer = GetComponent<MeshRenderer>();
-        if (mapRenderer == null || biomeSamplers == null || fullBiomeMap == null)
-        {
-            return;
-        }
-        Texture2D texture = new Texture2D(241,241);
-
-        Color[] colorMap = new Color[241 * 241];
-
-        for (int x = 0; x < 241; x++)
-        {
-            for (int y = 0; y < 241; y++)
-            {
-                
-                colorMap[x + y * 241] = SampleColor(x,y);
-            }
-        }
-        texture.SetPixels(colorMap);
-        texture.wrapMode = TextureWrapMode.Clamp;
-        texture.Apply();
-
-
-        mapRenderer.sharedMaterial.mainTexture = texture;
-    }
-
-
 
 
     void Start()
@@ -165,17 +102,15 @@ public class BiomeManager : MonoBehaviour
         //if the data doesnt exist, try to generate using bake and save methods from BiomeBaker
         if(Load())
         {
-            return;
+            GenerateHeightMaps();
         }
         else
         {
             //look for backups or:
             GenerateBiomeMap();
+            AssingBiomes();
+            GenerateHeightMaps();
+            //Generate biomelinks
         }
-    }
-
-    void Update()
-    {
-        
     }
 }

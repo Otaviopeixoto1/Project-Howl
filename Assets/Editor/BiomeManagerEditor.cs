@@ -6,21 +6,18 @@ public class BiomeManagerEditor : Editor
 {
     public override void OnInspectorGUI()
     {
-        BiomeManager mapDisp = (BiomeManager)target;
+        BiomeManager biomeManager = (BiomeManager)target;
 
         DrawDefaultInspector();
 
         if (GUILayout.Button("Load"))
         {
-            mapDisp.Load();
+            biomeManager.Load();
+            biomeManager.GenerateHeightMaps();
         }
         if (GUILayout.Button("Save"))
         {
-            mapDisp.Save();
-        }
-        if (GUILayout.Button("Display"))
-        {
-            mapDisp.DisplayMap();
+            biomeManager.Save();
         }
     }
 }

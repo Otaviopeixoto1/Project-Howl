@@ -16,9 +16,16 @@ public class BiomeSampler
     private string heightMapPath;
     public HeightMapGenerator heightMap;
     private string biomeMapPath;
+
+    [NonSerialized]
     private Texture2D biomeMap;
     
     public Color displayColor;
+
+    [NonSerialized]
+    public Color[] biomeMapThreaded;
+    [NonSerialized]
+    public int mapSize;
 
 
     public BiomeSampler(int id, Texture2D biomeMap)
@@ -60,6 +67,10 @@ public class BiomeSampler
             Debug.Log("missing texture for biome: " + id);
         }
         
+        this.biomeMapThreaded = tex.GetPixels();
+        this.mapSize = tex.width;
+
+
         this.biomeMap = tex;
 
         this.name = bData.name;
@@ -69,11 +80,13 @@ public class BiomeSampler
 
     public Color SampleBiome(float x, float y)
     {
-        return biomeMap.GetPixel(Mathf.RoundToInt(x),Mathf.RoundToInt(y));
+        //return biomeMap.GetPixel(Mathf.RoundToInt(x),Mathf.RoundToInt(y));
+        return biomeMapThreaded[Mathf.RoundToInt(x) + Mathf.RoundToInt(y) * mapSize];
     }
     public Color SampleBiomeNearest(float x, float y)
     {
-        return biomeMap.GetPixel(Mathf.RoundToInt(x),Mathf.RoundToInt(y));
+        //return biomeMap.GetPixel(Mathf.RoundToInt(x),Mathf.RoundToInt(y));
+        return biomeMapThreaded[Mathf.RoundToInt(x) + Mathf.RoundToInt(y) * mapSize];
     }
 
     public float SampleHeight(float x, float y)
@@ -88,7 +101,7 @@ public class BiomeSampler
 
     public int GetSize()
     {
-        return biomeMap.width;
+        return mapSize;
     }
 
     public BiomeData Save()
