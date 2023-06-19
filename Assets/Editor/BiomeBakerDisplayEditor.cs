@@ -18,7 +18,7 @@ public class BiomeBakerDisplayEditor : Editor
         if (GUILayout.Button("Bake"))
         {
             mapDisp.Bake();
-            mapDisp.DisplayMap(0);
+            //mapDisp.DisplayMap(0);
         }
         if (GUILayout.Button("Save"))
         {

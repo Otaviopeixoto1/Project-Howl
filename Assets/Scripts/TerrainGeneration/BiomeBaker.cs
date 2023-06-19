@@ -12,6 +12,8 @@ public class BiomeSampler
 {
     public readonly int id; //id must be unique. Create a static variable that takes care of that
     public string name;
+    public Color displayColor;
+
 
     private string heightMapPath;
     public HeightMapGenerator heightMap;
@@ -19,11 +21,10 @@ public class BiomeSampler
 
     [NonSerialized]
     private Texture2D biomeMap;
-    
-    public Color displayColor;
 
     [NonSerialized]
     public Color[] biomeMapThreaded;
+
     [NonSerialized]
     public int mapSize;
 
@@ -32,6 +33,8 @@ public class BiomeSampler
     {
         this.id = id;
         this.biomeMap = biomeMap;
+        this.mapSize = biomeMap.width;
+        this.biomeMapThreaded = biomeMap.GetPixels();
 
         UnityEngine.Random.InitState(Mathf.FloorToInt(id)); 
         float red = UnityEngine.Random.value;
@@ -59,7 +62,7 @@ public class BiomeSampler
         if (System.IO.File.Exists(Application.dataPath + biomeMapPath))
         {
             fileData = System.IO.File.ReadAllBytes(Application.dataPath + biomeMapPath);
-            tex = new Texture2D(2, 2); //texture dimensions are resized.
+            tex = new Texture2D(2, 2); //texture dimensions are resized on load.
             tex.LoadImage(fileData); 
         }
         else
@@ -71,7 +74,7 @@ public class BiomeSampler
         this.mapSize = tex.width;
 
 
-        this.biomeMap = tex;
+        this.biomeMap = tex; //remove this property
 
         this.name = bData.name;
         this.displayColor = bData.displayColor;
@@ -80,8 +83,32 @@ public class BiomeSampler
 
     public Color SampleBiome(float x, float y)
     {
+        int x0 = Mathf.FloorToInt(x);
+        int x1 = x0;
+        if (x0 + 1 < mapSize)
+        {
+           x1 += 1; 
+        }
+        
+        int y0 =  Mathf.FloorToInt(y);
+        int y1 = y0;
+        if (y0 + 1 < mapSize)
+        {
+           y1 += 1; 
+        }
+
+        Color s00 = biomeMapThreaded[ x0 + y0 * mapSize];
+        Color s10 = biomeMapThreaded[ x1 + y0 * mapSize];
+        Color s01 = biomeMapThreaded[ x0 + y1 * mapSize];
+        Color s11 = biomeMapThreaded[ x1 + y1 * mapSize];
         //return biomeMap.GetPixel(Mathf.RoundToInt(x),Mathf.RoundToInt(y));
-        return biomeMapThreaded[Mathf.RoundToInt(x) + Mathf.RoundToInt(y) * mapSize];
+
+        float w00 = (x1 - x) * (y1 - y);
+        float w10 = (x - x0) * (y1 - y);
+        float w01 = (x1 - x) * (y - y0);
+        float w11 = (x - x0) * (y - y0);
+
+        return w00 * s00 + w01 * s01 + w10 * s10 + w11 * s11;
     }
     public Color SampleBiomeNearest(float x, float y)
     {
@@ -123,16 +150,6 @@ public class BiomeSampler
         BiomeData bData = new BiomeData(id, name, heightMapPath, biomeMapPath, displayColor);
         return bData;
     }
-
-    /*
-    public string SerializeToJSON()
-    {
-        BiomeData bData = new BiomeData(id, name, heightMapPath, biomeMapPath, displayColor);
-
-        string jsonData = JsonUtility.ToJson(bData);
-        return jsonData;
-    }*/
-    
 }
 
 

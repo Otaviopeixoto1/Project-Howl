@@ -98,8 +98,8 @@ public class BiomeMapGenerator : MapGenerator
         }
 
         fullBiomeMap.SetPixels(colorMap);
-        fullBiomeMap.filterMode = FilterMode.Point; 
-        fullBiomeMap.wrapMode = TextureWrapMode.Clamp; 
+        //fullBiomeMap.filterMode = FilterMode.Point; 
+        //fullBiomeMap.wrapMode = TextureWrapMode.Clamp; 
         
         //fullBiomeMap.Apply();
         //System.IO.File.WriteAllBytes(Application.dataPath+ "/Map/BiomeMaps/FullMap.png" , fullBiomeMap.EncodeToPNG());
@@ -190,9 +190,8 @@ public class BiomeMapGenerator : MapGenerator
         {
             newSize += Mathf.Abs(pixelYOffset) - (newSize - mSize)/2 + 2;
         }
-
-        float scaleDif = 1/scaleIncrease;
-        
+    
+        float scaleDif = mSize/(float)newSize;
 
         Texture2D singleBiomeMap = new Texture2D(mSize + 1, mSize + 1);
         
@@ -203,6 +202,7 @@ public class BiomeMapGenerator : MapGenerator
             for (int x = -newSize/2; x <= newSize/2; x++)
             {
                 float cellId = cellIndexSampler.SampleBiomeNearest((x + newSize/2) * scaleDif , (y + newSize/2) * scaleDif).r;
+                //Debug.Log(cellId);
                 //use a decoder delegate instead of this hardcoded value 24f
                 if (Mathf.RoundToInt(cellId * 24f) == index)
                 {

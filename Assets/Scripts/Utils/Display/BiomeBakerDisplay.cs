@@ -40,6 +40,7 @@ public class BiomeBakerDisplay : MonoBehaviour
     {
         bakedBiomes.Clear();
         fullBiomeMap = BiomeBaker.BakeBiomeCells(biomeMapGenerator);
+        DisplayFullMap();
         bakedBiomes = BiomeBaker.BakeSingleBiomes(biomeMapGenerator, fullBiomeMap, biomeStretch);
 
     }
@@ -49,6 +50,18 @@ public class BiomeBakerDisplay : MonoBehaviour
         BiomeBaker.SaveBaked(biomeMapGenerator.gridDimension, fullBiomeMap, bakedBiomes);
 
     }
+    public void DisplayFullMap()
+    {
+        //fullBiomeMap.GetMap().Apply();
+        MeshRenderer mapRenderer = GetComponent<MeshRenderer>();
+
+        Texture2D tex = new Texture2D(241,241);
+
+        tex.SetPixels(fullBiomeMap.biomeMapThreaded);
+        tex.Apply();
+        mapRenderer.sharedMaterial.mainTexture = tex; 
+    }
+
 
     public void DisplayMap(int index)
     {
