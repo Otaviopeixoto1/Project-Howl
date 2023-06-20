@@ -215,7 +215,7 @@ public static class BiomeBaker
         int size = biomeMapGenerator.gridDimension;
         for (int i = 0; i <= size * (size + 2); i++)
         {
-            Texture2D singleMap = biomeMapGenerator.GetSingleBiomeMap(i, biomeStretch, fullBiomeMap);
+            Texture2D singleMap = biomeMapGenerator.GetSingleBiomeMap(i, biomeStretch, fullBiomeMap, size);
             bakedBiomes.Add(new BiomeSampler(i, singleMap));
         }
         

@@ -13,7 +13,6 @@ public class BiomeManagerEditor : Editor
         if (GUILayout.Button("Load"))
         {
             biomeManager.Load();
-            biomeManager.GenerateHeightMaps();
         }
         if (GUILayout.Button("Save"))
         {

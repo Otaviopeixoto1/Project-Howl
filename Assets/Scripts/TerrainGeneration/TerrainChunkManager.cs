@@ -158,7 +158,9 @@ public class TerrainChunkManager : MonoBehaviour
     void Update()
     {
         viewerWorldPos = new Vector2(viewer.position.x, viewer.position.z);
+
         UpdateVisibleChunks();
+        
         
         if (meshDataThreadInfoQueue.Count > 0) 
         {
@@ -221,7 +223,7 @@ public class TerrainChunkManager : MonoBehaviour
 
 
 
-    ////////////////////////////////// Threading the mesh data calculations ////////////////////////////////////////////
+////////////////////////////////// Threading the mesh data calculations ////////////////////////////////////////////
     
     public void RequestMeshData(MapData mapData, Action<MeshData> callback) {
 		ThreadStart threadStart = delegate{

@@ -35,7 +35,7 @@ public struct BiomeMapData
     public int biomeGridSize;
     public BiomeData fullbiomeMapData;
     public BiomeData[] biomeMaps;
-    public BiomeMapData(int biomeGridSize,BiomeData fullbiomeMapData, BiomeData[] biomeMaps)
+    public BiomeMapData(int biomeGridSize, BiomeData fullbiomeMapData, BiomeData[] biomeMaps)
     {
         this.biomeGridSize = biomeGridSize;
         this.fullbiomeMapData = fullbiomeMapData;

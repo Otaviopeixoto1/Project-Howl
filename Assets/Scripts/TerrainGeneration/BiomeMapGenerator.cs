@@ -64,17 +64,18 @@ public class BiomeMapGenerator : MapGenerator
         return noiseValue;
     }
 
-    public float indexMapDecoder(float indexSample, int gridSize) //use these for dynamic map gen
+
+    public static float DecodeCellIndex(float indexSample, int gridSize) 
     {
         return indexSample * gridSize *(gridSize + 2);
     }
 
-    public float indexMapEncoder(float indexSample, int gridSize)
+    public static float EncodeCellIndex(float indexSample, int gridSize)
     {
-        return indexSample * gridSize *(gridSize + 2);
+        return indexSample /( gridSize *(gridSize + 2));
     }
 
-    public Texture2D GetBiomeIndexMap()
+    public Texture2D GetBiomeIndexMap() // this could be faster without textures
     {
         noiseGenerator.SetModifiedCellularReturnType(FastNoiseLite.ModifiedCellularReturnType.ModifiedCellValue);
 
@@ -89,21 +90,14 @@ public class BiomeMapGenerator : MapGenerator
                 float cellVal = (SampleMap(x , y)/amplitude) * frequency;
                 int finalX = x + mapSize/2;
                 int finalY = y + mapSize/2;
-                colorMap[finalX + finalY * (mapSize+1)] =  Color.white * cellVal/24f;
-                //Add encoding and decoding of the colors based on grid size (it is necessary here)
-                //add encoding and decoding functions for this. the decoding will be passed to the 
-                //samplers !
-                // this is a simple encoder: gridsize * (gridsize + 2)
+                colorMap[finalX + finalY * (mapSize+1)] =  Color.white * EncodeCellIndex(cellVal, gridDimension);
             }
         }
 
         fullBiomeMap.SetPixels(colorMap);
         //fullBiomeMap.filterMode = FilterMode.Point; 
         //fullBiomeMap.wrapMode = TextureWrapMode.Clamp; 
-        
-        //fullBiomeMap.Apply();
-        //System.IO.File.WriteAllBytes(Application.dataPath+ "/Map/BiomeMaps/FullMap.png" , fullBiomeMap.EncodeToPNG());
-        
+
         noiseGenerator.SetModifiedCellularReturnType(modCellularReturnType);
 
         return fullBiomeMap;
@@ -162,24 +156,21 @@ public class BiomeMapGenerator : MapGenerator
 
 
 
-    public Texture2D GetSingleBiomeMap(int index, float scaleIncrease, BiomeSampler cellIndexSampler)
+    public Texture2D GetSingleBiomeMap(int index, float scaleIncrease, BiomeSampler cellIndexSampler, int gridSize)
     {
         noiseGenerator.SetModifiedCellularReturnType(FastNoiseLite.ModifiedCellularReturnType.Distance2Sub);
         
         Vector2[] vectors = noiseGenerator.GetCellularVectors();
-        //Debug.Log(index + ", " + vectors.Length);
 
-        //int mSize = cellIndexSampler.GetSize() - 1;
-        int mSize = 240;
-
+        int mSize = cellIndexSampler.GetSize() - 1;
 
         Vector2 offset = ((vectors[index] * scaleIncrease) - vectors[index])* mSize/(float)gridDimension;
-        //Debug.Log(offset);
         
         int pixelXOffset = Mathf.RoundToInt(offset.x);
         int pixelYOffset = Mathf.RoundToInt(offset.y);
 
         
+
         int newSize = Mathf.RoundToInt(mSize * scaleIncrease);
 
         if (Mathf.Abs(pixelXOffset) > (newSize - mSize)/2)
@@ -190,6 +181,8 @@ public class BiomeMapGenerator : MapGenerator
         {
             newSize += Mathf.Abs(pixelYOffset) - (newSize - mSize)/2 + 2;
         }
+
+
     
         float scaleDif = mSize/(float)newSize;
 
@@ -201,21 +194,16 @@ public class BiomeMapGenerator : MapGenerator
         {
             for (int x = -newSize/2; x <= newSize/2; x++)
             {
-                float cellId = cellIndexSampler.SampleBiomeNearest((x + newSize/2) * scaleDif , (y + newSize/2) * scaleDif).r;
-                //Debug.Log(cellId);
-                //use a decoder delegate instead of this hardcoded value 24f
-                if (Mathf.RoundToInt(cellId * 24f) == index)
+                float cellIdEnc = cellIndexSampler.SampleBiomeNearest((x + newSize/2) * scaleDif , (y + newSize/2) * scaleDif).r;
+                if (Mathf.RoundToInt(DecodeCellIndex(cellIdEnc,gridSize)) == index)
                 {
                     int finalX = x + mSize/2 - pixelXOffset;
                     int finalY = y + mSize/2 - pixelYOffset;
 
                     if (finalX >= 0 && finalY >= 0 && finalX <= mSize && finalY <= mSize)
                     {
-                        //put a threshold for distance in order to better blend the maps
-                        //if high distance values are allowed, they are encoded as 1 in the texture
-                        //and therefore the biome will dominate the edges around it, making the transitions
-                        //harder and less natural
-                        
+                        //Encode this sdf in a way that doesnt saturate so quickly
+
                         float cellSDF = SampleMap(x * scaleDif , y * scaleDif)/amplitude;
 
                         colorMap[finalY * (mSize+1) + finalX] =  new Color(cellSDF, 0,0,1);
@@ -228,10 +216,7 @@ public class BiomeMapGenerator : MapGenerator
         singleBiomeMap.SetPixels(colorMap);
         singleBiomeMap.filterMode = FilterMode.Point; 
         singleBiomeMap.wrapMode = TextureWrapMode.Clamp; 
-
-        //singleBiomeMap.Apply();
-        //System.IO.File.WriteAllBytes(Application.dataPath+ "/Map/BiomeMaps/map.png" , singleBiomeMap.EncodeToPNG());
-        
+  
         noiseGenerator.SetModifiedCellularReturnType(modCellularReturnType);
 
         return singleBiomeMap;
