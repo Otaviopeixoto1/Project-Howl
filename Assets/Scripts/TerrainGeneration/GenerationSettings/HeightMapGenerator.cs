@@ -1,8 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 [CreateAssetMenu(fileName = "HeightMapGenerator", menuName = "ScriptableObjects/HeightMapGenerator", order = 1)] 
+[Serializable]
 public class HeightMapGenerator : MapGenerator 
 {   
     private FastNoiseLite noiseGenerator = new FastNoiseLite();
@@ -31,6 +31,7 @@ public class HeightMapGenerator : MapGenerator
     public override void ApplySettings()
     {
         base.ApplySettings();
+        noiseGenerator.SetSeed(noiseSeed);
         noiseGenerator.SetNoiseType(noiseType);
         noiseGenerator.SetFractalType(fractalType);
         noiseGenerator.SetFrequency(frequency);

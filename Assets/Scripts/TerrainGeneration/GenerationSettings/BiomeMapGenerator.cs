@@ -42,6 +42,7 @@ public class BiomeMapGenerator : MapGenerator
     {
         frequency = gridDimension/(mapScale * mapSize);
         base.ApplySettings();
+        noiseGenerator.SetSeed(cellularSeed);
         noiseGenerator.SetNoiseType(FastNoiseLite.NoiseType.ModifiedCellular);
         noiseGenerator.SetFractalType(fractalType);
         noiseGenerator.SetFrequency(frequency);

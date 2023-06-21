@@ -33,7 +33,7 @@ public class OutlineSettings
 public class OutlineRendererFeature : ScriptableRendererFeature
 {
     public OutlineSettings Settings;
-    Material m_Material;
+    Material m_Material; // temporary material used to blit to the screen
 
 
     OutlinePass m_OutlinePass; //custom render pass
@@ -52,8 +52,8 @@ public class OutlineRendererFeature : ScriptableRendererFeature
     {
         if (renderingData.cameraData.cameraType != CameraType.Game) return;
 
-
-        m_OutlinePass.ConfigureInput(ScriptableRenderPassInput.Color);
+        //generates the opaque texture used by the shader
+        m_OutlinePass.ConfigureInput(ScriptableRenderPassInput.Color); //Remove
         //m_OutlinePass.SetTarget(renderer.cameraColorTarget);
         renderer.EnqueuePass(m_OutlinePass);
     }

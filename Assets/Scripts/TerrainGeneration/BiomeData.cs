@@ -37,87 +37,97 @@ public struct BiomeMapData
     public int biomeGridSize;
     public BiomeData fullbiomeMapData;
     public BiomeData[] biomeMaps;
-    public BiomeMapData(int biomeGridSize, BiomeData fullbiomeMapData, BiomeData[] biomeMaps)
+    public BiomeLinks biomeLinks;
+    public BiomeMapData(int biomeGridSize, BiomeData fullbiomeMapData, BiomeData[] biomeMaps, BiomeLinks biomeLinks)
     {
         this.biomeGridSize = biomeGridSize;
         this.fullbiomeMapData = fullbiomeMapData;
         this.biomeMaps = biomeMaps;
+        this.biomeLinks = biomeLinks;
     }
 }
 
+
+
+//Graph structure used to store information about neighbouring biomes (maybe blending between them):
 [Serializable]
-public class BiomeLinks //add the links to the biome map data as an array off biome indexes
+public class BiomeLinks 
 {
     public int gridSize;
-    public Dictionary<int, int[]> neighbours = new Dictionary<int, int[]>();
+    public SerializedLinks[] neighbours;
     
     public BiomeLinks(int gridSize)
     {
         this.gridSize = gridSize;
+        neighbours = new SerializedLinks[gridSize * (gridSize + 2) + 1];
+    }
+    public int[] GetLinks(int i)
+    {
+        return neighbours[i].links;
     }
 
     public void GenerateLinksFromGrid()
     {
-        neighbours[0] = new int[]{
+        neighbours[0] = new SerializedLinks(0, new int[]{
             1, 
             gridSize + 1, 
             gridSize + 2
-        };
+        });
 
-        neighbours[gridSize * (gridSize + 1)] = new int[]{
+        neighbours[gridSize * (gridSize + 1)] = new SerializedLinks(gridSize * (gridSize + 1), new int[]{
             (gridSize * gridSize) - 1, 
             (gridSize * gridSize), 
             gridSize * (gridSize + 1) + 1
-        };
+        });
 
-        neighbours[gridSize] = new int[]{
+        neighbours[gridSize] = new SerializedLinks(gridSize, new int[]{
             gridSize - 1, 
             (2 * gridSize) + 1, 
             2 * gridSize
-        };
+        });
 
-        neighbours[gridSize * (gridSize + 2)] = new int[]{
+        neighbours[gridSize * (gridSize + 2)] = new SerializedLinks(gridSize * (gridSize + 2), new int[]{
             gridSize * (gridSize + 2) - 1, 
             gridSize * (gridSize + 1) - 1, 
             gridSize * (gridSize + 1) - 2
-        };
+        });
 
         for (int i = 1; i < gridSize; i++)
         {
-            neighbours[i] =  new int[]{
+            neighbours[i] = new SerializedLinks(i, new int[]{
                 i - 1, 
                 i + 1, 
                 i + gridSize,
                 i + gridSize + 1,
                 i + gridSize + 2,
-            };
+            });
 
             int t = i + gridSize * (gridSize + 1);
-            neighbours[t] =  new int[]{
+            neighbours[t] =  new SerializedLinks(t, new int[]{
                 t - 1, 
                 t + 1, 
                 t - gridSize,
                 t - gridSize - 1,
                 t - gridSize - 2,
-            };
+            });
 
             int l = (i) * (gridSize + 1);
-            neighbours[l] =  new int[]{
+            neighbours[l] =  new SerializedLinks(l, new int[]{
                 l - (gridSize + 1), 
                 l + (gridSize + 1), 
                 l + 1,
                 l + (gridSize + 2),
                 l - (gridSize), 
-            };
+            });
 
             int r = (i) * (gridSize + 1) + gridSize;
-            neighbours[r] =  new int[]{
+            neighbours[r] = new SerializedLinks(r, new int[]{
                 r - (gridSize + 1), 
                 r + (gridSize + 1), 
                 r - 1,
                 r - (gridSize + 2),
                 r + (gridSize), 
-            };
+            });
 
 
         }
@@ -128,7 +138,7 @@ public class BiomeLinks //add the links to the biome map data as an array off bi
 
             for (int j = 0; j < gridSize - 1; j++)
             {
-                neighbours[i + j] =  new int[]{
+                neighbours[i + j] = new SerializedLinks(i+j, new int[]{
                     i + j - 1, 
                     i + j + 1, 
                     i + j - (gridSize + 1), 
@@ -137,24 +147,40 @@ public class BiomeLinks //add the links to the biome map data as an array off bi
                     i + j + (gridSize + 2), 
                     i + j - (gridSize), 
                     i + j + (gridSize), 
-                };
+                });
             }
 
         }
     }
     public void Print()
     {
-        foreach(KeyValuePair<int, int[]> entry in neighbours)
+        for (int i = 0; i < gridSize + 1; i++)
         {
-            string s = "{" + entry.Key+ ", " ;
-            foreach (int n in entry.Value)
+
+            string s = "{" + i + ", " ;
+            foreach (int n in neighbours[i].links)
             {
                 s += n +", ";
             }
 
             Debug.Log(s + "}");
+            
         }
     }
     
 }
+
+
+[Serializable]
+public class SerializedLinks
+{
+    public int id;
+    public int[] links;
+    public SerializedLinks(int id, int[] links)
+    {
+        this.id = id;
+        this.links = links;
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

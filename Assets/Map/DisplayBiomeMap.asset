@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 475d69ec90f21d135a45dabfc6ca71f1, type: 3}
   m_Name: DisplayBiomeMap
   m_EditorClassIdentifier: 
-  triggerUpdate: 0
   mapScale: 0.1
   amplitude: 20
   samplingCurve:
@@ -43,9 +42,10 @@ MonoBehaviour:
   fractalType: 0
   mapSize: 240
   gridDimension: 4
+  frequency: 0.16666667
   octaves: 1
   lacunarity: 0
   persistence: 0
   distanceFunction: 3
   modCellularReturnType: 1
-  cellularJitter: 0.5
+  cellularJitter: 0.501

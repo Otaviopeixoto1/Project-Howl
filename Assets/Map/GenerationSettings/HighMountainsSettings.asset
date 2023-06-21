@@ -16,6 +16,6 @@ MonoBehaviour:
   heightMapScale: 4.93
   baseMaxHeight: 20
   noiseOctaves: 4
-  noiseFrequencyRange: {x: 1.07, y: 1.5056338}
+  noiseFrequencyRange: {x: 1.4053234, y: 1.8453234}
   noiseLacunarityRange: {x: 1.25, y: 1.5724913}
   noisePersistenceRange: {x: 0.19267292, y: 0.77}

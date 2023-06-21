@@ -1,0 +1,18 @@
+{
+    "mapScale": 4.929999828338623,
+    "amplitude": 20.0,
+    "samplingCurve": {
+        "serializedVersion": "2",
+        "m_Curve": [],
+        "m_PreInfinity": 2,
+        "m_PostInfinity": 2,
+        "m_RotationOrder": 4
+    },
+    "noiseSeed": 1,
+    "noiseType": 0,
+    "fractalType": 1,
+    "octaves": 4,
+    "frequency": 1.5364713668823243,
+    "lacunarity": 1.3221466541290284,
+    "persistence": 0.28374385833740237
+}

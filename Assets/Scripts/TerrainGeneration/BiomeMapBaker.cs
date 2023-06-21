@@ -10,7 +10,7 @@ using UnityEngine;
 [Serializable]
 public class BiomeSampler
 {
-    public readonly int id; //id must be unique. Create a static variable that takes care of that
+    public readonly int id; //id must be unique
     public string name;
     public Biomes biomeType = Biomes.Forest;
     public Color displayColor;
@@ -52,23 +52,32 @@ public class BiomeSampler
         heightMapPath = bData.heightMapPath;
 
         //this.heightMap = heightMap; //check if file exists before assign map
-
+        if (System.IO.File.Exists(Application.dataPath + heightMapPath))
+        {
+            string json = File.ReadAllText(Application.dataPath + heightMapPath);
+            heightMap = ScriptableObject.CreateInstance<HeightMapGenerator>();
+            JsonUtility.FromJsonOverwrite(json, heightMap);
+        }
+        else if (id > 0)
+        {
+            Debug.Log("missing heightMap for biome: " + id);
+        }
 
 
         biomeMapPath = bData.biomeMapPath;
 
         Texture2D tex = null;
-        byte[] fileData;
+        byte[] texData;
 
         if (System.IO.File.Exists(Application.dataPath + biomeMapPath))
         {
-            fileData = System.IO.File.ReadAllBytes(Application.dataPath + biomeMapPath);
+            texData = System.IO.File.ReadAllBytes(Application.dataPath + biomeMapPath);
             tex = new Texture2D(2, 2); //texture dimensions are resized on load.
-            tex.LoadImage(fileData); 
+            tex.LoadImage(texData); 
         }
         else
         {
-            Debug.Log("missing texture for biome: " + id);
+            Debug.Log("missing map texture for biome: " + id);
         }
         
         this.biomeMapThreaded = tex.GetPixels();
@@ -78,6 +87,7 @@ public class BiomeSampler
         this.biomeMap = tex; //remove this property
 
         this.name = bData.name;
+        this.biomeType = bData.biomeType;
         this.displayColor = bData.displayColor;
         
     }
@@ -132,7 +142,7 @@ public class BiomeSampler
         return mapSize;
     }
 
-    public BiomeData Save()
+    public BiomeData Save(bool saveHeightMap = true)
     {
         if (name == null)
         {
@@ -141,12 +151,24 @@ public class BiomeSampler
         if (biomeMap != null)
         {
             biomeMapPath = "/Map/BiomeMaps/map" + id + ".png";
-            System.IO.File.WriteAllBytes(Application.dataPath + biomeMapPath, biomeMap.EncodeToPNG());
+            File.WriteAllBytes(Application.dataPath + biomeMapPath, biomeMap.EncodeToPNG());
         }
         else
         {
             Debug.Log("Null Map texture for sampler id = " + id);
         }
+
+        if (saveHeightMap && heightMap != null)
+        {
+            heightMapPath = "/Map/HeightMaps/heightgen" + id + ".json";
+            File.WriteAllText(Application.dataPath + heightMapPath, JsonUtility.ToJson(heightMap,true));
+        }
+        else if (saveHeightMap)
+        {
+            //if this is the biomeIdSampler, then there is no problem
+            Debug.Log("Null height map generator reference for sampler id = " + id);
+        }
+
 
         BiomeData bData = new BiomeData(id, name, biomeType, heightMapPath, biomeMapPath, displayColor);
         return bData;
@@ -155,27 +177,28 @@ public class BiomeSampler
 
 
 
-public class BiomeSamplerData
-{
-    public readonly int gridSize;
-    public readonly BiomeSampler fullBiomeMapSampler;
-    public readonly List<BiomeSampler> singleBiomeSamplers;
-
-    public BiomeSamplerData(int gridSize, BiomeSampler fullBiomeMapSampler, List<BiomeSampler> singleBiomeSamplers)
-    {
-        this.gridSize = gridSize;
-        this.fullBiomeMapSampler = fullBiomeMapSampler;
-        this.singleBiomeSamplers = singleBiomeSamplers;
-    }
-
-
-}
-
 //biome baker should be a simple static class with satic methods
 
 public static class BiomeMapBaker
 {
-    public static BiomeSamplerData LoadBaked()
+    public class BiomeSamplersData
+    {
+        public readonly int gridSize;
+        public readonly BiomeSampler biomeIdSampler;
+        public readonly List<BiomeSampler> singleBiomeSamplers;
+        public readonly BiomeLinks biomeLinks;
+
+        public BiomeSamplersData(int gridSize, BiomeSampler biomeIdSampler, List<BiomeSampler> singleBiomeSamplers, BiomeLinks biomeLinks)
+        {
+            this.gridSize = gridSize;
+            this.biomeIdSampler = biomeIdSampler;
+            this.singleBiomeSamplers = singleBiomeSamplers;
+            this.biomeLinks = biomeLinks;
+        }
+
+    }
+
+    public static BiomeSamplersData LoadBaked()
     {
         if (!System.IO.File.Exists(Application.dataPath + "/Map/BiomeMaps/mapdata.json"))
         {
@@ -186,21 +209,21 @@ public static class BiomeMapBaker
         BiomeMapData biomeMapData = JsonUtility.FromJson<BiomeMapData>(json);
 
         int gridSize = biomeMapData.biomeGridSize;
+
         BiomeSampler fullBiomeMapSampler = new BiomeSampler(biomeMapData.fullbiomeMapData);
+
         List<BiomeSampler> singleBiomeSamplers = new List<BiomeSampler>();
-
-
         foreach (BiomeData biomeData in biomeMapData.biomeMaps)
         {
             singleBiomeSamplers.Add(new BiomeSampler(biomeData));
         }
 
 
-        return new BiomeSamplerData(gridSize, fullBiomeMapSampler, singleBiomeSamplers);
+        return new BiomeSamplersData(gridSize, fullBiomeMapSampler, singleBiomeSamplers, biomeMapData.biomeLinks);
     }
 
 
-    public static BiomeSampler BakeBiomeCells(BiomeMapGenerator biomeMapGenerator)
+    public static BiomeSampler BakeBiomeCellIds(BiomeMapGenerator biomeMapGenerator)
     {
         Texture2D fullMap = biomeMapGenerator.GetBiomeIndexMap();
 
@@ -224,13 +247,18 @@ public static class BiomeMapBaker
         
     }
 
-    public static void SaveBaked(int biomeGridSize, BiomeSampler fullBiomeMap, List<BiomeSampler> bakedBiomes)
+    public static void SaveBaked(int biomeGridSize, BiomeSampler fullBiomeMap, List<BiomeSampler> bakedBiomes, BiomeLinks biomeLinks = null, bool saveHeights = true)
     {
         BiomeData fullBiomeMapData;
 
+        if (biomeLinks == null)
+        {
+            Debug.Log("Biome links is null");
+        }
+
         if (fullBiomeMap != null)
         {
-            fullBiomeMapData = fullBiomeMap.Save();
+            fullBiomeMapData = fullBiomeMap.Save(false);
         }
         else
         {
@@ -242,10 +270,10 @@ public static class BiomeMapBaker
 
         for (int i = 0; i < (bakedBiomes.Count); i++)
         {
-            biomeMaps[i] = bakedBiomes[i].Save();
+            biomeMaps[i] = bakedBiomes[i].Save(saveHeights);
         }
         
-        BiomeMapData bmd = new BiomeMapData(biomeGridSize,fullBiomeMapData,biomeMaps);
+        BiomeMapData bmd = new BiomeMapData(biomeGridSize,fullBiomeMapData,biomeMaps, biomeLinks);
 
         File.WriteAllText(Application.dataPath + "/Map/BiomeMaps/mapdata.json", JsonUtility.ToJson(bmd,true));
 

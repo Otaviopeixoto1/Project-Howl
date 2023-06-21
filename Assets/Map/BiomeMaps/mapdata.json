@@ -3,6 +3,7 @@
     "fullbiomeMapData": {
         "id": -1,
         "name": "map-1",
+        "biomeType": 0,
         "heightMapPath": "",
         "biomeMapPath": "/Map/BiomeMaps/map-1.png",
         "displayColor": {
@@ -16,7 +17,8 @@
         {
             "id": 0,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 1,
+            "heightMapPath": "/Map/HeightMaps/heightgen0.json",
             "biomeMapPath": "/Map/BiomeMaps/map0.png",
             "displayColor": {
                 "r": 0.5841396450996399,
@@ -28,7 +30,8 @@
         {
             "id": 1,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 1,
+            "heightMapPath": "/Map/HeightMaps/heightgen1.json",
             "biomeMapPath": "/Map/BiomeMaps/map1.png",
             "displayColor": {
                 "r": 0.9996846914291382,
@@ -40,7 +43,8 @@
         {
             "id": 2,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 1,
+            "heightMapPath": "/Map/HeightMaps/heightgen2.json",
             "biomeMapPath": "/Map/BiomeMaps/map2.png",
             "displayColor": {
                 "r": 0.4148785471916199,
@@ -52,7 +56,8 @@
         {
             "id": 3,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 1,
+            "heightMapPath": "/Map/HeightMaps/heightgen3.json",
             "biomeMapPath": "/Map/BiomeMaps/map3.png",
             "displayColor": {
                 "r": 0.8286172151565552,
@@ -64,7 +69,8 @@
         {
             "id": 4,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 1,
+            "heightMapPath": "/Map/HeightMaps/heightgen4.json",
             "biomeMapPath": "/Map/BiomeMaps/map4.png",
             "displayColor": {
                 "r": 0.2429833710193634,
@@ -76,7 +82,8 @@
         {
             "id": 5,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 1,
+            "heightMapPath": "/Map/HeightMaps/heightgen5.json",
             "biomeMapPath": "/Map/BiomeMaps/map5.png",
             "displayColor": {
                 "r": 0.6595963835716248,
@@ -88,7 +95,8 @@
         {
             "id": 6,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 0,
+            "heightMapPath": "/Map/HeightMaps/heightgen6.json",
             "biomeMapPath": "/Map/BiomeMaps/map6.png",
             "displayColor": {
                 "r": 0.07320905476808548,
@@ -100,7 +108,8 @@
         {
             "id": 7,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 3,
+            "heightMapPath": "/Map/HeightMaps/heightgen7.json",
             "biomeMapPath": "/Map/BiomeMaps/map7.png",
             "displayColor": {
                 "r": 0.4902098774909973,
@@ -112,7 +121,8 @@
         {
             "id": 8,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 0,
+            "heightMapPath": "/Map/HeightMaps/heightgen8.json",
             "biomeMapPath": "/Map/BiomeMaps/map8.png",
             "displayColor": {
                 "r": 0.90578293800354,
@@ -124,7 +134,8 @@
         {
             "id": 9,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 1,
+            "heightMapPath": "/Map/HeightMaps/heightgen9.json",
             "biomeMapPath": "/Map/BiomeMaps/map9.png",
             "displayColor": {
                 "r": 0.3168239891529083,
@@ -136,7 +147,8 @@
         {
             "id": 10,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 1,
+            "heightMapPath": "/Map/HeightMaps/heightgen10.json",
             "biomeMapPath": "/Map/BiomeMaps/map10.png",
             "displayColor": {
                 "r": 0.7313442826271057,
@@ -148,7 +160,8 @@
         {
             "id": 11,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 2,
+            "heightMapPath": "/Map/HeightMaps/heightgen11.json",
             "biomeMapPath": "/Map/BiomeMaps/map11.png",
             "displayColor": {
                 "r": 0.1455782800912857,
@@ -160,7 +173,8 @@
         {
             "id": 12,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 3,
+            "heightMapPath": "/Map/HeightMaps/heightgen12.json",
             "biomeMapPath": "/Map/BiomeMaps/map12.png",
             "displayColor": {
                 "r": 0.5661867260932922,
@@ -172,7 +186,8 @@
         {
             "id": 13,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 2,
+            "heightMapPath": "/Map/HeightMaps/heightgen13.json",
             "biomeMapPath": "/Map/BiomeMaps/map13.png",
             "displayColor": {
                 "r": 0.9785712957382202,
@@ -184,7 +199,8 @@
         {
             "id": 14,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 1,
+            "heightMapPath": "/Map/HeightMaps/heightgen14.json",
             "biomeMapPath": "/Map/BiomeMaps/map14.png",
             "displayColor": {
                 "r": 0.3922516703605652,
@@ -196,7 +212,8 @@
         {
             "id": 15,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 1,
+            "heightMapPath": "/Map/HeightMaps/heightgen15.json",
             "biomeMapPath": "/Map/BiomeMaps/map15.png",
             "displayColor": {
                 "r": 0.804908037185669,
@@ -208,7 +225,8 @@
         {
             "id": 16,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 0,
+            "heightMapPath": "/Map/HeightMaps/heightgen16.json",
             "biomeMapPath": "/Map/BiomeMaps/map16.png",
             "displayColor": {
                 "r": 0.218934565782547,
@@ -220,7 +238,8 @@
         {
             "id": 17,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 3,
+            "heightMapPath": "/Map/HeightMaps/heightgen17.json",
             "biomeMapPath": "/Map/BiomeMaps/map17.png",
             "displayColor": {
                 "r": 0.6345481276512146,
@@ -232,7 +251,8 @@
         {
             "id": 18,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 0,
+            "heightMapPath": "/Map/HeightMaps/heightgen18.json",
             "biomeMapPath": "/Map/BiomeMaps/map18.png",
             "displayColor": {
                 "r": 0.048417456448078158,
@@ -244,7 +264,8 @@
         {
             "id": 19,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 1,
+            "heightMapPath": "/Map/HeightMaps/heightgen19.json",
             "biomeMapPath": "/Map/BiomeMaps/map19.png",
             "displayColor": {
                 "r": 0.46304255723953249,
@@ -256,7 +277,8 @@
         {
             "id": 20,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 1,
+            "heightMapPath": "/Map/HeightMaps/heightgen20.json",
             "biomeMapPath": "/Map/BiomeMaps/map20.png",
             "displayColor": {
                 "r": 0.8773148059844971,
@@ -268,7 +290,8 @@
         {
             "id": 21,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 1,
+            "heightMapPath": "/Map/HeightMaps/heightgen21.json",
             "biomeMapPath": "/Map/BiomeMaps/map21.png",
             "displayColor": {
                 "r": 0.3018142282962799,
@@ -280,7 +303,8 @@
         {
             "id": 22,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 1,
+            "heightMapPath": "/Map/HeightMaps/heightgen22.json",
             "biomeMapPath": "/Map/BiomeMaps/map22.png",
             "displayColor": {
                 "r": 0.7151337265968323,
@@ -292,7 +316,8 @@
         {
             "id": 23,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 1,
+            "heightMapPath": "/Map/HeightMaps/heightgen23.json",
             "biomeMapPath": "/Map/BiomeMaps/map23.png",
             "displayColor": {
                 "r": 0.13275231420993806,
@@ -304,7 +329,8 @@
         {
             "id": 24,
             "name": "",
-            "heightMapPath": "",
+            "biomeType": 1,
+            "heightMapPath": "/Map/HeightMaps/heightgen24.json",
             "biomeMapPath": "/Map/BiomeMaps/map24.png",
             "displayColor": {
                 "r": 0.5444154143333435,
@@ -313,5 +339,279 @@
                 "a": 1.0
             }
         }
-    ]
+    ],
+    "biomeLinks": {
+        "gridSize": 4,
+        "neighbours": [
+            {
+                "id": 0,
+                "links": [
+                    1,
+                    5,
+                    6
+                ]
+            },
+            {
+                "id": 1,
+                "links": [
+                    0,
+                    2,
+                    5,
+                    6,
+                    7
+                ]
+            },
+            {
+                "id": 2,
+                "links": [
+                    1,
+                    3,
+                    6,
+                    7,
+                    8
+                ]
+            },
+            {
+                "id": 3,
+                "links": [
+                    2,
+                    4,
+                    7,
+                    8,
+                    9
+                ]
+            },
+            {
+                "id": 4,
+                "links": [
+                    3,
+                    9,
+                    8
+                ]
+            },
+            {
+                "id": 5,
+                "links": [
+                    0,
+                    10,
+                    6,
+                    11,
+                    1
+                ]
+            },
+            {
+                "id": 6,
+                "links": [
+                    5,
+                    7,
+                    1,
+                    11,
+                    0,
+                    12,
+                    2,
+                    10
+                ]
+            },
+            {
+                "id": 7,
+                "links": [
+                    6,
+                    8,
+                    2,
+                    12,
+                    1,
+                    13,
+                    3,
+                    11
+                ]
+            },
+            {
+                "id": 8,
+                "links": [
+                    7,
+                    9,
+                    3,
+                    13,
+                    2,
+                    14,
+                    4,
+                    12
+                ]
+            },
+            {
+                "id": 9,
+                "links": [
+                    4,
+                    14,
+                    8,
+                    3,
+                    13
+                ]
+            },
+            {
+                "id": 10,
+                "links": [
+                    5,
+                    15,
+                    11,
+                    16,
+                    6
+                ]
+            },
+            {
+                "id": 11,
+                "links": [
+                    10,
+                    12,
+                    6,
+                    16,
+                    5,
+                    17,
+                    7,
+                    15
+                ]
+            },
+            {
+                "id": 12,
+                "links": [
+                    11,
+                    13,
+                    7,
+                    17,
+                    6,
+                    18,
+                    8,
+                    16
+                ]
+            },
+            {
+                "id": 13,
+                "links": [
+                    12,
+                    14,
+                    8,
+                    18,
+                    7,
+                    19,
+                    9,
+                    17
+                ]
+            },
+            {
+                "id": 14,
+                "links": [
+                    9,
+                    19,
+                    13,
+                    8,
+                    18
+                ]
+            },
+            {
+                "id": 15,
+                "links": [
+                    10,
+                    20,
+                    16,
+                    21,
+                    11
+                ]
+            },
+            {
+                "id": 16,
+                "links": [
+                    15,
+                    17,
+                    11,
+                    21,
+                    10,
+                    22,
+                    12,
+                    20
+                ]
+            },
+            {
+                "id": 17,
+                "links": [
+                    16,
+                    18,
+                    12,
+                    22,
+                    11,
+                    23,
+                    13,
+                    21
+                ]
+            },
+            {
+                "id": 18,
+                "links": [
+                    17,
+                    19,
+                    13,
+                    23,
+                    12,
+                    24,
+                    14,
+                    22
+                ]
+            },
+            {
+                "id": 19,
+                "links": [
+                    14,
+                    24,
+                    18,
+                    13,
+                    23
+                ]
+            },
+            {
+                "id": 20,
+                "links": [
+                    15,
+                    16,
+                    21
+                ]
+            },
+            {
+                "id": 21,
+                "links": [
+                    20,
+                    22,
+                    17,
+                    16,
+                    15
+                ]
+            },
+            {
+                "id": 22,
+                "links": [
+                    21,
+                    23,
+                    18,
+                    17,
+                    16
+                ]
+            },
+            {
+                "id": 23,
+                "links": [
+                    22,
+                    24,
+                    19,
+                    18,
+                    17
+                ]
+            },
+            {
+                "id": 24,
+                "links": [
+                    23,
+                    19,
+                    18
+                ]
+            }
+        ]
+    }
 }

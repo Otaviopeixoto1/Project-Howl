@@ -17,7 +17,7 @@ public enum WorldMapType
 [CreateAssetMenu(fileName = "WorldGenerationSettings", menuName = "ScriptableObjects/WorldGeneration/WorldGenerationSettings", order = 0)] 
 public class WorldGenerationSettings : ScriptableObject
 {
-    public int worldSeed = 1;
+    public static int worldSeed = 340;
     public WorldMapType worldMapType = WorldMapType.Default;
     
     public int biomeGridSize = 4; // only makes sense if its a grid world type (WorldMapType.Default)
@@ -44,8 +44,9 @@ public class WorldGenerationSettings : ScriptableObject
     //always apply before requesting for world generation data
     public void Apply()
     {
+        UnityEngine.Random.InitState(worldSeed);
         Dictionary<Biomes,BiomeSettings> availableBiomes = GetAvailableBiomes();
-
+        Debug.Log("assingning new biomes. Seed = " + worldSeed);
         switch (worldMapType)
         {
             case WorldMapType.Default:

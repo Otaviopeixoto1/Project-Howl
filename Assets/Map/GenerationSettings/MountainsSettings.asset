@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: MountainsSettings
   m_EditorClassIdentifier: 
   biome: 2
-  heightMapScale: 5
-  baseMaxHeight: 12
+  heightMapScale: 3.24
+  baseMaxHeight: 10.7
   noiseOctaves: 4
-  noiseFrequencyRange: {x: 0.8171404, y: 1.0471404}
-  noiseLacunarityRange: {x: 0.5968476, y: 1.2}
+  noiseFrequencyRange: {x: 0.1746669, y: 0.4046669}
+  noiseLacunarityRange: {x: 0.25914747, y: 0.8591474}
   noisePersistenceRange: {x: 4.61, y: 9.065572}

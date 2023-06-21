@@ -22,13 +22,14 @@ public class BiomeManager : MonoBehaviour
     //Amount of biome cells on x and y. Default value = 4
     public int biomeGridSize = 4;
 
-    private BiomeLinks biomeLinks; // serialize and save the biome links in a file
+
+    //Graph structure used to store information about neighbouring biomes (maybe blending between them):
+    private BiomeLinks biomeLinks; 
 
 
 
 
-
-
+    //use the world seed here as well
     public void GenerateBiomeMap()
     {
         //Generate the biomeMapGenerator and pass to BiomeBaker to generate all biome cells 
@@ -56,20 +57,19 @@ public class BiomeManager : MonoBehaviour
         }
 
         biomeLinks = new BiomeLinks(biomeGridSize);
-        biomeLinks.GenerateLinksFromGrid(); //Serialize to Json file
+        biomeLinks.GenerateLinksFromGrid(); 
     }
 
     public bool Load()
     {
-        BiomeSamplerData loadedSamplerData = BiomeMapBaker.LoadBaked(); 
+        BiomeMapBaker.BiomeSamplersData loadedSamplerData = BiomeMapBaker.LoadBaked(); 
 
         if (loadedSamplerData != null && loadedSamplerData.singleBiomeSamplers.Count > 1)
         {
             biomeSamplers = loadedSamplerData.singleBiomeSamplers;
-            biomeIdSampler = loadedSamplerData.fullBiomeMapSampler;
+            biomeIdSampler = loadedSamplerData.biomeIdSampler;
             biomeGridSize = loadedSamplerData.gridSize;
-
-            AssingBiomes(); // REMOVE after proper biomeData serialization
+            biomeLinks = loadedSamplerData.biomeLinks;
 
             return true;
         }
@@ -86,14 +86,14 @@ public class BiomeManager : MonoBehaviour
         {
             return false;
         }
-        BiomeMapBaker.SaveBaked(biomeGridSize, biomeIdSampler, biomeSamplers);
+        BiomeMapBaker.SaveBaked(biomeGridSize, biomeIdSampler, biomeSamplers, biomeLinks:biomeLinks);
         return true;
     }
 
 
     public int[] GetNeighbours(int index)
     {
-        return biomeLinks.neighbours[index];
+        return biomeLinks.GetLinks(index);
     }
 
     public BiomeSampler GetBiomeIdSampler()

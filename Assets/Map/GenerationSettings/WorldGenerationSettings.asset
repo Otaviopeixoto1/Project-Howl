@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3aed98fd993dc84ac9d91f3924e80488, type: 3}
   m_Name: WorldGenerationSettings
   m_EditorClassIdentifier: 
-  worldSeed: 1
+  worldSeed: 350
   worldMapType: 0
   biomeGridSize: 4
   biomeGenerationSettings:

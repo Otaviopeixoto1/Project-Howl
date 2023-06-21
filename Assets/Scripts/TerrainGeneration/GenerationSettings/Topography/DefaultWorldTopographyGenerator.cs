@@ -13,6 +13,7 @@ public class DefaultWorldTopographyGenerator : WorldTopographyGenerator
         Vector2 frequencyRange = topographySettings.noiseFrequencyRange;
         Vector2 lacunarityRange = topographySettings.noiseLacunarityRange;
         Vector2 pesistenceRange = topographySettings.noisePersistanceRange;
+        Random.InitState(WorldGenerationSettings.worldSeed);
 
         heightMapGenerator.frequency = Random.Range(frequencyRange.x, frequencyRange.y);
         heightMapGenerator.lacunarity = Random.Range(lacunarityRange.x, lacunarityRange.y);

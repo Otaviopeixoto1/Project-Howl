@@ -17,7 +17,7 @@ public class BiomeBakerDisplay : MonoBehaviour
     [NonReorderable]
     [SerializeField]
     private List<BiomeSampler> bakedBiomes = new List<BiomeSampler>();
-    private BiomeSampler fullBiomeMap = null;
+    private BiomeSampler biomeIdSampler = null;
 
 
 
@@ -25,7 +25,7 @@ public class BiomeBakerDisplay : MonoBehaviour
     {
         bakedBiomes.Clear();
 
-        BiomeSamplerData samplerData = BiomeMapBaker.LoadBaked();
+        BiomeMapBaker.BiomeSamplersData samplerData = BiomeMapBaker.LoadBaked();
         if (samplerData == null)
         {
             Debug.Log("Error Loading BiomeSamplers");
@@ -33,31 +33,31 @@ public class BiomeBakerDisplay : MonoBehaviour
         }
         
         bakedBiomes = samplerData.singleBiomeSamplers;
-        fullBiomeMap = samplerData.fullBiomeMapSampler;
+        biomeIdSampler = samplerData.biomeIdSampler;
     }
 
     public void Bake()
     {
         bakedBiomes.Clear();
-        fullBiomeMap = BiomeMapBaker.BakeBiomeCells(biomeMapGenerator);
+        biomeIdSampler = BiomeMapBaker.BakeBiomeCellIds(biomeMapGenerator);
         DisplayFullMap();
-        bakedBiomes = BiomeMapBaker.BakeSingleBiomes(biomeMapGenerator, fullBiomeMap, biomeStretch);
+        bakedBiomes = BiomeMapBaker.BakeSingleBiomes(biomeMapGenerator, biomeIdSampler, biomeStretch);
 
     }
 
     public void Save()
     {
-        BiomeMapBaker.SaveBaked(biomeMapGenerator.gridDimension, fullBiomeMap, bakedBiomes);
+        BiomeMapBaker.SaveBaked(biomeMapGenerator.gridDimension, biomeIdSampler, bakedBiomes, saveHeights:false);
 
     }
     public void DisplayFullMap()
     {
-        //fullBiomeMap.GetMap().Apply();
+        //biomeIdSampler.GetMap().Apply();
         MeshRenderer mapRenderer = GetComponent<MeshRenderer>();
 
         Texture2D tex = new Texture2D(241,241);
 
-        tex.SetPixels(fullBiomeMap.biomeMapThreaded);
+        tex.SetPixels(biomeIdSampler.biomeMapThreaded);
         tex.Apply();
         mapRenderer.sharedMaterial.mainTexture = tex; 
     }

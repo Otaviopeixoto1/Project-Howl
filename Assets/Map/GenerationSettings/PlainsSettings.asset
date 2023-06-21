@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: PlainsSettings
   m_EditorClassIdentifier: 
   biome: 3
-  heightMapScale: 5
-  baseMaxHeight: 6.7
+  heightMapScale: 2.47
+  baseMaxHeight: 2.5
   noiseOctaves: 4
-  noiseFrequencyRange: {x: 0.33946842, y: 0.7}
-  noiseLacunarityRange: {x: 0.18832839, y: 0.54}
+  noiseFrequencyRange: {x: 0.13, y: 0.30120152}
+  noiseLacunarityRange: {x: 0.09034762, y: 0.2903476}
   noisePersistenceRange: {x: 8.043673, y: 10}

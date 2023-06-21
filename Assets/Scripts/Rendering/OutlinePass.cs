@@ -11,7 +11,6 @@ public class OutlinePass : ScriptableRenderPass
     readonly float m_NormalUpperThreshold;
 
     RenderTargetIdentifier m_CameraColorTarget; //(color buffer) output target
-    static int colorID = Shader.PropertyToID("_OutlineColor");
     static int dLowerID = Shader.PropertyToID("_DLower");
     static int dUpperID = Shader.PropertyToID("_DUpper");
     static int nLowerID = Shader.PropertyToID("_NLower");
@@ -56,16 +55,14 @@ public class OutlinePass : ScriptableRenderPass
         CommandBuffer cb = CommandBufferPool.Get(name: "OutlinePass");
         cb.BeginSample("Outline Pass");
 
-        //m_Material.SetColor(colorID, m_Color);
         m_Material.SetFloat(dLowerID,m_DepthLowerThreshold);
         m_Material.SetFloat(dUpperID,m_DepthUpperThreshold);
         m_Material.SetFloat(nLowerID,m_NormalLowerThreshold);
         m_Material.SetFloat(nUpperID,m_NormalUpperThreshold);
 
         
-        //setting the target like this doesnt work !
-        //cb.SetRenderTarget(new RenderTargetIdentifier(m_CameraColorTarget, 0, CubemapFace.Unknown, -1));
-        
+        //Use blit. it will work the same. Remove the color Input. we take the camera texture from blit
+
         cb.DrawMesh(RenderingUtils.fullscreenMesh, Matrix4x4.identity, m_Material);
 
         cb.EndSample("Outline Pass");
