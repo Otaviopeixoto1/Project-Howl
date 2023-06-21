@@ -14,14 +14,16 @@ public struct BiomeData
 {
     public int id;
     public string name;
+    public Biomes biomeType;
     public string heightMapPath;
     public string biomeMapPath;
     public Color displayColor;
 
-    public BiomeData(int id, string name,string heightMapPath, string biomeMapPath, Color displayColor)
+    public BiomeData(int id, string name, Biomes biomeType, string heightMapPath, string biomeMapPath, Color displayColor)
     {
         this.id = id;
         this.name = name;
+        this.biomeType = biomeType;
         this.heightMapPath = heightMapPath;
         this.biomeMapPath = biomeMapPath;
         this.displayColor = displayColor;

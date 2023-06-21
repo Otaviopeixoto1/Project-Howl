@@ -25,7 +25,7 @@ public class BiomeBakerDisplay : MonoBehaviour
     {
         bakedBiomes.Clear();
 
-        BiomeSamplerData samplerData = BiomeBaker.LoadBaked();
+        BiomeSamplerData samplerData = BiomeMapBaker.LoadBaked();
         if (samplerData == null)
         {
             Debug.Log("Error Loading BiomeSamplers");
@@ -39,15 +39,15 @@ public class BiomeBakerDisplay : MonoBehaviour
     public void Bake()
     {
         bakedBiomes.Clear();
-        fullBiomeMap = BiomeBaker.BakeBiomeCells(biomeMapGenerator);
+        fullBiomeMap = BiomeMapBaker.BakeBiomeCells(biomeMapGenerator);
         DisplayFullMap();
-        bakedBiomes = BiomeBaker.BakeSingleBiomes(biomeMapGenerator, fullBiomeMap, biomeStretch);
+        bakedBiomes = BiomeMapBaker.BakeSingleBiomes(biomeMapGenerator, fullBiomeMap, biomeStretch);
 
     }
 
     public void Save()
     {
-        BiomeBaker.SaveBaked(biomeMapGenerator.gridDimension, fullBiomeMap, bakedBiomes);
+        BiomeMapBaker.SaveBaked(biomeMapGenerator.gridDimension, fullBiomeMap, bakedBiomes);
 
     }
     public void DisplayFullMap()

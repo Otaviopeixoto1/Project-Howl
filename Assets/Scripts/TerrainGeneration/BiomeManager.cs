@@ -2,38 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Biomes
-{
 
-}
-
-public enum BiomeGenerationMode
-{
-    Random,
-    Standard
-}
-
-
-//save, load, assign biomes
 public class BiomeManager : MonoBehaviour
 {
     [SerializeField]
-    private BiomeGenerationMode biomeGenerationMode = BiomeGenerationMode.Random;
+    private WorldGenerationSettings worldGenerationSettings;
+    [SerializeField]
+    private WorldTopographyGenerator worldTopographyGenerator; 
+
 
     private BiomeSampler biomeIdSampler;
+
     [NonReorderable]
     [SerializeField]
     private List<BiomeSampler> biomeSamplers;
 
-    [SerializeField]
-    [Range(0.01f,5f)]
-    private float heightMapScale = 1f;
-
-
-    //Amount of biome cells on x and y. Default value = 4
+    
     [HideInInspector]
-    public int biomeGridSize;
+    //Amount of biome cells on x and y. Default value = 4
+    public int biomeGridSize = 4;
+
     private BiomeLinks biomeLinks; // serialize and save the biome links in a file
+
+
+
 
 
 
@@ -45,24 +37,31 @@ public class BiomeManager : MonoBehaviour
 
     public void AssingBiomes()
     {
-        //assing random biomes to each cell, based on the map position and neighbours
-    }
-
-    public void GenerateHeightMaps()
-    {
-        for (int i = 0; i <= biomeGridSize * (biomeGridSize + 2); i++)
+        
+        worldGenerationSettings.biomeGridSize = biomeGridSize; //just avoiding conflicts
+        worldGenerationSettings.Apply();
+        if (biomeSamplers.Count == (biomeGridSize + 1) * (biomeGridSize + 1))
         {
-            HeightMapGenerator heightMapGenerator = ScriptableObject.CreateInstance<HeightMapGenerator>();
-            heightMapGenerator.frequency = Random.Range(0.01f, 50.0f);
-            heightMapGenerator.amplitude = Random.Range(1f, 20.0f);
-            heightMapGenerator.mapScale = heightMapScale;
-            biomeSamplers[i].heightMap = heightMapGenerator;
+            for (int i = 0; i < biomeSamplers.Count; i++)
+            {
+                TopographySettings topographySettings = worldGenerationSettings.GetTopographySettings(i);
+
+                biomeSamplers[i].biomeType = topographySettings.biomeType;
+                biomeSamplers[i].heightMap = worldTopographyGenerator.GetHeightMapGenerator(topographySettings);
+            }
         }
+        else
+        {
+            Debug.Log("biomeGridSize is incompatible with the number of biome samplers");
+        }
+
+        biomeLinks = new BiomeLinks(biomeGridSize);
+        biomeLinks.GenerateLinksFromGrid(); //Serialize to Json file
     }
 
     public bool Load()
     {
-        BiomeSamplerData loadedSamplerData = BiomeBaker.LoadBaked(); 
+        BiomeSamplerData loadedSamplerData = BiomeMapBaker.LoadBaked(); 
 
         if (loadedSamplerData != null && loadedSamplerData.singleBiomeSamplers.Count > 1)
         {
@@ -70,10 +69,7 @@ public class BiomeManager : MonoBehaviour
             biomeIdSampler = loadedSamplerData.fullBiomeMapSampler;
             biomeGridSize = loadedSamplerData.gridSize;
 
-            biomeLinks = new BiomeLinks(biomeGridSize);
-            biomeLinks.GenerateLinksFromGrid();
-
-            GenerateHeightMaps(); // REMOVE after propper biome assignment
+            AssingBiomes(); // REMOVE after proper biomeData serialization
 
             return true;
         }
@@ -90,7 +86,7 @@ public class BiomeManager : MonoBehaviour
         {
             return false;
         }
-        BiomeBaker.SaveBaked(biomeGridSize, biomeIdSampler, biomeSamplers);
+        BiomeMapBaker.SaveBaked(biomeGridSize, biomeIdSampler, biomeSamplers);
         return true;
     }
 
@@ -109,6 +105,7 @@ public class BiomeManager : MonoBehaviour
         return biomeSamplers[index];   
     }
 
+    
 
     void Start()
     {
@@ -116,14 +113,14 @@ public class BiomeManager : MonoBehaviour
         //if the data doesnt exist, try to generate using bake and save methods from BiomeBaker
         if(Load())
         {
-            GenerateHeightMaps();
+            // add some signal or callback
         }
         else
         {
             //look for backups or:
             GenerateBiomeMap();
             AssingBiomes();
-            GenerateHeightMaps();
+            Save();
             //Generate biomelinks
         }
     }

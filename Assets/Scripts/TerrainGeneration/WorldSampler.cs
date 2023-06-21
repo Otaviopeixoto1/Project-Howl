@@ -110,6 +110,10 @@ public class WorldSampler : MonoBehaviour
     {
 
     }
+    void Awake()
+    {
+        
+    }
 
     void Start()
     {

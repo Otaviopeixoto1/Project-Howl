@@ -14,6 +14,10 @@ public class BiomeManagerEditor : Editor
         {
             biomeManager.Load();
         }
+        if (GUILayout.Button("Assign"))
+        {
+            biomeManager.AssingBiomes();
+        }
         if (GUILayout.Button("Save"))
         {
             biomeManager.Save();
