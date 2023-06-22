@@ -8,6 +8,10 @@ using System;
 //  These classes store data that gets serialized into json files for saving and loading baked map data
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+/// <summary>
+/// Class used for the serialization of data from the BiomeSampler class
+/// </summary>
 [Serializable]
 public struct BiomeData
 {
@@ -31,7 +35,9 @@ public struct BiomeData
 }
 
 
-
+/// <summary>
+/// Class used for the serialization of the entire map data including all BiomeSamplers and BiomeLinks
+/// </summary>
 [Serializable]
 public struct BiomeMapData
 {
@@ -49,8 +55,9 @@ public struct BiomeMapData
 }
 
 
-
-//Graph structure used to store information about neighbouring biomes (maybe blending between them):
+/// <summary>
+/// Graph structure used to store indexes and other information of neighbouring biomes in the biome map grid
+/// </summary>
 [Serializable]
 public class BiomeLinks 
 {
@@ -62,11 +69,19 @@ public class BiomeLinks
         this.gridSize = gridSize;
         neighbours = new SerializedLinks[gridSize * (gridSize + 2) + 1];
     }
+    
+    /// <summary>
+    /// Get the indexes of neighbour cells linked to the cell of index i
+    /// </summary>
     public int[] GetLinks(int i)
     {
         return neighbours[i].links;
     }
 
+    /// <summary>
+    /// Generate all the possible links between cells and its neighbours in a square grid of 
+    /// size: gridSize x gridSize
+    /// </summary>
     public void GenerateLinksFromGrid()
     {
         neighbours[0] = new SerializedLinks(0, new int[]{
@@ -168,7 +183,9 @@ public class BiomeLinks
     
 }
 
-
+/// <summary>
+/// Class created due to Unity Serialization not being able to serialize 2D arrays (nor arrays of arrays)
+/// </summary>
 [Serializable]
 public class SerializedLinks
 {

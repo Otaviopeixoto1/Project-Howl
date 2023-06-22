@@ -2,7 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Class used to manage the biome generation and assigning each biome cell a unique BiomeSampler
+/// </summary>
 
+//Change name: WorldManager
 public class BiomeManager : MonoBehaviour
 {
     [SerializeField]
@@ -26,6 +30,12 @@ public class BiomeManager : MonoBehaviour
     
 
 
+
+
+
+    /// <summary>
+    /// Instances a BiomeMapGenerator and bakes the cell distance fields into separate BiomeSamplers
+    /// </summary>
     public void GenerateBiomeMap()
     {
         Debug.Log("Generating Biome Map");
@@ -43,6 +53,10 @@ public class BiomeManager : MonoBehaviour
 
     }
 
+
+    /// <summary>
+    /// Assigns the biomes and heightmaps of each of the previously generated BiomeSamplers
+    /// </summary>
     public void AssingBiomes()
     {
         Debug.Log("Assigning Biomes");
@@ -67,6 +81,10 @@ public class BiomeManager : MonoBehaviour
         biomeLinks.GenerateLinksFromGrid(); 
     }
 
+
+    /// <summary>
+    /// Loads the previously saved map data. Returns true if the loading was successful and false otherwise
+    /// </summary>
     public bool Load()
     {
         Debug.Log("Loading Data");
@@ -93,6 +111,11 @@ public class BiomeManager : MonoBehaviour
         }
         
     }
+
+
+    /// <summary>
+    /// Saves the previously Baked map data. Returns true if the saving was successful and false otherwise
+    /// </summary>
     public bool Save()
     {
         if (biomeSamplers == null || biomeIdSampler == null)
@@ -105,18 +128,30 @@ public class BiomeManager : MonoBehaviour
     }
 
 
-    public int[] GetNeighbours(int index)
+    /// <summary>
+    /// Returns the indexes of all the biome cells linked (neighbouring) to the cell of index: id  
+    /// </summary>
+    public int[] GetNeighbours(int id)
     {
-        return biomeLinks.GetLinks(index);
+        return biomeLinks.GetLinks(id);
     }
 
+
+    /// <summary>
+    /// Returns the Baked sampler with the information of the full biome map and the cell ids of each biome cell
+    /// </summary>
     public BiomeSampler GetBiomeIdSampler()
     {
         return biomeIdSampler;
     }
-    public BiomeSampler GetBiomeSampler(int index)
+
+
+    /// <summary>
+    /// Returns the sampler of a biome cell with index: id
+    /// </summary>
+    public BiomeSampler GetBiomeSampler(int id)
     {
-        return biomeSamplers[index];   
+        return biomeSamplers[id];   
     }
 
     
@@ -137,7 +172,7 @@ public class BiomeManager : MonoBehaviour
             GenerateBiomeMap();
             AssingBiomes();
             Save();
-            //Load();
+            Load(); // has to be loaded again due to bug
         }
     }
 }

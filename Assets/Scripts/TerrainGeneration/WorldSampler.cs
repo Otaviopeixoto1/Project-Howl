@@ -7,10 +7,10 @@ using UnityEngine;
 //improve sampling filter for height maps. currently has many artifacts
 
 
+/// <summary>
+/// Class used to sample the entire map and handle the blending between different (neighbouring) biome cells
+/// </summary>
 
-
-
-//Samples the entire map biomes and height for generating meshes. 
 [RequireComponent(typeof(BiomeManager))]
 public class WorldSampler : MonoBehaviour
 {
@@ -28,6 +28,9 @@ public class WorldSampler : MonoBehaviour
     [SerializeField]
     [Range(0.01f,1)]
     private float biomeMapScale = 1f;
+
+
+
 
 
 

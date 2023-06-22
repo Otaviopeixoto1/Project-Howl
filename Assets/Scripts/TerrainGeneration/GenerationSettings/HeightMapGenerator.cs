@@ -2,7 +2,6 @@ using UnityEngine;
 using System;
 
 [CreateAssetMenu(fileName = "HeightMapGenerator", menuName = "ScriptableObjects/HeightMapGenerator", order = 1)] 
-[Serializable]
 public class HeightMapGenerator : MapGenerator 
 {   
     private FastNoiseLite noiseGenerator = new FastNoiseLite();

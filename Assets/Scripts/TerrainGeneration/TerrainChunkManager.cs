@@ -6,7 +6,7 @@ using UnityEngine;
 
 
 
-public struct SamplerData
+public struct SamplerThreadData
 {
     public readonly WorldSampler sampler;
     public readonly Vector2 chunkPosition;
@@ -14,7 +14,7 @@ public struct SamplerData
     public readonly float chunkScale;
     public readonly int lodBias;
 
-    public SamplerData (WorldSampler sampler,Vector2 gridPosition, int chunkSize, float chunkScale, int lodBias)
+    public SamplerThreadData (WorldSampler sampler,Vector2 gridPosition, int chunkSize, float chunkScale, int lodBias)
     {
         this.sampler = sampler;
         this.chunkPosition = gridPosition * chunkSize;
@@ -41,7 +41,7 @@ public class TerrainChunk
 
     
 
-    public TerrainChunk(Vector2Int coord, SamplerData mapData, Transform parent, Material material, TerrainChunkManager chunkManager)
+    public TerrainChunk(Vector2Int coord, SamplerThreadData mapData, Transform parent, Material material, TerrainChunkManager chunkManager)
     {
         this.chunkSize = mapData.chunkSize;
         this.scale = mapData.chunkScale;
@@ -68,8 +68,8 @@ public class TerrainChunk
 
 
 
-    //called on the main thread, when mesh data calculations are finished
-    void OnMeshDataReceived(MeshData meshData)  
+    
+    private void OnMeshDataReceived(MeshData meshData)  
     {                                           
         meshFilter.mesh = meshData.CreateMesh();
         meshRenderer.material.SetTexture("_BaseMap", debugTexture);
@@ -111,7 +111,6 @@ public class TerrainChunk
         tex.Apply();
 
         return tex;
-        //meshRenderer.material.SetTexture("debugTerrainTexture", tex);
     }
 
 }
@@ -127,8 +126,11 @@ public class TerrainChunkManager : MonoBehaviour
 {
     private Dictionary<Vector2Int, TerrainChunk> terrainChunks = new Dictionary<Vector2Int, TerrainChunk>();
     private List<TerrainChunk> visibleChunksOnLastUpdate = new List<TerrainChunk>();
-    //queue containing the mesh data processed inside the threads
+
+    //queue containing the mesh data processed inside the threads:
     private Queue<MeshThreadInfo> meshDataThreadInfoQueue = new Queue<MeshThreadInfo>();
+    
+    private WorldSampler worldSampler;
 
 
     [SerializeField]
@@ -136,8 +138,6 @@ public class TerrainChunkManager : MonoBehaviour
     [SerializeField]
     private Material testMaterial;
     public static Vector2 viewerWorldPos;
-
-    private WorldSampler worldSampler;
 
     [SerializeField]
     [Range(10,240)]
@@ -215,7 +215,7 @@ public class TerrainChunkManager : MonoBehaviour
                 }
                 else
                 {
-                    SamplerData mapData = new SamplerData(worldSampler, viewChunkCoord, chunkSize, chunkScale, 0);
+                    SamplerThreadData mapData = new SamplerThreadData(worldSampler, viewChunkCoord, chunkSize, chunkScale, 0);
                     terrainChunks.Add(viewChunkCoord, new TerrainChunk(viewChunkCoord, mapData, this.transform, testMaterial, this));
                 }
 
@@ -230,7 +230,7 @@ public class TerrainChunkManager : MonoBehaviour
 
 ////////////////////////////////// Threading the mesh data calculations ////////////////////////////////////////////
     
-    public void RequestMeshData(SamplerData mapData, Action<MeshData> callback) {
+    public void RequestMeshData(SamplerThreadData mapData, Action<MeshData> callback) {
 		ThreadStart threadStart = delegate{
 			MeshDataThread(mapData, callback);
 		};
@@ -238,7 +238,7 @@ public class TerrainChunkManager : MonoBehaviour
 		new Thread(threadStart).Start();
 	}
 
-	private void MeshDataThread(SamplerData mapData, Action<MeshData> callback) {
+	private void MeshDataThread(SamplerThreadData mapData, Action<MeshData> callback) {
 		MeshData meshData = MeshGenerator.GenerateTerrainFromSampler(mapData.sampler, 
                                                                     mapData.chunkSize + 1, 
                                                                     mapData.chunkSize + 1, 

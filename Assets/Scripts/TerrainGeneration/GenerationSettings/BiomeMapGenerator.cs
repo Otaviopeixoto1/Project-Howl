@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+/// <summary>
+/// Class used to generate random Voronoi/Cellular noise that is then used for assigning biome regions (biome cells)
+/// </summary>
 [CreateAssetMenu(fileName = "BiomeMapGenerator", menuName = "ScriptableObjects/BiomeMapGenerator", order = 1)] 
 public class BiomeMapGenerator : MapGenerator
 {
@@ -37,7 +40,9 @@ public class BiomeMapGenerator : MapGenerator
 
 
 
-
+    /// <summary>
+    /// Applies all changes made to the exposed variables into the noise generator
+    /// </summary>
     public override void ApplySettings()
     {
         frequency = gridDimension/(mapScale * mapSize);
@@ -55,6 +60,10 @@ public class BiomeMapGenerator : MapGenerator
         noiseGenerator.SetCellularJitter(cellularJitter);
     }
 
+    /// <summary>
+    /// Samples the dynamicaly generated map (must use ApplySettings() first). The result will be encoded and will
+    /// depend on the choice of ModifiedCellularReturnType
+    /// </summary>
     public override float SampleMap(float x, float y, AnimationCurve samplingCurve = null)
     {
         float scale = mapScale;
@@ -67,17 +76,26 @@ public class BiomeMapGenerator : MapGenerator
         return noiseValue;
     }
 
-
+    /// <summary>
+    /// Decodes the value obtained from sampling the map containing the cell indexes
+    /// </summary>
     public static float DecodeCellIndex(float indexSample, int gridSize) 
     {
         return indexSample * gridSize *(gridSize + 2);
     }
 
+    /// <summary>
+    /// Encodes the value obtained from sampling the noise map with the return value of ModifiedCellValue
+    /// reprensenting the cell indexes
+    /// </summary>
     public static float EncodeCellIndex(float indexSample, int gridSize)
     {
         return indexSample /( gridSize *(gridSize + 2));
     }
 
+    /// <summary>
+    /// Sets the return type to ModifiedCellValue, generates the cell index map and returns the encoded version in the form of a texture
+    /// </summary>
     public Texture2D GetBiomeIndexMap() // this could be faster without textures
     {
         noiseGenerator.SetModifiedCellularReturnType(FastNoiseLite.ModifiedCellularReturnType.ModifiedCellValue);
@@ -158,7 +176,9 @@ public class BiomeMapGenerator : MapGenerator
     }
 
 
-
+    /// <summary>
+    /// Gets the distance field of a single cell (representing a biome map) in the form of a texture
+    /// </summary>
     public Texture2D GetSingleBiomeMap(int index, float scaleIncrease, BiomeSampler cellIndexSampler, int gridSize)
     {
         noiseGenerator.SetModifiedCellularReturnType(FastNoiseLite.ModifiedCellularReturnType.Distance2Sub);

@@ -6,7 +6,9 @@ using UnityEngine;
 
 
 
-
+/// <summary>
+/// Class used to store data of biome cells as well as provide functions to sample data based on 2D Map/Texture Coordinates
+/// </summary>
 [Serializable]
 public class BiomeSampler
 {
@@ -21,7 +23,7 @@ public class BiomeSampler
     private string biomeMapPath;
 
     [NonSerialized]
-    private Texture2D biomeMap;
+    private Texture2D biomeMap; // Remove the texture, just use the array
 
     [NonSerialized]
     public Color[] biomeMapThreaded;
@@ -91,6 +93,9 @@ public class BiomeSampler
         
     }
 
+    /// <summary>
+    /// Samples data encoded into a Color from the BiomeSampler's biome map. Uses Bilinear filtering
+    /// </summary>
     public Color SampleBiome(float x, float y)
     {
         int x0 = Mathf.FloorToInt(x);
@@ -119,12 +124,19 @@ public class BiomeSampler
 
         return w00 * s00 + w01 * s01 + w10 * s10 + w11 * s11;
     }
+
+    /// <summary>
+    /// Samples data encoded into a Color from the BiomeSampler's biome map. Uses Nearest/Point filtering
+    /// </summary>
     public Color SampleBiomeNearest(float x, float y)
     {
         //return biomeMap.GetPixel(Mathf.RoundToInt(x),Mathf.RoundToInt(y));
         return biomeMapThreaded[Mathf.RoundToInt(x) + Mathf.RoundToInt(y) * mapSize];
     }
 
+    /// <summary>
+    /// Samples the HeightMap generated dynamicaly by the BiomeSampler's HeightMapGenerator 
+    /// </summary>
     public float SampleHeight(float x, float y)
     {
         return heightMap.SampleMap(x,y);
@@ -135,11 +147,17 @@ public class BiomeSampler
         return biomeMap;
     }
 
+    /// <summary>
+    /// Returns the width (same as height) in pixels of the BiomeSampler's biome map
+    /// </summary>
     public int GetSize()
     {
         return mapSize;
     }
 
+    /// <summary>
+    /// Serializes the HeightMap into JSON named /Map/HeightMaps/heightgen{id}.json and BiomeMap into a texture named /Map/BiomeMaps/map{id}.png
+    /// </summary>
     public BiomeData Save(bool saveHeightMap = true)
     {
         if (name == null)
@@ -174,9 +192,14 @@ public class BiomeSampler
 
 
 
-
+/// <summary>
+/// Static class responsible for baking the biome map data and saving all necessary data and filepaths into the /Map/BiomeMaps/mapdata.json
+/// </summary>
 public static class BiomeMapBaker
 {
+    /// <summary>
+    /// Static class responsible for passing the loaded data from the mapdata.json file to the map generation pipeline
+    /// </summary>
     public class BiomeSamplersData
     {
         public readonly int gridSize;
@@ -194,6 +217,9 @@ public static class BiomeMapBaker
 
     }
 
+    /// <summary>
+    /// Load data from /Map/BiomeMaps/mapdata.json and returns a BiomeSamplersData struct 
+    /// </summary>
     public static BiomeSamplersData LoadBaked()
     {
         if (!System.IO.File.Exists(Application.dataPath + "/Map/BiomeMaps/mapdata.json"))
@@ -218,7 +244,9 @@ public static class BiomeMapBaker
         return new BiomeSamplersData(gridSize, fullBiomeMapSampler, singleBiomeSamplers, biomeMapData.biomeLinks);
     }
 
-
+    /// <summary>
+    /// Bakes cell ids information of the entire biome map into one single BiomeSampler
+    /// </summary>
     public static BiomeSampler BakeBiomeCellIds(BiomeMapGenerator biomeMapGenerator)
     {
         Texture2D fullMap = biomeMapGenerator.GetBiomeIndexMap();
@@ -228,6 +256,11 @@ public static class BiomeMapBaker
 
         return fullMapSampler;
     }
+
+    /// <summary>
+    /// Bakes the biome cell information, including the map region occupied by that cell (stored as a distance field).
+    /// Aditonally, the Baking process can control how much the individual biome regions are streched streched in order to cause more overlapping between them
+    /// </summary>
 
     public static List<BiomeSampler> BakeSingleBiomes(BiomeMapGenerator biomeMapGenerator, BiomeSampler fullBiomeMap, float biomeStretch)
     {
@@ -243,6 +276,9 @@ public static class BiomeMapBaker
         
     }
 
+    /// <summary>
+    /// Saves all baked information into the mapdata.json file
+    /// </summary>
     public static void SaveBaked(int biomeGridSize, BiomeSampler fullBiomeMap, List<BiomeSampler> bakedBiomes, BiomeLinks biomeLinks = null, bool saveHeights = true)
     {
         BiomeData fullBiomeMapData;
