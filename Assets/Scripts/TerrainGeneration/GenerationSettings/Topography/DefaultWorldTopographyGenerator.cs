@@ -10,14 +10,18 @@ public class DefaultWorldTopographyGenerator : WorldTopographyGenerator
     public override HeightMapGenerator GetHeightMapGenerator(TopographySettings topographySettings)
     {
         HeightMapGenerator heightMapGenerator = ScriptableObject.CreateInstance<HeightMapGenerator>();
+        
+        heightMapGenerator.noiseSeed = WorldGenerationSettings.worldSeed;
+        
         Vector2 frequencyRange = topographySettings.noiseFrequencyRange;
         Vector2 lacunarityRange = topographySettings.noiseLacunarityRange;
         Vector2 pesistenceRange = topographySettings.noisePersistanceRange;
+        
         Random.InitState(WorldGenerationSettings.worldSeed);
-
         heightMapGenerator.frequency = Random.Range(frequencyRange.x, frequencyRange.y);
         heightMapGenerator.lacunarity = Random.Range(lacunarityRange.x, lacunarityRange.y);
         heightMapGenerator.persistence = Random.Range(pesistenceRange.x, pesistenceRange.y);
+        
         heightMapGenerator.amplitude = topographySettings.baseMaxHeight;
         heightMapGenerator.octaves = topographySettings.noiseOctaves;
         heightMapGenerator.mapScale = topographySettings.heightMapScale;

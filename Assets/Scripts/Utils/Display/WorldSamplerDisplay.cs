@@ -12,7 +12,10 @@ public class WorldSamplerDisplay : MonoBehaviour
     [SerializeField]
     private Material displayMaterial;
 
-
+    void Awake()
+    {
+        gameObject.SetActive(false);
+    }
 
 
     public void Display()

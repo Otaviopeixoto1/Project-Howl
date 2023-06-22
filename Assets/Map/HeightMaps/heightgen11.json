@@ -8,7 +8,7 @@
         "m_PostInfinity": 2,
         "m_RotationOrder": 4
     },
-    "noiseSeed": 1,
+    "noiseSeed": 340,
     "noiseType": 0,
     "fractalType": 1,
     "octaves": 4,

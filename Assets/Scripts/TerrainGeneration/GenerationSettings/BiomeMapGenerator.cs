@@ -29,7 +29,7 @@ public class BiomeMapGenerator : MapGenerator
     [Range(0, 10)]
     public float persistence = 6.74f;
 
-    public FastNoiseLite.CellularDistanceFunction distanceFunction = FastNoiseLite.CellularDistanceFunction.Euclidean;
+    public FastNoiseLite.CellularDistanceFunction distanceFunction = FastNoiseLite.CellularDistanceFunction.Hybrid;
     public FastNoiseLite.ModifiedCellularReturnType modCellularReturnType = FastNoiseLite.ModifiedCellularReturnType.ModifiedCellValue;
 
     [Range(0,1)]

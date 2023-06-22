@@ -28,6 +28,7 @@ public class RandomWorldTopographyGenerator : WorldTopographyGenerator
     {
         Random.InitState(WorldGenerationSettings.worldSeed);
         HeightMapGenerator heightMapGenerator = ScriptableObject.CreateInstance<HeightMapGenerator>();
+        heightMapGenerator.noiseSeed = WorldGenerationSettings.worldSeed;
         heightMapGenerator.frequency = Random.Range(noiseFrequencyRange.x, noiseFrequencyRange.y);
         heightMapGenerator.lacunarity = Random.Range(noiseLacunarityRange.x, noiseLacunarityRange.y);
         heightMapGenerator.persistence = Random.Range(noisePersistenceRange.x, noisePersistenceRange.y);

@@ -15,31 +15,38 @@ public class BiomeManager : MonoBehaviour
 
     [NonReorderable]
     [SerializeField]
-    private List<BiomeSampler> biomeSamplers;
+    private List<BiomeSampler> biomeSamplers; //convert to array
 
     
-    [HideInInspector]
     //Amount of biome cells on x and y. Default value = 4
-    public int biomeGridSize = 4;
-
+    public const int biomeGridSize = 4;
 
     //Graph structure used to store information about neighbouring biomes (maybe blending between them):
     private BiomeLinks biomeLinks; 
+    
 
 
-
-
-    //use the world seed here as well
     public void GenerateBiomeMap()
     {
-        //Generate the biomeMapGenerator and pass to BiomeBaker to generate all biome cells 
-        return;
+        Debug.Log("Generating Biome Map");
+        BiomeMapGenerator biomeMapGenerator = ScriptableObject.CreateInstance<BiomeMapGenerator>();
+        biomeMapGenerator.cellularSeed = WorldGenerationSettings.worldSeed;
+        biomeMapGenerator.gridDimension = biomeGridSize; //use the one from WorldGenerationSettings
+        biomeMapGenerator.cellularJitter = 0.5f; //use the WorldGenerationSettings
+        biomeMapGenerator.ApplySettings();
+
+        biomeIdSampler = BiomeMapBaker.BakeBiomeCellIds(biomeMapGenerator);
+
+                                                        //use the strech from WorldGenerationSettings
+        biomeSamplers = BiomeMapBaker.BakeSingleBiomes(biomeMapGenerator, biomeIdSampler, 1.2f);
+        Debug.Log(biomeGridSize + " " + biomeSamplers.Count);
+
     }
 
     public void AssingBiomes()
     {
-        
-        worldGenerationSettings.biomeGridSize = biomeGridSize; //just avoiding conflicts
+        Debug.Log("Assigning Biomes");
+        worldGenerationSettings.biomeGridSize = biomeGridSize; //use the one fro WorldGenSettings
         worldGenerationSettings.Apply();
         if (biomeSamplers.Count == (biomeGridSize + 1) * (biomeGridSize + 1))
         {
@@ -62,14 +69,20 @@ public class BiomeManager : MonoBehaviour
 
     public bool Load()
     {
+        Debug.Log("Loading Data");
         BiomeMapBaker.BiomeSamplersData loadedSamplerData = BiomeMapBaker.LoadBaked(); 
 
         if (loadedSamplerData != null && loadedSamplerData.singleBiomeSamplers.Count > 1)
         {
             biomeSamplers = loadedSamplerData.singleBiomeSamplers;
             biomeIdSampler = loadedSamplerData.biomeIdSampler;
-            biomeGridSize = loadedSamplerData.gridSize;
+            //biomeGridSize = loadedSamplerData.gridSize;
             biomeLinks = loadedSamplerData.biomeLinks;
+
+
+            //Check for missing data
+            //if missing, generate again. If cant generate, return false
+
 
             return true;
         }
@@ -86,6 +99,7 @@ public class BiomeManager : MonoBehaviour
         {
             return false;
         }
+        Debug.Log("Saving Data");
         BiomeMapBaker.SaveBaked(biomeGridSize, biomeIdSampler, biomeSamplers, biomeLinks:biomeLinks);
         return true;
     }
@@ -111,6 +125,8 @@ public class BiomeManager : MonoBehaviour
     {
         //check if a mapdata.json exists and if not. create the map from scratch (or look for a backup)
         //if the data doesnt exist, try to generate using bake and save methods from BiomeBaker
+        
+        
         if(Load())
         {
             // add some signal or callback
@@ -121,7 +137,7 @@ public class BiomeManager : MonoBehaviour
             GenerateBiomeMap();
             AssingBiomes();
             Save();
-            //Generate biomelinks
+            //Load();
         }
     }
 }

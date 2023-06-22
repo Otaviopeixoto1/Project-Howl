@@ -6,7 +6,7 @@ using UnityEngine;
 
 
 
-public struct MapData //Change name of this class
+public struct SamplerData
 {
     public readonly WorldSampler sampler;
     public readonly Vector2 chunkPosition;
@@ -14,7 +14,7 @@ public struct MapData //Change name of this class
     public readonly float chunkScale;
     public readonly int lodBias;
 
-    public MapData (WorldSampler sampler,Vector2 gridPosition, int chunkSize, float chunkScale, int lodBias)
+    public SamplerData (WorldSampler sampler,Vector2 gridPosition, int chunkSize, float chunkScale, int lodBias)
     {
         this.sampler = sampler;
         this.chunkPosition = gridPosition * chunkSize;
@@ -41,7 +41,7 @@ public class TerrainChunk
 
     
 
-    public TerrainChunk(Vector2Int coord, MapData mapData, Transform parent, Material material, TerrainChunkManager chunkManager)
+    public TerrainChunk(Vector2Int coord, SamplerData mapData, Transform parent, Material material, TerrainChunkManager chunkManager)
     {
         this.chunkSize = mapData.chunkSize;
         this.scale = mapData.chunkScale;
@@ -155,6 +155,18 @@ public class TerrainChunkManager : MonoBehaviour
         worldSampler = GetComponent<WorldSampler>();
     }
 
+    void OnValidate()
+    {   
+        if (chunkScale < 0.01f)
+        {
+            chunkScale = 0.01f;
+        }
+        chunkVisibilityRadius = Mathf.RoundToInt(maxViewDistance/chunkSize);
+    }
+
+
+
+
     void Update()
     {
         viewerWorldPos = new Vector2(viewer.position.x, viewer.position.z);
@@ -171,15 +183,8 @@ public class TerrainChunkManager : MonoBehaviour
 		}
     }
 
-    void OnValidate()
-    {   
-        if (chunkScale < 0.01f)
-        {
-            chunkScale = 0.01f;
-        }
-        chunkVisibilityRadius = Mathf.RoundToInt(maxViewDistance/chunkSize);
-    }
 
+    //Run on a coroutine. it doesnt have to update every frame
     public void UpdateVisibleChunks() 
     {
         //////////////////////////////Clearing all chunks/////////////////////////// 
@@ -210,7 +215,7 @@ public class TerrainChunkManager : MonoBehaviour
                 }
                 else
                 {
-                    MapData mapData = new MapData(worldSampler, viewChunkCoord, chunkSize, chunkScale, 0);
+                    SamplerData mapData = new SamplerData(worldSampler, viewChunkCoord, chunkSize, chunkScale, 0);
                     terrainChunks.Add(viewChunkCoord, new TerrainChunk(viewChunkCoord, mapData, this.transform, testMaterial, this));
                 }
 
@@ -225,7 +230,7 @@ public class TerrainChunkManager : MonoBehaviour
 
 ////////////////////////////////// Threading the mesh data calculations ////////////////////////////////////////////
     
-    public void RequestMeshData(MapData mapData, Action<MeshData> callback) {
+    public void RequestMeshData(SamplerData mapData, Action<MeshData> callback) {
 		ThreadStart threadStart = delegate{
 			MeshDataThread(mapData, callback);
 		};
@@ -233,7 +238,7 @@ public class TerrainChunkManager : MonoBehaviour
 		new Thread(threadStart).Start();
 	}
 
-	private void MeshDataThread(MapData mapData, Action<MeshData> callback) {
+	private void MeshDataThread(SamplerData mapData, Action<MeshData> callback) {
 		MeshData meshData = MeshGenerator.GenerateTerrainFromSampler(mapData.sampler, 
                                                                     mapData.chunkSize + 1, 
                                                                     mapData.chunkSize + 1, 

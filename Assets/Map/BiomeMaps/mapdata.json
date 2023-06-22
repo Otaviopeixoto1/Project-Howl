@@ -16,7 +16,7 @@
     "biomeMaps": [
         {
             "id": 0,
-            "name": "",
+            "name": "map0",
             "biomeType": 1,
             "heightMapPath": "/Map/HeightMaps/heightgen0.json",
             "biomeMapPath": "/Map/BiomeMaps/map0.png",
@@ -29,7 +29,7 @@
         },
         {
             "id": 1,
-            "name": "",
+            "name": "map1",
             "biomeType": 1,
             "heightMapPath": "/Map/HeightMaps/heightgen1.json",
             "biomeMapPath": "/Map/BiomeMaps/map1.png",
@@ -42,7 +42,7 @@
         },
         {
             "id": 2,
-            "name": "",
+            "name": "map2",
             "biomeType": 1,
             "heightMapPath": "/Map/HeightMaps/heightgen2.json",
             "biomeMapPath": "/Map/BiomeMaps/map2.png",
@@ -55,7 +55,7 @@
         },
         {
             "id": 3,
-            "name": "",
+            "name": "map3",
             "biomeType": 1,
             "heightMapPath": "/Map/HeightMaps/heightgen3.json",
             "biomeMapPath": "/Map/BiomeMaps/map3.png",
@@ -68,7 +68,7 @@
         },
         {
             "id": 4,
-            "name": "",
+            "name": "map4",
             "biomeType": 1,
             "heightMapPath": "/Map/HeightMaps/heightgen4.json",
             "biomeMapPath": "/Map/BiomeMaps/map4.png",
@@ -81,7 +81,7 @@
         },
         {
             "id": 5,
-            "name": "",
+            "name": "map5",
             "biomeType": 1,
             "heightMapPath": "/Map/HeightMaps/heightgen5.json",
             "biomeMapPath": "/Map/BiomeMaps/map5.png",
@@ -94,7 +94,7 @@
         },
         {
             "id": 6,
-            "name": "",
+            "name": "map6",
             "biomeType": 0,
             "heightMapPath": "/Map/HeightMaps/heightgen6.json",
             "biomeMapPath": "/Map/BiomeMaps/map6.png",
@@ -107,7 +107,7 @@
         },
         {
             "id": 7,
-            "name": "",
+            "name": "map7",
             "biomeType": 3,
             "heightMapPath": "/Map/HeightMaps/heightgen7.json",
             "biomeMapPath": "/Map/BiomeMaps/map7.png",
@@ -120,7 +120,7 @@
         },
         {
             "id": 8,
-            "name": "",
+            "name": "map8",
             "biomeType": 0,
             "heightMapPath": "/Map/HeightMaps/heightgen8.json",
             "biomeMapPath": "/Map/BiomeMaps/map8.png",
@@ -133,7 +133,7 @@
         },
         {
             "id": 9,
-            "name": "",
+            "name": "map9",
             "biomeType": 1,
             "heightMapPath": "/Map/HeightMaps/heightgen9.json",
             "biomeMapPath": "/Map/BiomeMaps/map9.png",
@@ -146,7 +146,7 @@
         },
         {
             "id": 10,
-            "name": "",
+            "name": "map10",
             "biomeType": 1,
             "heightMapPath": "/Map/HeightMaps/heightgen10.json",
             "biomeMapPath": "/Map/BiomeMaps/map10.png",
@@ -159,7 +159,7 @@
         },
         {
             "id": 11,
-            "name": "",
+            "name": "map11",
             "biomeType": 2,
             "heightMapPath": "/Map/HeightMaps/heightgen11.json",
             "biomeMapPath": "/Map/BiomeMaps/map11.png",
@@ -172,7 +172,7 @@
         },
         {
             "id": 12,
-            "name": "",
+            "name": "map12",
             "biomeType": 3,
             "heightMapPath": "/Map/HeightMaps/heightgen12.json",
             "biomeMapPath": "/Map/BiomeMaps/map12.png",
@@ -185,7 +185,7 @@
         },
         {
             "id": 13,
-            "name": "",
+            "name": "map13",
             "biomeType": 2,
             "heightMapPath": "/Map/HeightMaps/heightgen13.json",
             "biomeMapPath": "/Map/BiomeMaps/map13.png",
@@ -198,7 +198,7 @@
         },
         {
             "id": 14,
-            "name": "",
+            "name": "map14",
             "biomeType": 1,
             "heightMapPath": "/Map/HeightMaps/heightgen14.json",
             "biomeMapPath": "/Map/BiomeMaps/map14.png",
@@ -211,7 +211,7 @@
         },
         {
             "id": 15,
-            "name": "",
+            "name": "map15",
             "biomeType": 1,
             "heightMapPath": "/Map/HeightMaps/heightgen15.json",
             "biomeMapPath": "/Map/BiomeMaps/map15.png",
@@ -224,7 +224,7 @@
         },
         {
             "id": 16,
-            "name": "",
+            "name": "map16",
             "biomeType": 0,
             "heightMapPath": "/Map/HeightMaps/heightgen16.json",
             "biomeMapPath": "/Map/BiomeMaps/map16.png",
@@ -237,7 +237,7 @@
         },
         {
             "id": 17,
-            "name": "",
+            "name": "map17",
             "biomeType": 3,
             "heightMapPath": "/Map/HeightMaps/heightgen17.json",
             "biomeMapPath": "/Map/BiomeMaps/map17.png",
@@ -250,7 +250,7 @@
         },
         {
             "id": 18,
-            "name": "",
+            "name": "map18",
             "biomeType": 0,
             "heightMapPath": "/Map/HeightMaps/heightgen18.json",
             "biomeMapPath": "/Map/BiomeMaps/map18.png",
@@ -263,7 +263,7 @@
         },
         {
             "id": 19,
-            "name": "",
+            "name": "map19",
             "biomeType": 1,
             "heightMapPath": "/Map/HeightMaps/heightgen19.json",
             "biomeMapPath": "/Map/BiomeMaps/map19.png",
@@ -276,7 +276,7 @@
         },
         {
             "id": 20,
-            "name": "",
+            "name": "map20",
             "biomeType": 1,
             "heightMapPath": "/Map/HeightMaps/heightgen20.json",
             "biomeMapPath": "/Map/BiomeMaps/map20.png",
@@ -289,7 +289,7 @@
         },
         {
             "id": 21,
-            "name": "",
+            "name": "map21",
             "biomeType": 1,
             "heightMapPath": "/Map/HeightMaps/heightgen21.json",
             "biomeMapPath": "/Map/BiomeMaps/map21.png",
@@ -302,7 +302,7 @@
         },
         {
             "id": 22,
-            "name": "",
+            "name": "map22",
             "biomeType": 1,
             "heightMapPath": "/Map/HeightMaps/heightgen22.json",
             "biomeMapPath": "/Map/BiomeMaps/map22.png",
@@ -315,7 +315,7 @@
         },
         {
             "id": 23,
-            "name": "",
+            "name": "map23",
             "biomeType": 1,
             "heightMapPath": "/Map/HeightMaps/heightgen23.json",
             "biomeMapPath": "/Map/BiomeMaps/map23.png",
@@ -328,7 +328,7 @@
         },
         {
             "id": 24,
-            "name": "",
+            "name": "map24",
             "biomeType": 1,
             "heightMapPath": "/Map/HeightMaps/heightgen24.json",
             "biomeMapPath": "/Map/BiomeMaps/map24.png",

@@ -44,6 +44,11 @@ public class MapDisplay2D : MapDisplay
         
     }
 
+    void Awake()
+    {
+        gameObject.SetActive(false);
+    }
+
 
     public static bool IsValidStyle(MapGenerator mapGenerator, DisplayStyle displayStyle)
     {

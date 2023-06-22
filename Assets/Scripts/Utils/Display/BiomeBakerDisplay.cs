@@ -19,6 +19,10 @@ public class BiomeBakerDisplay : MonoBehaviour
     private List<BiomeSampler> bakedBiomes = new List<BiomeSampler>();
     private BiomeSampler biomeIdSampler = null;
 
+    void Awake()
+    {
+        gameObject.SetActive(false);
+    }
 
 
     public void Load()
@@ -104,5 +108,6 @@ public class BiomeBakerDisplay : MonoBehaviour
         }
 
     }
+    
 
 }

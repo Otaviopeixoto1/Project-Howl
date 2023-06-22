@@ -51,7 +51,6 @@ public class BiomeSampler
 
         heightMapPath = bData.heightMapPath;
 
-        //this.heightMap = heightMap; //check if file exists before assign map
         if (System.IO.File.Exists(Application.dataPath + heightMapPath))
         {
             string json = File.ReadAllText(Application.dataPath + heightMapPath);
@@ -112,7 +111,6 @@ public class BiomeSampler
         Color s10 = biomeMapThreaded[ x1 + y0 * mapSize];
         Color s01 = biomeMapThreaded[ x0 + y1 * mapSize];
         Color s11 = biomeMapThreaded[ x1 + y1 * mapSize];
-        //return biomeMap.GetPixel(Mathf.RoundToInt(x),Mathf.RoundToInt(y));
 
         float w00 = (x1 - x) * (y1 - y);
         float w10 = (x - x0) * (y1 - y);
@@ -165,7 +163,6 @@ public class BiomeSampler
         }
         else if (saveHeightMap)
         {
-            //if this is the biomeIdSampler, then there is no problem
             Debug.Log("Null height map generator reference for sampler id = " + id);
         }
 
@@ -177,7 +174,6 @@ public class BiomeSampler
 
 
 
-//biome baker should be a simple static class with satic methods
 
 public static class BiomeMapBaker
 {

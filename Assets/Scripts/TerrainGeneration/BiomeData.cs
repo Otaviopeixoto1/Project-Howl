@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
 
@@ -9,6 +7,7 @@ using System;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  These classes store data that gets serialized into json files for saving and loading baked map data
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 [Serializable]
 public struct BiomeData
 {
@@ -30,6 +29,8 @@ public struct BiomeData
     }
 
 }
+
+
 
 [Serializable]
 public struct BiomeMapData
@@ -128,14 +129,11 @@ public class BiomeLinks
                 r - (gridSize + 2),
                 r + (gridSize), 
             });
-
-
         }
 
 
         for (int i = gridSize + 2; i < (gridSize * (gridSize + 1) + 1); i += gridSize + 1)
         {
-
             for (int j = 0; j < gridSize - 1; j++)
             {
                 neighbours[i + j] = new SerializedLinks(i+j, new int[]{

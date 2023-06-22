@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+//Implement heightCurves from Scratch to run on threads
+//improve sampling filter for height maps. currently has many artifacts
+
+
+
 
 
 //Samples the entire map biomes and height for generating meshes. 
@@ -27,8 +32,6 @@ public class WorldSampler : MonoBehaviour
 
 
 
-    //Implement heightCurves from Scratch to run on threads
-    //implement bilinear filtering
     public float SampleHeight(float _x, float _y) 
     {
 
@@ -41,7 +44,7 @@ public class WorldSampler : MonoBehaviour
         }
 
         BiomeSampler biomeIdSampler = biomeManager.GetBiomeIdSampler();
-        int gridSize = biomeManager.biomeGridSize;
+        int gridSize = BiomeManager.biomeGridSize;
         int cellId = Mathf.RoundToInt(BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, gridSize));
 
 
@@ -78,7 +81,7 @@ public class WorldSampler : MonoBehaviour
         }
 
         BiomeSampler biomeIdSampler = biomeManager.GetBiomeIdSampler();
-        int gridSize = biomeManager.biomeGridSize;
+        int gridSize = BiomeManager.biomeGridSize;
         int cellId = Mathf.RoundToInt(BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, gridSize));
 
 

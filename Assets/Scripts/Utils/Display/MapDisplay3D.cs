@@ -38,6 +38,11 @@ public class MapDisplay3D : MapDisplay
     private Mesh currentMesh = null;
 
 
+    void Awake()
+    {
+        gameObject.SetActive(false);
+    }
+    
     public void DrawMesh()
     {
         meshRenderer = GetComponent<MeshRenderer>();
