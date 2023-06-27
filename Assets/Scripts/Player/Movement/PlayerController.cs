@@ -32,8 +32,19 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 inputDir = playerInputActions.Player.Move.ReadValue<Vector2>();
         Vector2 moveSpeed = playerInputActions.Player.Move.ReadValue<Vector2>() * playerSpeed; 
-        characterController.Move(new Vector3(moveSpeed.x, gravityValue, moveSpeed.y) * Time.deltaTime);
         
+        float appliedGravity;
+        if (characterController.isGrounded)
+        {
+            appliedGravity = 0f;
+        }
+        else
+        {
+            appliedGravity = gravityValue;
+        }
+        characterController.Move(new Vector3(moveSpeed.x, appliedGravity, moveSpeed.y) * Time.deltaTime);
+        
+
         if (inputDir != Vector2.zero)
         {
             movementDir = new Vector3(inputDir.x,0,inputDir.y);
