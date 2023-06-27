@@ -5,7 +5,9 @@ using System.Threading;
 using UnityEngine;
 
 
-
+/// <summary>
+/// Struct used to pass the world sampler and other data to the chunk generation threads
+/// </summary>
 public struct SamplerThreadData
 {
     public readonly WorldSampler sampler;
@@ -25,9 +27,10 @@ public struct SamplerThreadData
 }
 
 
+
 public class TerrainChunk
 {
-    GameObject meshObject;
+    GameObject chunkObject; // all of these variables should be readonly
     MeshRenderer meshRenderer;
     MeshFilter meshFilter;
 
@@ -49,19 +52,19 @@ public class TerrainChunk
         worldPosition = ((Vector2)coord) * chunkSize * scale;
         bounds = new Bounds(worldPosition, Vector2.one * chunkSize * scale);
 
-        meshObject = new GameObject("Terrain Chunk");
-        meshRenderer = meshObject.AddComponent<MeshRenderer>();
-        meshFilter = meshObject.AddComponent<MeshFilter>();
+        chunkObject = new GameObject("Terrain Chunk");
+        meshRenderer = chunkObject.AddComponent<MeshRenderer>();
+        meshFilter = chunkObject.AddComponent<MeshFilter>();
         meshRenderer.material = material; 
 
         debugTexture = CreateDebugTexture(mapData.sampler);
 
         Vector3 worldPositionV3 = new Vector3(worldPosition.x, 0, worldPosition.y);
 
-        meshObject.transform.position = worldPositionV3;
-        meshObject.transform.parent = parent;
+        chunkObject.transform.position = worldPositionV3;
+        chunkObject.transform.parent = parent;
 
-        SetVisible(false);
+        //SetVisible(false);
 
         chunkManager.RequestMeshData(mapData, OnMeshDataReceived);
     }
@@ -85,14 +88,15 @@ public class TerrainChunk
                             // (probably wont be rendered)
     }
 
+
     public void SetVisible(bool visible)
     {
-        meshObject.SetActive(visible);
+        chunkObject.SetActive(visible);
     }
 
     public bool IsVisible()
     {
-        return meshObject.activeSelf;
+        return chunkObject.activeSelf;
     }
 
     public Texture2D CreateDebugTexture(WorldSampler sampler)
@@ -130,22 +134,29 @@ public class TerrainChunkManager : MonoBehaviour
     //queue containing the mesh data processed inside the threads:
     private Queue<MeshThreadInfo> meshDataThreadInfoQueue = new Queue<MeshThreadInfo>();
     
+    private ChunkThreadManager chunkThreadManager;
+
     private WorldSampler worldSampler;
 
 
     [SerializeField]
     private Transform viewer;
+    [HideInInspector]
+    public Vector2 viewerWorldPos;
+    private Vector2 lastViewerPos;
+    [SerializeField]
+    private float thresholdForChunkUpdate = 0.1f;
+
+
     [SerializeField]
     private Material testMaterial;
-    public static Vector2 viewerWorldPos;
-
     [SerializeField]
     [Range(10,240)]
     private int chunkSize = 240;
     [SerializeField]
     private float chunkScale = 1f;
-    private float maxViewDistance = 300;
-    private int chunkVisibilityRadius;
+    private float maxViewDistance = 300; //useless Add the chunkVisibilityRadius in chunks directly
+    private int chunkVisibilityRadius; //set to public and set manualy.
 
 
 
@@ -153,6 +164,8 @@ public class TerrainChunkManager : MonoBehaviour
     {   
         chunkVisibilityRadius = Mathf.RoundToInt(maxViewDistance/chunkSize);
         worldSampler = GetComponent<WorldSampler>();
+
+        //UpdateVisibleChunks(); // send a signal after the world sampler has all the data needed
     }
 
     void OnValidate()
@@ -161,6 +174,11 @@ public class TerrainChunkManager : MonoBehaviour
         {
             chunkScale = 0.01f;
         }
+        if (thresholdForChunkUpdate < 0.01f)
+        {
+            thresholdForChunkUpdate = 0.01f;
+        }
+
         chunkVisibilityRadius = Mathf.RoundToInt(maxViewDistance/chunkSize);
     }
 
@@ -171,12 +189,24 @@ public class TerrainChunkManager : MonoBehaviour
     {
         viewerWorldPos = new Vector2(viewer.position.x, viewer.position.z);
 
-        UpdateVisibleChunks();
+
+
+        //for the current case, it doesnt make sense to update the chunks unless the chunk coordinate has changed
+        // (the player moved from one chunk to another)
+        //update the current chunks only if the player has changed from one chunk to another 
+        //(its a topdown view). the condition could also be changed (even dynamicaly)
+        if (Vector3.Distance(viewerWorldPos, lastViewerPos) > thresholdForChunkUpdate * chunkSize * chunkScale)
+        {
+            lastViewerPos = viewerWorldPos;
+            UpdateVisibleChunks();
+        }
+        
         
         
         if (meshDataThreadInfoQueue.Count > 0) 
         {
-			for (int i = 0; i < meshDataThreadInfoQueue.Count; i++) {
+			for (int i = 0; i < meshDataThreadInfoQueue.Count; i++) 
+            {
 				MeshThreadInfo threadInfo = meshDataThreadInfoQueue.Dequeue();
 				threadInfo.callback(threadInfo.meshData);
 			}
@@ -184,7 +214,6 @@ public class TerrainChunkManager : MonoBehaviour
     }
 
 
-    //Run on a coroutine. it doesnt have to update every frame
     public void UpdateVisibleChunks() 
     {
         //////////////////////////////Clearing all chunks/////////////////////////// 
@@ -199,6 +228,7 @@ public class TerrainChunkManager : MonoBehaviour
         int currentChunkX = Mathf.RoundToInt(viewerWorldPos.x/(chunkSize * chunkScale));
         int currentChunkY = Mathf.RoundToInt(viewerWorldPos.y/(chunkSize * chunkScale));
 
+        //Looping through all chunks that should be visible in this frame
         for (int dy = -chunkVisibilityRadius; dy <= chunkVisibilityRadius; dy++)
         {
             for (int dx = -chunkVisibilityRadius; dx <= chunkVisibilityRadius; dx++)
@@ -207,7 +237,7 @@ public class TerrainChunkManager : MonoBehaviour
 
                 if (terrainChunks.ContainsKey(viewChunkCoord))
                 {
-                    terrainChunks[viewChunkCoord].Update(viewerWorldPos,maxViewDistance);// call update with the arguments
+                    terrainChunks[viewChunkCoord].Update(viewerWorldPos,maxViewDistance);
                     if(terrainChunks[viewChunkCoord].IsVisible())
                     {
                         visibleChunksOnLastUpdate.Add(terrainChunks[viewChunkCoord]);
@@ -217,6 +247,7 @@ public class TerrainChunkManager : MonoBehaviour
                 {
                     SamplerThreadData mapData = new SamplerThreadData(worldSampler, viewChunkCoord, chunkSize, chunkScale, 0);
                     terrainChunks.Add(viewChunkCoord, new TerrainChunk(viewChunkCoord, mapData, this.transform, testMaterial, this));
+                    visibleChunksOnLastUpdate.Add(terrainChunks[viewChunkCoord]);
                 }
 
 
@@ -254,6 +285,13 @@ public class TerrainChunkManager : MonoBehaviour
 		}
 	}
 
+
+
+
+
+    /// <summary>
+    /// struct used to send the calculated chunk mesh data from other threads to the main thread
+    /// </summary>
     private struct MeshThreadInfo {
 		public readonly Action<MeshData> callback;
 		public readonly MeshData meshData;
