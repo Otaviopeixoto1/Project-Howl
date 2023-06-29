@@ -27,7 +27,7 @@ public class WorldSamplerDisplay : MonoBehaviour
     }
     public void LoadSamplers()
     {
-        BiomeManager biomeManager = GetComponent<BiomeManager>();
+        WorldManager biomeManager = GetComponent<WorldManager>();
         biomeManager.Load();
     }
 

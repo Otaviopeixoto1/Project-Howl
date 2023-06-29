@@ -123,6 +123,95 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &324677535
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 324677539}
+  - component: {fileID: 324677536}
+  - component: {fileID: 324677537}
+  - component: {fileID: 324677538}
+  m_Layer: 0
+  m_Name: Terrain
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &324677536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 324677535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d8a3c70312816463a501edfb1d59ebe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  worldGenerationSettings: {fileID: 11400000, guid: f59495a42aed8b32cb4f9ad5ea4dd2c5,
+    type: 2}
+  worldTopographyGenerator: {fileID: 11400000, guid: 6d72d87fffbe59c769798884ce67e003,
+    type: 2}
+  biomeSamplers: []
+--- !u!114 &324677537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 324677535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49b6c7fe36b99ec2e85b3e0223709424, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  worldManager: {fileID: 324677536}
+  heightMultiplier: 20
+  biomeMapSize: 240
+  biomeMapScale: 0.05
+--- !u!114 &324677538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 324677535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05ec4f09a9bb66b3eb13571368bbab4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewer: {fileID: 1521759003}
+  viewerWorldPos: {x: 0, y: 0}
+  thresholdForMeshUpdate: 0.1
+  thresholdForColliderUpdate: 0.1
+  testMaterial: {fileID: 2100000, guid: 68d6e2daea376a4cc99513bf78caa6e1, type: 2}
+  chunkSize: 240
+  chunkScale: 1
+  chunkMeshLodBias: 0
+  chunkColliderLodBias: 6
+  normalizedViewDist: 1.2
+--- !u!4 &324677539
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 324677535}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -210,7 +299,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   m_LocalRotation: {x: 0.2588191, y: 0, z: 0, w: 0.9659258}
-  m_LocalPosition: {x: 0, y: 8.09, z: -12.51}
+  m_LocalPosition: {x: 720, y: 85.089966, z: 813}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -625,6 +714,12 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 7785983090936244987}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1521759003 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1519579684315888534, guid: 577006fef970ac96888177047b6ab330,
+    type: 3}
+  m_PrefabInstance: {fileID: 7785983090936244987}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1618512095
 GameObject:
   m_ObjectHideFlags: 0
@@ -880,17 +975,17 @@ PrefabInstance:
     - target: {fileID: 1519579684315888534, guid: 577006fef970ac96888177047b6ab330,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 720
       objectReference: {fileID: 0}
     - target: {fileID: 1519579684315888534, guid: 577006fef970ac96888177047b6ab330,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 77
       objectReference: {fileID: 0}
     - target: {fileID: 1519579684315888534, guid: 577006fef970ac96888177047b6ab330,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 825.51
       objectReference: {fileID: 0}
     - target: {fileID: 1519579684315888534, guid: 577006fef970ac96888177047b6ab330,
         type: 3}

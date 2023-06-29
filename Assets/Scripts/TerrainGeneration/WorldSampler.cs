@@ -11,11 +11,11 @@ using UnityEngine;
 /// Class used to sample the entire map and handle the blending between different (neighbouring) biome cells
 /// </summary>
 
-[RequireComponent(typeof(BiomeManager))]
+[RequireComponent(typeof(WorldManager))]
 public class WorldSampler : MonoBehaviour
 {
     [SerializeField]
-    private BiomeManager biomeManager;
+    private WorldManager worldManager;
      
     [SerializeField]
     [Range(1,20)]
@@ -30,10 +30,33 @@ public class WorldSampler : MonoBehaviour
     private float biomeMapScale = 1f;
 
 
+    void OnEnable()
+    {
+        WorldManager.OnSuccessfulLoad += SetManager;
+    }
 
 
+    void OnDisable()
+    {
+        WorldManager.OnSuccessfulLoad -= SetManager;
+    }
 
 
+    void Start()
+    {
+        worldManager = GetComponent<WorldManager>();
+    }
+
+    void Update()
+    {
+        
+    }
+
+    private void SetManager()
+    {
+        worldManager = GetComponent<WorldManager>();
+        WorldManager.OnSuccessfulLoad -= SetManager;
+    }
 
     public float SampleHeight(float _x, float _y) 
     {
@@ -46,22 +69,22 @@ public class WorldSampler : MonoBehaviour
             return 0f;
         }
 
-        BiomeSampler biomeIdSampler = biomeManager.GetBiomeIdSampler();
-        int gridSize = BiomeManager.biomeGridSize;
+        BiomeSampler biomeIdSampler = worldManager.GetBiomeIdSampler();
+        int gridSize = WorldManager.biomeGridSize;
         int cellId = Mathf.RoundToInt(BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, gridSize));
 
 
-        BiomeSampler biomeSampler = biomeManager.GetBiomeSampler(cellId);
+        BiomeSampler biomeSampler = worldManager.GetBiomeSampler(cellId);
         float cellValue = biomeSampler.SampleBiome(x,y).r;
         float finalHeight = biomeSampler.SampleHeight(x,y) * cellValue; 
         float totalValue = cellValue;
 
 
-        if (cellValue < 1.1)
+        if (cellValue < 1.1) // add this as a threashold parameter
         {
-            foreach (int neighbourId in biomeManager.GetNeighbours(cellId))
+            foreach (int neighbourId in worldManager.GetNeighbours(cellId))
             {
-                BiomeSampler neighbourSampler = biomeManager.GetBiomeSampler(neighbourId);
+                BiomeSampler neighbourSampler = worldManager.GetBiomeSampler(neighbourId);
                 float nCellValue = neighbourSampler.SampleBiome(x,y).r;
                 float nheight = neighbourSampler.SampleHeight(x,y) * nCellValue;
                 totalValue += nCellValue;
@@ -83,12 +106,12 @@ public class WorldSampler : MonoBehaviour
             return Color.black;
         }
 
-        BiomeSampler biomeIdSampler = biomeManager.GetBiomeIdSampler();
-        int gridSize = BiomeManager.biomeGridSize;
+        BiomeSampler biomeIdSampler = worldManager.GetBiomeIdSampler();
+        int gridSize = WorldManager.biomeGridSize;
         int cellId = Mathf.RoundToInt(BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, gridSize));
 
 
-        BiomeSampler biomeSampler = biomeManager.GetBiomeSampler(cellId);
+        BiomeSampler biomeSampler = worldManager.GetBiomeSampler(cellId);
         float cellValue = biomeSampler.SampleBiome(x,y).r;
         Color finalColor = biomeSampler.displayColor * cellValue;
         float totalValue = cellValue;
@@ -110,24 +133,4 @@ public class WorldSampler : MonoBehaviour
         return finalColor;
     }
 
-
-
-    void OnValidate()
-    {
-
-    }
-    void Awake()
-    {
-        
-    }
-
-    void Start()
-    {
-        biomeManager = GetComponent<BiomeManager>();
-    }
-
-    void Update()
-    {
-        
-    }
 }

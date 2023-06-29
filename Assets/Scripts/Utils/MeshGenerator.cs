@@ -25,13 +25,17 @@ public class MeshData
         currentTriangleIndex += 3;    
     }   
 
-    public Mesh CreateMesh()
+    public Mesh CreateMesh(bool skipNormals = false)
     {
         Mesh mesh = new Mesh();
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.uv = uvs;
-        mesh.RecalculateNormals();
+        
+        if (!skipNormals)
+        {
+            mesh.RecalculateNormals();
+        }
 
         return mesh;
     }

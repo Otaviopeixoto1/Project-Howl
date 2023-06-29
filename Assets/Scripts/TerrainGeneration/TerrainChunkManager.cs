@@ -14,15 +14,17 @@ public struct SamplerThreadData
     public readonly Vector2 chunkPosition;
     public readonly int chunkSize;
     public readonly float chunkScale;
-    public readonly int lodBias;
+    public readonly int meshLodBias;
+    public readonly int colliderLodBias;
 
-    public SamplerThreadData (WorldSampler sampler,Vector2 gridPosition, int chunkSize, float chunkScale, int lodBias)
+    public SamplerThreadData (WorldSampler sampler,Vector2 gridPosition, int chunkSize, float chunkScale, int meshLodBias, int colliderLodBias)
     {
         this.sampler = sampler;
         this.chunkPosition = gridPosition * chunkSize;
         this.chunkSize = chunkSize;
         this.chunkScale = chunkScale;
-        this.lodBias = lodBias;
+        this.meshLodBias = meshLodBias;
+        this.colliderLodBias = colliderLodBias;
     }
 }
 
@@ -33,6 +35,7 @@ public class TerrainChunk
     GameObject chunkObject; // all of these variables should be readonly
     MeshRenderer meshRenderer;
     MeshFilter meshFilter;
+    MeshCollider meshCollider;
 
     int chunkSize; //size refers to the mesh size (number of mesh vertices along x and y - 1)
     float scale;
@@ -55,6 +58,8 @@ public class TerrainChunk
         chunkObject = new GameObject("Terrain Chunk");
         meshRenderer = chunkObject.AddComponent<MeshRenderer>();
         meshFilter = chunkObject.AddComponent<MeshFilter>();
+        meshCollider = chunkObject.AddComponent<MeshCollider>();
+        meshCollider.cookingOptions = MeshColliderCookingOptions.UseFastMidphase;
         meshRenderer.material = material; 
 
         debugTexture = CreateDebugTexture(mapData.sampler);
@@ -72,20 +77,26 @@ public class TerrainChunk
 
 
     
-    private void OnMeshDataReceived(MeshData meshData)  
+    private void OnMeshDataReceived(MeshData meshData, MeshData colliderData)  
     {                                           
         meshFilter.mesh = meshData.CreateMesh();
+        meshCollider.sharedMesh = colliderData.CreateMesh(true);
         meshRenderer.material.SetTexture("_BaseMap", debugTexture);
     }
 
     public void Update(Vector2 viewerWorldPos, float maxViewDistance) 
     {
         //viewer distance from the edge of the chunk:
-        float viewerDistance = Mathf.Sqrt(bounds.SqrDistance(viewerWorldPos)); 
+        float viewerDistance = GetBoundsDistance(viewerWorldPos); 
         
         bool visible = viewerDistance <= maxViewDistance * scale;
         SetVisible(visible); //Only destroy the chunks that are actualy very far
                             // (probably wont be rendered)
+    }
+
+    public float GetBoundsDistance(Vector2 viewerWorldPos)
+    {
+        return Mathf.Sqrt(bounds.SqrDistance(viewerWorldPos));
     }
 
 
@@ -127,14 +138,15 @@ public class TerrainChunk
 
 [RequireComponent(typeof(WorldSampler))]
 public class TerrainChunkManager : MonoBehaviour
-{
+{  
     private Dictionary<Vector2Int, TerrainChunk> terrainChunks = new Dictionary<Vector2Int, TerrainChunk>();
     private List<TerrainChunk> visibleChunks = new List<TerrainChunk>();
-
-    
     private ChunkThreadManager chunkThreadManager;
 
+
+
     private WorldSampler worldSampler;
+    private WorldManager worldManager;
 
 
     [SerializeField]
@@ -142,9 +154,16 @@ public class TerrainChunkManager : MonoBehaviour
     [HideInInspector]
     public Vector2 viewerWorldPos;
     private Vector2 lastViewerPos;
-    [SerializeField]
-    private float thresholdForChunkUpdate = 0.1f;
 
+    [SerializeField]
+    [Tooltip("distance (in normalized units) the viewer has to move before update")]
+    private float thresholdForMeshUpdate = 0.1f; //distance the viewer has to move before update in normalized units 
+                                                  //actual distance is thresholdForChunkUpdate * chunkSize * scale
+                                                  //also add:
+                                                  //THE DISTANCE BETWEEN THE viewer AND THE EDGE OF THE CHUNK
+    [SerializeField]
+    private float thresholdForColliderUpdate = 0.1f; //distance the viewer and the chunk edge before updating nearby colliders
+                                                  
 
     [SerializeField]
     private Material testMaterial;
@@ -154,16 +173,22 @@ public class TerrainChunkManager : MonoBehaviour
     [SerializeField]
     private float chunkScale = 1f;
     [SerializeField]
+    private int chunkMeshLodBias = 0;
+    [SerializeField]
+    private int chunkColliderLodBias = 6;
+    [SerializeField]
     private float normalizedViewDist = 1.2f;
 
-
+    void Awake()
+    {
+        chunkThreadManager = new ChunkThreadManager();
+        worldSampler = GetComponent<WorldSampler>();
+        worldManager = GetComponent<WorldManager>();
+    }
 
     void Start()
     {   
-        chunkThreadManager = new ChunkThreadManager();
-        worldSampler = GetComponent<WorldSampler>();
 
-        //UpdateVisibleChunks(); // send a signal after the world sampler has all the data needed
     }
 
     void OnValidate()
@@ -172,13 +197,34 @@ public class TerrainChunkManager : MonoBehaviour
         {
             chunkScale = 0.01f;
         }
-        if (thresholdForChunkUpdate < 0.01f)
+        if (thresholdForMeshUpdate < 0.01f)
         {
-            thresholdForChunkUpdate = 0.01f;
+            thresholdForMeshUpdate = 0.01f;
         }
 
     }
+    void OnEnable()
+    {
+        WorldManager.OnSuccessfulLoad += FirstChunkUpdate;
+    }
 
+
+    void OnDisable()
+    {
+        WorldManager.OnSuccessfulLoad -= FirstChunkUpdate;
+    }
+
+
+    private void FirstChunkUpdate()
+    {
+        viewerWorldPos = new Vector2(viewer.position.x, viewer.position.z);
+
+        int currentChunkX = Mathf.RoundToInt(viewerWorldPos.x/(chunkSize * chunkScale));
+        int currentChunkY = Mathf.RoundToInt(viewerWorldPos.y/(chunkSize * chunkScale));
+        
+        UpdateVisibleChunks(currentChunkX, currentChunkY);
+        WorldManager.OnSuccessfulLoad -= FirstChunkUpdate;
+    }
 
 
 
@@ -188,13 +234,14 @@ public class TerrainChunkManager : MonoBehaviour
 
         int currentChunkX = Mathf.RoundToInt(viewerWorldPos.x/(chunkSize * chunkScale));
         int currentChunkY = Mathf.RoundToInt(viewerWorldPos.y/(chunkSize * chunkScale));
+
+
         //for the current case, it doesnt make sense to update the chunks unless the chunk coordinate has changed
         // (the player moved from one chunk to another)
         //update the current chunks only if the player has changed from one chunk to another 
         //(its a topdown view). the condition could also be changed (even dynamicaly)
 
-
-        if (Vector3.Distance(viewerWorldPos, lastViewerPos) > thresholdForChunkUpdate * chunkSize * chunkScale)
+        if (Vector3.Distance(viewerWorldPos, lastViewerPos) > thresholdForMeshUpdate * chunkSize * chunkScale)
         {
             lastViewerPos = viewerWorldPos;
             UpdateVisibleChunks(currentChunkX, currentChunkY);
@@ -239,7 +286,7 @@ public class TerrainChunkManager : MonoBehaviour
                 }
                 else
                 {
-                    SamplerThreadData mapData = new SamplerThreadData(worldSampler, viewChunkCoord, chunkSize, chunkScale, 0);
+                    SamplerThreadData mapData = new SamplerThreadData(worldSampler, viewChunkCoord, chunkSize, chunkScale, chunkMeshLodBias, chunkColliderLodBias);
                     terrainChunks.Add(viewChunkCoord, new TerrainChunk(viewChunkCoord, mapData, this.transform, testMaterial, chunkThreadManager));
                     //all chunks start as visible
                     visibleChunks.Add(terrainChunks[viewChunkCoord]);
