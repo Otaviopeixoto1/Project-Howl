@@ -5,6 +5,7 @@ public class MeshData
     public Vector3[] vertices;
     public int[] triangles;
     public Vector2[] uvs;
+    public Vector2[] atlasUvs;
 
 
     private int currentTriangleIndex;
@@ -12,6 +13,7 @@ public class MeshData
     {
         vertices = new Vector3[width * height];
         uvs = new Vector2[width * height];
+        atlasUvs = new Vector2[width * height];
         triangles = new int[(width - 1) * (height - 1) * 6];
 
         //Debug.Log("total vertices: " + width * height +" total triangles, " + (width - 1) * (height - 1) * 6);
@@ -30,7 +32,12 @@ public class MeshData
         Mesh mesh = new Mesh();
         mesh.vertices = vertices;
         mesh.triangles = triangles;
-        mesh.uv = uvs;
+        mesh.SetUVs(0, uvs);
+
+        if (atlasUvs[0] != null)
+        {
+            mesh.SetUVs(3,atlasUvs);
+        }
         
         if (!skipNormals)
         {
@@ -141,6 +148,7 @@ public static class MeshGenerator
                 meshData.vertices[vertexIndex] = (new Vector3(x, sampler.SampleHeight(x + sampleOffset.x, y + sampleOffset.y), y) 
                                                 + centerOffset) * meshScale;
                 meshData.uvs[vertexIndex] = new Vector2(x/(float)meshWidth, y/(float)meshHeight);
+                meshData.atlasUvs[vertexIndex] = (new Vector2(((x/(float)meshWidth) + sampleOffset.x)/(float)meshWidth, (y/(float)meshHeight) + sampleOffset.y)/(float)meshHeight);
 
                 if (x < (meshWidth - 1) && y < (meshHeight - 1))
                 {

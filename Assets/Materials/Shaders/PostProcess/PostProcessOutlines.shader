@@ -37,7 +37,6 @@ Shader "Unlit/PostProcessOutlines"
             {
                 float4 positionHCS : POSITION;
                 float2 uv : TEXCOORD0;
-                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct Interpolators
@@ -49,7 +48,7 @@ Shader "Unlit/PostProcessOutlines"
             Interpolators vert(MeshData input)
             {
                 Interpolators o;
-                UNITY_SETUP_INSTANCE_ID(input);
+
 
                 o.positionCS = float4(input.positionHCS.xy, 0.0, 1.0);
                 o.uv = input.uv;
@@ -65,8 +64,8 @@ Shader "Unlit/PostProcessOutlines"
 
 
             sampler2D _CameraDepthTexture;
-            //sampler2D _CameraNormalsTexture;
-            sampler2D _GBuffer2;
+            sampler2D _CameraNormalsTexture;
+            //sampler2D _GBuffer2;
             sampler2D _CameraOpaqueTexture;
 
             float4 _CameraOpaqueTexture_TexelSize;
@@ -140,7 +139,7 @@ Shader "Unlit/PostProcessOutlines"
                     //use Linear01Depth on perspective camera
                     depthSamples[i] = (tex2D(_CameraDepthTexture, uvSamples[i]).r);///((1+input.uv.y));
 
-                    normalSamples[i] = tex2D(_GBuffer2, uvSamples[i]).rgb;
+                    normalSamples[i] = tex2D(_CameraNormalsTexture, uvSamples[i]).rgb;
                     normalSamples[i] = normalize(mul((float3x3)UNITY_MATRIX_MV, normalSamples[i]));
                 }
                 //return depthSamples[0];
@@ -159,8 +158,8 @@ Shader "Unlit/PostProcessOutlines"
                 //strength = depthStrength.y;
                 //float strength = depthStrength.x > 0 ?
                 //               (1 - 0.5 * depthStrength.x) : ( 1 + 0.5* normalStrength);
-
-                return color * strength ;
+                float4 finalColor = color * strength;
+                return float4(finalColor.rgb, 1) ;
 
 
             }

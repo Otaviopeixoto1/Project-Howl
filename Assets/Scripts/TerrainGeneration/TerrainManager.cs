@@ -56,13 +56,14 @@ public class TerrainChunk
         bounds = new Bounds(worldPosition, Vector2.one * chunkSize * scale);
 
         chunkObject = new GameObject("Terrain Chunk");
+        chunkObject.layer = 6;
         meshRenderer = chunkObject.AddComponent<MeshRenderer>();
         meshFilter = chunkObject.AddComponent<MeshFilter>();
         meshCollider = chunkObject.AddComponent<MeshCollider>();
         meshCollider.cookingOptions = MeshColliderCookingOptions.UseFastMidphase;
         meshRenderer.material = material; 
 
-        debugTexture = CreateDebugTexture(mapData.sampler);
+        //debugTexture = CreateDebugTexture(mapData.sampler);
 
         Vector3 worldPositionV3 = new Vector3(worldPosition.x, 0, worldPosition.y);
 
@@ -80,8 +81,8 @@ public class TerrainChunk
     private void OnMeshDataReceived(MeshData meshData, MeshData colliderData)  
     {                                           
         meshFilter.mesh = meshData.CreateMesh();
-        meshCollider.sharedMesh = colliderData.CreateMesh(true);
-        meshRenderer.material.SetTexture("_BaseMap", debugTexture);
+        meshCollider.sharedMesh = colliderData.CreateMesh(skipNormals:true);
+        //meshRenderer.material.SetTexture("_BaseMap", debugTexture);
     }
 
     public void Update(Vector2 viewerWorldPos, float maxViewDistance) 
@@ -90,8 +91,8 @@ public class TerrainChunk
         float viewerDistance = GetBoundsDistance(viewerWorldPos); 
         
         bool visible = viewerDistance <= maxViewDistance * scale;
-        SetVisible(visible); //Only destroy the chunks that are actualy very far
-                            // (probably wont be rendered)
+        SetVisible(visible); 
+        //Only destroy the chunks that are actualy very far (probably wont be rendered)
     }
 
     public float GetBoundsDistance(Vector2 viewerWorldPos)
@@ -137,7 +138,7 @@ public class TerrainChunk
 
 
 [RequireComponent(typeof(WorldSampler))]
-public class TerrainChunkManager : MonoBehaviour
+public class TerrainManager : MonoBehaviour
 {  
     private Dictionary<Vector2Int, TerrainChunk> terrainChunks = new Dictionary<Vector2Int, TerrainChunk>();
     private List<TerrainChunk> visibleChunks = new List<TerrainChunk>();
@@ -188,7 +189,8 @@ public class TerrainChunkManager : MonoBehaviour
 
     void Start()
     {   
-
+        //Assuming that biomeMapSize = chunkSize (= 240 currently) 
+        testMaterial.SetFloat("_atlasScale", 1/worldSampler.GetBiomeMapScale() - 1);
     }
 
     void OnValidate()
@@ -217,12 +219,12 @@ public class TerrainChunkManager : MonoBehaviour
 
     private void FirstChunkUpdate()
     {
+        //assign the world map atlas texture to the material
         viewerWorldPos = new Vector2(viewer.position.x, viewer.position.z);
 
-        int currentChunkX = Mathf.RoundToInt(viewerWorldPos.x/(chunkSize * chunkScale));
-        int currentChunkY = Mathf.RoundToInt(viewerWorldPos.y/(chunkSize * chunkScale));
+        Vector2Int chunkCoords = WorldToChunkCoords(viewerWorldPos);
         
-        UpdateVisibleChunks(currentChunkX, currentChunkY);
+        UpdateVisibleChunks(chunkCoords.x, chunkCoords.y);
         WorldManager.OnSuccessfulLoad -= FirstChunkUpdate;
     }
 
@@ -232,9 +234,8 @@ public class TerrainChunkManager : MonoBehaviour
     {
         viewerWorldPos = new Vector2(viewer.position.x, viewer.position.z);
 
-        int currentChunkX = Mathf.RoundToInt(viewerWorldPos.x/(chunkSize * chunkScale));
-        int currentChunkY = Mathf.RoundToInt(viewerWorldPos.y/(chunkSize * chunkScale));
 
+        Vector2Int chunkCoords = WorldToChunkCoords(viewerWorldPos);
 
         //for the current case, it doesnt make sense to update the chunks unless the chunk coordinate has changed
         // (the player moved from one chunk to another)
@@ -244,7 +245,7 @@ public class TerrainChunkManager : MonoBehaviour
         if (Vector3.Distance(viewerWorldPos, lastViewerPos) > thresholdForMeshUpdate * chunkSize * chunkScale)
         {
             lastViewerPos = viewerWorldPos;
-            UpdateVisibleChunks(currentChunkX, currentChunkY);
+            UpdateVisibleChunks(chunkCoords.x, chunkCoords.y);
         }
         
         
@@ -297,6 +298,74 @@ public class TerrainChunkManager : MonoBehaviour
         }
     }
 
+    //Currently NOT WORKING
+    public Vector3 GetNormal(Vector2 worldPos)
+    {
+        if (worldSampler == null)
+        {
+            return Vector3.up;
+        }
+        Vector2Int gridCoords = WorldToGridCoords(worldPos);
+        float u = worldSampler.SampleHeight(gridCoords.x,gridCoords.y + 1);
+        float d = worldSampler.SampleHeight(gridCoords.x,gridCoords.y - 1);
+        float l = worldSampler.SampleHeight(gridCoords.x - 1,gridCoords.y);
+        float r = worldSampler.SampleHeight(gridCoords.x + 1,gridCoords.y);
+
+        Vector3 t1 = new Vector3(0,u-d,1); 
+        Vector3 t2 = new Vector3(1,r-l,0); 
+        return (Vector3.Cross(t1,t2)).normalized;
+    }
+
+    //Currently NOT WORKING
+    public Vector3 GetNormal(Vector3 worldPos)
+    {
+        if (worldSampler == null)
+        {
+            return Vector3.up;
+        }
+        Vector2Int gridCoords = WorldToGridCoords(worldPos);
+        float u = worldSampler.SampleHeight(gridCoords.x,gridCoords.y + 1);
+        float d = worldSampler.SampleHeight(gridCoords.x,gridCoords.y - 1);
+        float l = worldSampler.SampleHeight(gridCoords.x - 1,gridCoords.y);
+        float r = worldSampler.SampleHeight(gridCoords.x + 1,gridCoords.y);
+
+        Vector3 t1 = new Vector3(0,u-d,1); 
+        Vector3 t2 = new Vector3(1,r-l,0); 
+        return (Vector3.Cross(t1,t2)).normalized;
+    }
+
+
+    public Vector2Int WorldToGridCoords(Vector2 worldPos)
+    {
+        int currentChunkX = Mathf.RoundToInt(worldPos.x/(chunkScale));
+        int currentChunkY = Mathf.RoundToInt(worldPos.y/(chunkScale));
+        return new Vector2Int(currentChunkX, currentChunkY);
+    }
+    public Vector2Int WorldToGridCoords(Vector3 worldPos)
+    {
+        int currentChunkX = Mathf.RoundToInt(worldPos.x/(chunkScale));
+        int currentChunkY = Mathf.RoundToInt(worldPos.z/(chunkScale));
+        return new Vector2Int(currentChunkX, currentChunkY);
+    }
+    public Vector2Int WorldToChunkCoords(Vector2 worldPos)
+    {
+        int currentChunkX = Mathf.RoundToInt(worldPos.x/(chunkSize * chunkScale));
+        int currentChunkY = Mathf.RoundToInt(worldPos.y/(chunkSize * chunkScale));
+        return new Vector2Int(currentChunkX, currentChunkY);
+    }
+    public Vector2Int WorldToChunkCoords(Vector3 worldPos)
+    {
+        int currentChunkX = Mathf.RoundToInt(worldPos.x/(chunkSize * chunkScale));
+        int currentChunkY = Mathf.RoundToInt(worldPos.z/(chunkSize * chunkScale));
+        return new Vector2Int(currentChunkX, currentChunkY);
+    }
+
+    //return unscaled chunk world coordinate
+    public Vector2 SnapToChunkCoordinates(Vector3 worldPos)
+    {
+        Vector2Int chunkCoords = WorldToChunkCoords(worldPos);
+        return chunkCoords * chunkSize;
+    }
 
 
 }

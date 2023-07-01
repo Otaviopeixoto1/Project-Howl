@@ -29,34 +29,60 @@ public class WorldSampler : MonoBehaviour
     [Range(0.01f,1)]
     private float biomeMapScale = 1f;
 
-
+    
     void OnEnable()
     {
-        WorldManager.OnSuccessfulLoad += SetManager;
+        WorldManager.OnSuccessfulLoad += LoadMaps;
+        WorldManager.OnBiomeAssignement += GenerateMaps;
     }
 
 
     void OnDisable()
     {
-        WorldManager.OnSuccessfulLoad -= SetManager;
+        WorldManager.OnSuccessfulLoad -= LoadMaps;
+        WorldManager.OnBiomeAssignement -= GenerateMaps;
     }
 
-
-    void Start()
+    void Awake()
     {
         worldManager = GetComponent<WorldManager>();
     }
 
-    void Update()
+
+    private void GenerateMaps()
     {
-        
+        //Generate the texture Map of the world
+        Texture2D worldtexture = new Texture2D(biomeMapSize + 1, biomeMapSize  + 1);
+        Color[] colormap = new Color[(biomeMapSize + 1) * (biomeMapSize + 1)];
+
+        for (int y = 0; y <= biomeMapSize; y++)
+        {
+            for (int x = 0; x <= biomeMapSize; x++)
+            {
+                colormap[x + (biomeMapSize + 1) * y] = SampleColor(x/biomeMapScale,y/biomeMapScale);
+            }
+        }
+        worldtexture.SetPixels(colormap);
+        worldtexture.Apply();
+
+        string atlasPath = "/Map/BiomeMaps/worldAtlas.png";
+        System.IO.File.WriteAllBytes(Application.dataPath + atlasPath, worldtexture.EncodeToPNG());
+
+        WorldManager.OnBiomeAssignement -= GenerateMaps;
+    }
+    private void SaveMaps()
+    {
+        //saves the texture map of the world
+    }
+    private void LoadMaps()
+    {
+        //Load the texture Map of the world
+        WorldManager.OnSuccessfulLoad -= LoadMaps;
     }
 
-    private void SetManager()
-    {
-        worldManager = GetComponent<WorldManager>();
-        WorldManager.OnSuccessfulLoad -= SetManager;
-    }
+
+
+
 
     public float SampleHeight(float _x, float _y) 
     {
@@ -132,5 +158,9 @@ public class WorldSampler : MonoBehaviour
 
         return finalColor;
     }
-
+    
+    public float GetBiomeMapScale()
+    {
+        return biomeMapScale;
+    }
 }

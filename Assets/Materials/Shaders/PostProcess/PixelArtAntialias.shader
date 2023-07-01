@@ -6,8 +6,7 @@ Shader "Hidden/PixelArtAntialias"
     }
     SubShader
     {
-        // No culling or depth
-        Cull Off ZWrite Off ZTest Always
+        
 
         Pass
         {
@@ -42,6 +41,7 @@ Shader "Hidden/PixelArtAntialias"
 
             fixed4 frag (Interpolators i) : SV_Target
             {
+                //return float4(1,1, 0, 1);
                 float2 boxSize = clamp(fwidth(i.uv) * _MainTex_TexelSize.zw, 1e-5, 1);
 
                 float2 tx = i.uv * _MainTex_TexelSize.zw - 0.5 * boxSize;
@@ -49,7 +49,7 @@ Shader "Hidden/PixelArtAntialias"
                 float2 txOffset = smoothstep(1-boxSize, 1, frac(tx));
 
                 float2 uv = (floor(tx) + 0.5 + txOffset) *  _MainTex_TexelSize.xy;
-
+                float4 color = tex2Dgrad(_MainTex, uv, ddx(i.uv),ddy(i.uv));
                 return tex2Dgrad(_MainTex, uv, ddx(i.uv),ddy(i.uv));
             }
             ENDCG

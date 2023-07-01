@@ -56,7 +56,7 @@ public class WorldManager : MonoBehaviour
 
                                                         //use the strech from WorldGenerationSettings
         biomeSamplers = BiomeMapBaker.BakeSingleBiomes(biomeMapGenerator, biomeIdSampler, 1.2f);
-        Debug.Log(biomeGridSize + " " + biomeSamplers.Count);
+        //Debug.Log(biomeGridSize + " " + biomeSamplers.Count);
 
     }
 
@@ -174,11 +174,11 @@ public class WorldManager : MonoBehaviour
         {
             //look for backups or:
             GenerateBiomeMap();
-            OnBiomeMapGeneration();
+            //OnBiomeMapGeneration();
             AssignBiomes();
             OnBiomeAssignement();
             Save();
-            OnSave();
+            //OnSave();
             Load(); // has to be loaded again due to bug
             OnSuccessfulLoad();
         }

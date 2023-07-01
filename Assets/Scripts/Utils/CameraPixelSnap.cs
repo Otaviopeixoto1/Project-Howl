@@ -18,14 +18,22 @@ public class CameraPixelSnap : MonoBehaviour
 
     //Get this from the camera component's render texture
     [SerializeField]
-    private Vector2Int renderResolution = new Vector2Int(642,362);
+    private Vector2Int renderResolution = new Vector2Int(640,360);
     private Vector3 targetLastPosition;
 
+
+    private Vector3 origin = Vector3.zero;
+    private float zdist =0f;
+
+    Vector3 coord;
     void Start()
     {
         if (target != null)
         {
             targetLastPosition = target.transform.position;
+            origin = transform.position;
+            zdist = Vector3.Distance(target.transform.position, origin);
+            coord = targetLastPosition;
         }
         mainCamera = GetComponent<Camera>();
         cameraHeight = mainCamera.orthographicSize * 2f;
@@ -44,40 +52,30 @@ public class CameraPixelSnap : MonoBehaviour
         float xPixelsPerUnit = (renderResolution.x/cameraWidth); 
         float yPixelsPerUnit = renderResolution.y/cameraHeight;
         
+        //Debug.Log(xPixelsPerUnit +", " +  yPixelsPerUnit);
+        Vector3 targetCoord = target.transform.position - origin;
 
-        Vector3 displacement = target.transform.position - targetLastPosition;
+        float xc =  Vector3.Dot(targetCoord, transform.right) * xPixelsPerUnit;
+        float yc =  Vector3.Dot(targetCoord, transform.up) * yPixelsPerUnit;
+        float z =  Vector3.Dot(targetCoord, transform.forward);
 
-        float dist = displacement.magnitude;
-        //if (dist > 0.1f)
-        {
-            //displacement amount in pixels:
-            float x =  Vector3.Dot(displacement, transform.right) * xPixelsPerUnit;
-            float y =  Vector3.Dot(displacement, transform.up) * xPixelsPerUnit;
+        int _xc = Mathf.RoundToInt(xc);
+        int _yc = Mathf.RoundToInt(yc);
+
+        Vector3 correctedPos = (_xc/xPixelsPerUnit) * transform.right  
+                                        + (_yc/yPixelsPerUnit) * transform.up
+                                        + (z - zdist) * transform.forward ;
+
+
+        Vector2 pixelOffset = new Vector2(_xc - xc,  _yc - yc);
         
-            //floor
-            int _x = Mathf.RoundToInt( Vector3.Dot(displacement, transform.right) * xPixelsPerUnit);
-            int _y = Mathf.RoundToInt( Vector3.Dot(displacement, transform.up) * yPixelsPerUnit);
+        transform.position = correctedPos + origin;
+        
+        //Debug.Log(xc + ", " + yc + "  " + _xc + ", " + _yc + " " + pixelOffset);
+        pixelSmoother.SetPixelOffset(pixelOffset); //this is incorrect !!!!!
+        //targetLastPosition = correctedDisplacement + targetLastPosition; 
 
-
-            float _z = Vector3.Dot(displacement, transform.forward);
-            //Debug.Log(displacement);
-            Vector3 correctedDisplacement = (_x/xPixelsPerUnit) * transform.right  
-                                            + (_y/yPixelsPerUnit) * transform.up
-                                            + (_z) * transform.forward;
-
-            //Vector3 pixelDisplacement = transform.InverseTransformDirection(displacement);
-            //pixelDisplacement.x *= xPixelsPerUnit; //displacement amount in screen pixels
-            //pixelDisplacement.y *= yPixelsPerUnit;
-
-            //pixelSmoother
-
-            transform.Translate(correctedDisplacement, Space.World);
-            Vector2 pixelOffset = new Vector2(_x - x, _y - y);
-            //Debug.Log(x + ", " + y + "  " + _x + ", " + _y);
-            pixelSmoother.SetPixelOffset(pixelOffset);
-
-            //corretct this. the target last position changes when snapping and so it changes the displacement
-            targetLastPosition = correctedDisplacement + targetLastPosition; 
-        }
+        origin = transform.position;
+        
     }
 }
