@@ -12,9 +12,10 @@ Shader "Unlit/PostProcessOutlines"
     {
         Tags
         {
-            "RenderType"="Opaque" "RenderingPipeline"="UniversalPipeline"
+            "RenderType" = "Opaque" 
+            "RenderingPipeline" = "UniversalPipeline"
         }
-        ZWrite Off Cull Off
+        ZWrite Off Cull Off ZTest Always
         
         
 
@@ -24,15 +25,18 @@ Shader "Unlit/PostProcessOutlines"
 
             HLSLPROGRAM
 
-            #pragma vertex vert
+            #pragma vertex Vert
             #pragma fragment frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             
-            float _DLower;
-            float _DUpper;
-            float _NLower;
-            float _NUpper;
+            
+            // The Blit.hlsl file provides the vertex shader (Vert),
+            // input structure (Attributes) and output strucutre (Varyings)
+            #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
 
+
+
+            /*
             struct MeshData
             {
                 float4 positionHCS : POSITION;
@@ -49,10 +53,14 @@ Shader "Unlit/PostProcessOutlines"
             {
                 Interpolators o;
 
+                //VertexPositionInputs positionInputs = GetVertexPositionInputs(input.positionHCS.xyz);
+
+                //o.positionCS = positionInputs.positionCS;
 
                 o.positionCS = float4(input.positionHCS.xy, 0.0, 1.0);
                 o.uv = input.uv;
 
+                
                 // If we're on a Direct3D like platform
                 #if UNITY_UV_STARTS_AT_TOP
                     // Flip UVs
@@ -60,7 +68,15 @@ Shader "Unlit/PostProcessOutlines"
                 #endif
                 
                 return o;
-            }
+            }*/
+
+
+
+            float _DLower;
+            float _DUpper;
+            float _NLower;
+            float _NUpper;
+
 
 
             sampler2D _CameraDepthTexture;
@@ -116,22 +132,27 @@ Shader "Unlit/PostProcessOutlines"
             }
 
 
-            float4 frag(Interpolators input) : SV_Target
+
+
+
+            float4 frag(Varyings input) : SV_Target
             {
+                //return 1;
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
                 float2 texelSize = float2(_CameraOpaqueTexture_TexelSize.x, _CameraOpaqueTexture_TexelSize.y);
 
                 float2 uvSamples[5];
                 float depthSamples[5];
                 float3 normalSamples[5];
 
-                float4 color = tex2D(_CameraOpaqueTexture, input.uv).rgba;
+                float4 color = tex2D(_CameraOpaqueTexture, input.texcoord).rgba;
                 //return color;
 
-                uvSamples[0] = input.uv;
-                uvSamples[1] = input.uv - float2(texelSize.x, 0);
-                uvSamples[2] = input.uv + float2(texelSize.x, 0);
-                uvSamples[3] = (input.uv + float2(0, texelSize.y));
-                uvSamples[4] = (input.uv - float2(0, texelSize.y));
+                uvSamples[0] = input.texcoord;
+                uvSamples[1] = input.texcoord - float2(texelSize.x, 0);
+                uvSamples[2] = input.texcoord + float2(texelSize.x, 0);
+                uvSamples[3] = (input.texcoord + float2(0, texelSize.y));
+                uvSamples[4] = (input.texcoord - float2(0, texelSize.y));
 
 
                 for(int i = 0; i < 5 ; i++)
@@ -145,7 +166,7 @@ Shader "Unlit/PostProcessOutlines"
                 //return depthSamples[0];
                 //return float4(normalSamples[0],1);
 
-                float2 depthStrength = GetDepthStrength(depthSamples,input.uv.y);
+                float2 depthStrength = GetDepthStrength(depthSamples,input.texcoord.y);
                 //return depthStrength.y; //depthStrength.y is also a good outline (maybe even better)
                 //depthStrength.x = 0;
 

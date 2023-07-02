@@ -9,7 +9,7 @@ using UnityEngine.Rendering.Universal;
 public class OutlineSettings
 {
     public Shader OutlineShader;
-    //public Color OutlineColor;
+
 
     [Range(0f, 0.1f)]
     public float DepthLowerThreshold = 0.04f;
@@ -33,16 +33,17 @@ public class OutlineSettings
 public class OutlineRendererFeature : ScriptableRendererFeature
 {
     public OutlineSettings Settings;
-    Material m_Material; // temporary material used to blit to the screen
+    private Material m_Material; // temporary material used to blit to the screen
 
 
-    OutlinePass m_OutlinePass; //custom render pass
+    private OutlinePass m_OutlinePass; //custom render pass
 
     public override void Create()
     {
         if (Settings.OutlineShader != null)
         {
             m_Material = new Material(Settings.OutlineShader);
+            //m_Material = new Material(Shader.Find("Unlit/Texture"));
         }
 
         m_OutlinePass = new OutlinePass(m_Material, Settings);
@@ -50,16 +51,17 @@ public class OutlineRendererFeature : ScriptableRendererFeature
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-        if (renderingData.cameraData.cameraType != CameraType.Game) return;
+        CameraData cameraData = renderingData.cameraData;
+        if (cameraData.cameraType != CameraType.Game) return;
 
-        //generates the opaque texture used by the shader
-        m_OutlinePass.ConfigureInput(ScriptableRenderPassInput.Normal | ScriptableRenderPassInput.Color); //Remove
-        //m_OutlinePass.SetTarget(renderer.cameraColorTarget);
+        //generates the opaque and normal textures used by the shader
+        m_OutlinePass.ConfigureInput(ScriptableRenderPassInput.Normal | ScriptableRenderPassInput.Color); 
         renderer.EnqueuePass(m_OutlinePass);
     }
     
     protected override void Dispose(bool disposing)
     {
         CoreUtils.Destroy(m_Material);
+        m_OutlinePass.ReleaseTargets();
     }
 }
