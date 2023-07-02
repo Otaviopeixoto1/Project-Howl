@@ -113,4 +113,4 @@ MonoBehaviour:
     DepthLowerThreshold: 0.0043
     DepthUpperThreshold: 0.0086
     NormalLowerThreshold: 0.0068
-    NormalUpperThreshold: 0.0303
+    NormalUpperThreshold: 0.1

@@ -36,42 +36,6 @@ Shader "Unlit/PostProcessOutlines"
 
 
 
-            /*
-            struct MeshData
-            {
-                float4 positionHCS : POSITION;
-                float2 uv : TEXCOORD0;
-            };
-
-            struct Interpolators
-            {
-                float4 positionCS : SV_POSITION;
-                float2 uv : TEXCOORD0;
-            };
-
-            Interpolators vert(MeshData input)
-            {
-                Interpolators o;
-
-                //VertexPositionInputs positionInputs = GetVertexPositionInputs(input.positionHCS.xyz);
-
-                //o.positionCS = positionInputs.positionCS;
-
-                o.positionCS = float4(input.positionHCS.xy, 0.0, 1.0);
-                o.uv = input.uv;
-
-                
-                // If we're on a Direct3D like platform
-                #if UNITY_UV_STARTS_AT_TOP
-                    // Flip UVs
-                    o.uv = o.uv * float2(1.0, -1.0) + float2(0.0, 1.0);
-                #endif
-                
-                return o;
-            }*/
-
-
-
             float _DLower;
             float _DUpper;
             float _NLower;
@@ -138,7 +102,7 @@ Shader "Unlit/PostProcessOutlines"
             float4 frag(Varyings input) : SV_Target
             {
                 //return 1;
-                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+                
                 float2 texelSize = float2(_CameraOpaqueTexture_TexelSize.x, _CameraOpaqueTexture_TexelSize.y);
 
                 float2 uvSamples[5];

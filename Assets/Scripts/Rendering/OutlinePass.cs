@@ -13,7 +13,7 @@ public class OutlinePass : ScriptableRenderPass
     readonly float m_NormalLowerThreshold;
     readonly float m_NormalUpperThreshold;
 
-    RTHandle m_CameraColorTarget; //(color buffer) output target
+    //RTHandle m_CameraColorTarget; //(color buffer) output target
     static int dLowerID = Shader.PropertyToID("_DLower");
     static int dUpperID = Shader.PropertyToID("_DUpper");
     static int nLowerID = Shader.PropertyToID("_NLower");
@@ -50,12 +50,13 @@ public class OutlinePass : ScriptableRenderPass
         //ConfigureTarget(new RenderTargetIdentifier(m_CameraColorTarget, 0, CubemapFace.Unknown, -1));
     }
 
+
+
     //clean-up allocated RTHandle
     public void ReleaseTargets() {
+        //Debug.Log("releasing");
         rtTemp?.Release();
     }
-
-
 
 
     public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
@@ -90,7 +91,7 @@ public class OutlinePass : ScriptableRenderPass
             
             RTHandle rtCamera = renderingData.cameraData.renderer.cameraColorTargetHandle;
             //
-            Blitter.BlitCameraTexture(cb, rtCamera, rtTemp, m_Material, 0); //something wront with the material
+            Blitter.BlitCameraTexture(cb, rtCamera, rtTemp, m_Material, 0); 
             Blitter.BlitCameraTexture(cb, rtTemp, rtCamera, Vector2.one);
         }
 

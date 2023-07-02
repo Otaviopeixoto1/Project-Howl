@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: TerrainMaterial
-  m_Shader: {fileID: 4800000, guid: 679e2c2086e74967d802156467f0b78f, type: 3}
+  m_Name: CloudShadowMaterial
+  m_Shader: {fileID: 4800000, guid: 766f1adbf206c4142bac0ee0f6970310, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -23,19 +23,12 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 29a1e216fda897e15b13ade00f5dcc59, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _colorRamp:
-        m_Texture: {fileID: 2800000, guid: 5c4d954e02e49d08c8c0cbdd1dc44cc0, type: 3}
+    - _Tex:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
-    m_Floats:
-    - _ambientLightBias: 0.1
-    - _atlasScale: 19
-    - _lightIntensityBias: 0.1
-    - atlasScale: 1
-    m_Colors: []
+    m_Floats: []
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
