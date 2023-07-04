@@ -3,6 +3,8 @@ Shader "Unlit/PostProcessOutlines"
     
     Properties
     {
+        _SourceTex ("Texture", 2D) = "white"
+
         _DLower("DepthLowerThreshold", float) = 0.04
         _DUpper("DepthUpperThreshold",  float) = 0.05
         _NLower("NormalLowerThreshold", float) = 0.05
@@ -47,7 +49,9 @@ Shader "Unlit/PostProcessOutlines"
             sampler2D _CameraNormalsTexture;
             //sampler2D _GBuffer2;
             sampler2D _CameraOpaqueTexture;
-
+            sampler2D _SourceTex;
+            
+            float4 _SourceTex_TexelSize;
             float4 _CameraOpaqueTexture_TexelSize;
 
 
@@ -139,7 +143,7 @@ Shader "Unlit/PostProcessOutlines"
 
                 float strength = depthStrength.x * (1 - 0.5 * depthStrength.x) 
                                 +(1-depthStrength.x) * (1 + 0.5 * normalStrength);
-
+                //return strength;
                 //strength = depthStrength.y;
                 //float strength = depthStrength.x > 0 ?
                 //               (1 - 0.5 * depthStrength.x) : ( 1 + 0.5* normalStrength);
