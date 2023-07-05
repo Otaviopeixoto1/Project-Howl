@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: PlainsSettings
   m_EditorClassIdentifier: 
   biome: 3
+  baseTexture: {fileID: 2800000, guid: 8cc9ff06d2785ab85902cbca13613828, type: 3}
+  baseTextureScale: 1
   heightMapScale: 2.47
   baseMaxHeight: 2.5
   noiseOctaves: 4

@@ -124,8 +124,8 @@ public static class MeshGenerator
         
     }
 
-    
-    //using BiomeManager as sampler:
+
+
 
     public static MeshData GenerateTerrainFromSampler(WorldSampler sampler, int meshWidth, int meshHeight, float meshScale, Vector2 sampleOffset, int lodBias = 0, bool isThread = false)
     {
@@ -148,7 +148,7 @@ public static class MeshGenerator
                 meshData.vertices[vertexIndex] = (new Vector3(x, sampler.SampleHeight(x + sampleOffset.x, y + sampleOffset.y), y) 
                                                 + centerOffset) * meshScale;
                 meshData.uvs[vertexIndex] = new Vector2(x/(float)meshWidth, y/(float)meshHeight);
-                meshData.atlasUvs[vertexIndex] = (new Vector2(((x/(float)meshWidth) + sampleOffset.x)/(float)meshWidth, (y/(float)meshHeight) + sampleOffset.y)/(float)meshHeight);
+                meshData.atlasUvs[vertexIndex] = new Vector2(((x/(float)meshWidth) + sampleOffset.x)/(float)meshWidth, ((y/(float)meshHeight) + sampleOffset.y)/(float)meshHeight);
 
                 if (x < (meshWidth - 1) && y < (meshHeight - 1))
                 {
@@ -168,7 +168,6 @@ public static class MeshGenerator
 
 
     // A quicker way to just update the heightmap of the mesh:
-
     public static Vector3[] CalculateMeshVertices(MapGenerator sampler, int meshWidth, int meshHeight, float meshScale, int lodBias)
     {
         int widthIncrement = CalculateLodIncrement(meshWidth,lodBias);

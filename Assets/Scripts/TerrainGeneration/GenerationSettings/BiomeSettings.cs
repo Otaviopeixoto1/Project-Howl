@@ -33,12 +33,34 @@ public struct TopographySettings
     }
 }
 
+
+
+
+public struct GenerationSettings
+{
+    public readonly Texture2D baseTexture; 
+    public readonly float baseTextureScale; 
+
+    public GenerationSettings(Texture2D baseTexture, float baseTextureScale)
+    {
+        this.baseTexture = baseTexture;
+        this.baseTextureScale = baseTextureScale;
+    }
+}
+
+
+
 //store the height map generation parameters and the biome detains and objects
 
 [CreateAssetMenu(fileName = "BiomeSettings", menuName = "ScriptableObjects/WorldGeneration/BiomeSettings", order = 1)] 
 public class BiomeSettings : ScriptableObject
 {
+    [Header("Generation Settings")]
     public Biomes biome = Biomes.Forest;
+    public Texture2D baseTexture;
+    public float baseTextureScale = 1f;
+    // add the terrain details here
+
 
     [Header("Topography Settings")]
 
@@ -79,8 +101,12 @@ public class BiomeSettings : ScriptableObject
     }
 
 
+    public GenerationSettings GetGenerationSettings()
+    {
+        return new GenerationSettings(baseTexture, baseTextureScale);
+    }
 
-    public TopographySettings GenerateTopographySettings()
+    public TopographySettings GetTopographySettings()
     {
         return new TopographySettings(
             biome,

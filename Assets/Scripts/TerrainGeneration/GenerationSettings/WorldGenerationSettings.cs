@@ -18,8 +18,10 @@ public enum WorldMapType
 public class WorldGenerationSettings : ScriptableObject
 {
     public static int worldSeed = 340;
-    public WorldMapType worldMapType = WorldMapType.Default;
     
+    public WorldMapType worldMapType = WorldMapType.Default;
+
+    public int biomeMapSize = 240;
     public int biomeGridSize = 4; // only makes sense if its a grid world type (WorldMapType.Default)
     //Displayed List for available biomes
     public List<BiomeSettings> biomeGenerationSettings = new List<BiomeSettings>();
@@ -154,8 +156,16 @@ public class WorldGenerationSettings : ScriptableObject
     {
         //return the topography settings. we need to apply the settings to generate the link between
         //the cell index and the biome settings
-        return worldSettings[index].GenerateTopographySettings();
+        return worldSettings[index].GetTopographySettings();
     }
+
+
+
+    public GenerationSettings GetGenerationSettings(int index)
+    {
+        return  worldSettings[index].GetGenerationSettings();
+    }
+
 
     private bool IsOnEdge(int index)
     {

@@ -79,9 +79,9 @@ public class BiomeMapGenerator : MapGenerator
     /// <summary>
     /// Decodes the value obtained from sampling the map containing the cell indexes
     /// </summary>
-    public static float DecodeCellIndex(float indexSample, int gridSize) 
+    public static int DecodeCellIndex(float indexSample, int gridSize) 
     {
-        return indexSample * gridSize *(gridSize + 2);
+        return Mathf.RoundToInt(indexSample * gridSize *(gridSize + 2));
     }
 
     /// <summary>
@@ -218,7 +218,7 @@ public class BiomeMapGenerator : MapGenerator
             for (int x = -newSize/2; x <= newSize/2; x++)
             {
                 float cellIdEnc = cellIndexSampler.SampleBiomeNearest((x + newSize/2) * scaleDif , (y + newSize/2) * scaleDif).r;
-                if (Mathf.RoundToInt(DecodeCellIndex(cellIdEnc,gridSize)) == index)
+                if (DecodeCellIndex(cellIdEnc,gridSize) == index)
                 {
                     int finalX = x + mSize/2 - pixelXOffset;
                     int finalY = y + mSize/2 - pixelYOffset;

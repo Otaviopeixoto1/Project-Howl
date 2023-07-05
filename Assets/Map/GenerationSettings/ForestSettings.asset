@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: ForestSettings
   m_EditorClassIdentifier: 
   biome: 0
+  baseTexture: {fileID: 2800000, guid: 6a3eb310dc4a3367fa4590a9efabae65, type: 3}
+  baseTextureScale: 19
   heightMapScale: 3.87
   baseMaxHeight: 1.7
   noiseOctaves: 4

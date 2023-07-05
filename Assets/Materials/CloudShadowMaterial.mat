@@ -29,13 +29,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Amplitude: 0.5
-    - _Density: 0.9
-    - _DispersionSpeed: 1
+    - _Amplitude: 1.62
+    - _Density: 1
+    - _DispersionSpeed: 0.74
     - _Frequency: 1
-    - _Lacunarity: 0.6
-    - _Octaves: 1
+    - _Lacunarity: 0.5
+    - _Octaves: 2
     - _Persistence: 2
+    - _windSpeed: 0.25
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _WindDirection: {r: 1, g: 1, b: 0.5, a: 1}

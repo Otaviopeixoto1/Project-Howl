@@ -5,6 +5,7 @@ Shader "CustomRenderTexture/Simple"
         _Color("Color", Color) = (1,1,1,1)
         _Tex("InputTex", 2D) = "white" {}
         _WindDirection("Wind Direction", Vector) = (1,1,1,1)
+        _windSpeed("Wind Speed", Range(0.01,1)) = 1
         _Amplitude("Amplitude", Range(0,2)) = 0.5
         [IntRange] _Octaves("Octaves", Range(1,8)) = 1
         _Frequency("Frequency", Range(1,100)) = 1.0
@@ -14,7 +15,7 @@ Shader "CustomRenderTexture/Simple"
         _DispersionSpeed ("Dispersion Speed", Range(0,1)) = 0.5 
     }
  
-        SubShader
+    SubShader
     {
        Lighting Off
        Blend One Zero
@@ -38,6 +39,7 @@ Shader "CustomRenderTexture/Simple"
            float _Lacunarity;
            float _Persistence;
            float4 _WindDirection;
+           float _windSpeed;
            float _Density;
            float _DispersionSpeed;
  
@@ -54,20 +56,26 @@ Shader "CustomRenderTexture/Simple"
                 float lacunarity = _Lacunarity;
                 float persistence = _Persistence;
 
-                float2 coords = IN.localTexcoord.xy - float2(1,1)*0.2 * time;
+                float2 coords = IN.localTexcoord.xy - float2(1,1) * 0.2 * _windSpeed * time;
 
                 float maxValue = 0;
                 
+                //remove amplitude from parameters and fix it to one.
+
                 for (int i = 0; i < octaves; i++) 
                 {
                     maxValue += amplitude;
-                    noiseValue += amplitude * snoise(float3(coords * frequency * 36, time * _DispersionSpeed),1);
+                    noiseValue += amplitude * snoise(float3(coords * frequency * 36 , time * _DispersionSpeed),1);
                     frequency *= lacunarity;
                     amplitude *= persistence;
                 }
                 noiseValue /= maxValue;
-
-                return (1-step((1 - _Density),noiseValue)) * (1- noiseValue);
+                
+                float cloudNoise = (step((1 - _Density), noiseValue));
+                //the step function causes the cloud movement to look weird. Adjust it to make the clouds smoother
+                //add some smooth edges to the clouds defined by cloudNoise
+                //make a color ramp for the clouds !
+                return (cloudNoise);
            }
            ENDCG
         }

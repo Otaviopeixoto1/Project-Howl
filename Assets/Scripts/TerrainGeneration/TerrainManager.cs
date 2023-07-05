@@ -190,7 +190,7 @@ public class TerrainManager : MonoBehaviour
     void Start()
     {   
         //Assuming that biomeMapSize = chunkSize (= 240 currently) 
-        testMaterial.SetFloat("_atlasScale", 1/worldSampler.GetBiomeMapScale() - 1);
+        testMaterial.SetFloat("_atlasScale", 1/worldSampler.GetBiomeMapScale());
     }
 
     void OnValidate()
@@ -297,6 +297,18 @@ public class TerrainManager : MonoBehaviour
             }
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
     //Currently NOT WORKING
     public Vector3 GetNormal(Vector2 worldPos)

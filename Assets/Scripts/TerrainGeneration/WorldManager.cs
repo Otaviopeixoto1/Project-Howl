@@ -84,8 +84,37 @@ public class WorldManager : MonoBehaviour
             Debug.Log("biomeGridSize is incompatible with the number of biome samplers");
         }
 
+        GenerateWorldAtlas();
+
         biomeLinks = new BiomeLinks(biomeGridSize);
         biomeLinks.GenerateLinksFromGrid(); 
+    }
+
+    private void GenerateWorldAtlas()
+    {
+        int size = worldGenerationSettings.biomeMapSize;
+        //Generate the texture Map of the world
+        Texture2D worldtexture = new Texture2D(size + 1, size  + 1);
+        Color[] colormap = new Color[(size + 1) * (size + 1)];
+
+        for (int y = 0; y <= size; y++)
+        {
+            for (int x = 0; x <= size; x++)
+            {
+                int cellId = BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, biomeGridSize);
+                GenerationSettings genSettings = worldGenerationSettings.GetGenerationSettings(cellId);
+                Texture2D baseTexture = genSettings.baseTexture;
+                float scale = genSettings.baseTextureScale;
+
+
+                colormap[x + (size + 1) * y] = baseTexture.GetPixelBilinear(x/scale, y/scale);
+            }
+        }
+        worldtexture.SetPixels(colormap);
+        worldtexture.Apply();
+
+        string atlasPath = "/Map/BiomeMaps/worldAtlas.png";
+        System.IO.File.WriteAllBytes(Application.dataPath + atlasPath, worldtexture.EncodeToPNG());
     }
 
 
@@ -176,7 +205,7 @@ public class WorldManager : MonoBehaviour
             GenerateBiomeMap();
             //OnBiomeMapGeneration();
             AssignBiomes();
-            OnBiomeAssignement();
+            //OnBiomeAssignement();
             Save();
             //OnSave();
             Load(); // has to be loaded again due to bug
