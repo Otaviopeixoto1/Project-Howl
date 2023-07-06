@@ -1,6 +1,6 @@
 {
     "mapScale": 2.4700000286102297,
-    "amplitude": 2.5,
+    "amplitude": 50.0,
     "samplingCurve": {
         "serializedVersion": "2",
         "m_Curve": [],

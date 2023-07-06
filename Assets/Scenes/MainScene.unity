@@ -216,7 +216,6 @@ GameObject:
   m_Component:
   - component: {fileID: 324677539}
   - component: {fileID: 324677536}
-  - component: {fileID: 324677537}
   - component: {fileID: 324677538}
   m_Layer: 6
   m_Name: Terrain
@@ -241,23 +240,6 @@ MonoBehaviour:
     type: 2}
   worldTopographyGenerator: {fileID: 11400000, guid: 6d72d87fffbe59c769798884ce67e003,
     type: 2}
-  biomeSamplers: []
---- !u!114 &324677537
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 324677535}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 49b6c7fe36b99ec2e85b3e0223709424, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  worldManager: {fileID: 324677536}
-  heightMultiplier: 20
-  biomeMapSize: 240
-  biomeMapScale: 0.05
 --- !u!114 &324677538
 MonoBehaviour:
   m_ObjectHideFlags: 0

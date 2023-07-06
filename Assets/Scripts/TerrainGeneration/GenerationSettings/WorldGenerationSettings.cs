@@ -21,8 +21,15 @@ public class WorldGenerationSettings : ScriptableObject
     
     public WorldMapType worldMapType = WorldMapType.Default;
 
-    public int biomeMapSize = 240;
+    
     public int biomeGridSize = 4; // only makes sense if its a grid world type (WorldMapType.Default)
+
+    public int biomeMapSize = 240;
+
+    [Range(0.01f,1)]
+    public float biomeMapScale = 0.05f;
+
+
     //Displayed List for available biomes
     public List<BiomeSettings> biomeGenerationSettings = new List<BiomeSettings>();
     private BiomeSettings[] worldSettings;

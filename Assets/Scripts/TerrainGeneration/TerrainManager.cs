@@ -137,7 +137,7 @@ public class TerrainChunk
 
 
 
-[RequireComponent(typeof(WorldSampler))]
+[RequireComponent(typeof(WorldManager))]
 public class TerrainManager : MonoBehaviour
 {  
     private Dictionary<Vector2Int, TerrainChunk> terrainChunks = new Dictionary<Vector2Int, TerrainChunk>();
@@ -183,14 +183,12 @@ public class TerrainManager : MonoBehaviour
     void Awake()
     {
         chunkThreadManager = new ChunkThreadManager();
-        worldSampler = GetComponent<WorldSampler>();
         worldManager = GetComponent<WorldManager>();
     }
 
     void Start()
     {   
-        //Assuming that biomeMapSize = chunkSize (= 240 currently) 
-        testMaterial.SetFloat("_atlasScale", 1/worldSampler.GetBiomeMapScale());
+        
     }
 
     void OnValidate()
@@ -219,7 +217,10 @@ public class TerrainManager : MonoBehaviour
 
     private void FirstChunkUpdate()
     {
-        //assign the world map atlas texture to the material
+        worldSampler = worldManager.GetWorldSampler();
+        testMaterial.SetFloat("_atlasScale", 1/worldSampler.GetBiomeMapScale());
+
+
         viewerWorldPos = new Vector2(viewer.position.x, viewer.position.z);
 
         Vector2Int chunkCoords = WorldToChunkCoords(viewerWorldPos);

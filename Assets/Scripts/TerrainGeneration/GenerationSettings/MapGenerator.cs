@@ -15,7 +15,7 @@ public class MapGenerator : ScriptableObject
     [Range(0.01f,0.1f)]
     public float mapScale = 0.1f;
 
-    [Range(0, 20)]
+    [Range(1, 500)]
     public float amplitude = 20f;
 
     public AnimationCurve samplingCurve;

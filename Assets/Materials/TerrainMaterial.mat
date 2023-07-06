@@ -34,7 +34,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _ambientLightBias: 0.54
-    - _atlasScale: 19
+    - _atlasScale: 20
     - _lightIntensityBias: 0.1
     - atlasScale: 1
     m_Colors: []

@@ -8,7 +8,8 @@ public class DefaultWorldTopographyGenerator : WorldTopographyGenerator
 {
 
     //add custom functions for changing the heightmaps
-
+    [Range(1f,50f)]
+    public float heightMultiplier = 20f;
 
     public override HeightMapGenerator GetHeightMapGenerator(TopographySettings topographySettings)
     {
@@ -27,7 +28,7 @@ public class DefaultWorldTopographyGenerator : WorldTopographyGenerator
         
         heightMapGenerator.noiseType = FastNoiseLite.NoiseType.OpenSimplex2;
         heightMapGenerator.fractalType = FastNoiseLite.FractalType.FBm;
-        heightMapGenerator.amplitude = topographySettings.baseMaxHeight;
+        heightMapGenerator.amplitude = topographySettings.baseMaxHeight * heightMultiplier;
         heightMapGenerator.octaves = topographySettings.noiseOctaves;
         heightMapGenerator.mapScale = topographySettings.heightMapScale;
         heightMapGenerator.ApplySettings();

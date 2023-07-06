@@ -77,6 +77,7 @@ Shader "TerrainShader"
                 float3 normal : TEXCOORD1;
                 float3 positionWS : TEXCOORD2; //position in World Space
                 float2 atlasUV : TEXCOORD3;
+                float lightIntensity : TEXCOORD4;
                 
             };
 
@@ -97,13 +98,22 @@ Shader "TerrainShader"
 
                 o.atlasUV = v.atlasUV/_atlasScale;
                 o.normal = TransformObjectToWorldNormal(v.normal);
-                
+
+
+                float3 N = o.normal;    
+                Light mainLight = GetMainLight();
+                float3 L = mainLight.direction;
+
+                o.lightIntensity =  saturate(0.5*(dot(N ,L) + 1) + _lightIntensityBias);
                 return o;
             }
 
             half4 frag (Interpolators i) : SV_Target
             {
                 //return 1;
+
+                //return half4(i.normal,1);
+
                 float4 shadowCoord = TransformWorldToShadowCoord(i.positionWS);
                 Light mainLight = GetMainLight(shadowCoord); //light data with shadows  
 
@@ -118,12 +128,9 @@ Shader "TerrainShader"
                 
 
 
-                float3 N = i.normal;    
-                float3 L = mainLight.direction;
+      
 
-                float lightIntensity = saturate(0.5*(dot(N,L) + 1) + _lightIntensityBias);
-
-                float toonLighting = tex2D(_colorRamp, float2(lightIntensity,0));
+                float toonLighting =  tex2D(_colorRamp, float2(i.lightIntensity,0));
 
                 half4 col = tex2D(_MainTex, i.atlasUV);
                 //return half4(i.atlasUV,0,1);

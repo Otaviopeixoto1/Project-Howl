@@ -10,14 +10,16 @@ public class WorldManagerEditor : Editor
 
         DrawDefaultInspector();
 
+        if (GUILayout.Button("Generate"))
+        {
+            biomeManager.GenerateBiomeMap();
+        }
+         
         if (GUILayout.Button("Load"))
         {
             biomeManager.Load();
         }
-        if (GUILayout.Button("Assign"))
-        {
-            biomeManager.AssignBiomes();
-        }
+        
         if (GUILayout.Button("Save"))
         {
             biomeManager.Save();

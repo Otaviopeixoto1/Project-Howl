@@ -12,6 +12,8 @@ public class WorldSamplerDisplay : MonoBehaviour
     [SerializeField]
     private Material displayMaterial;
 
+    private WorldManager worldManager;
+
     void Awake()
     {
         gameObject.SetActive(false);
@@ -27,13 +29,13 @@ public class WorldSamplerDisplay : MonoBehaviour
     }
     public void LoadSamplers()
     {
-        WorldManager biomeManager = GetComponent<WorldManager>();
-        biomeManager.Load();
+        worldManager = GetComponent<WorldManager>();
+        worldManager.Load();
     }
 
     public void DisplayTerrainMesh()// get world coordinates as input !
     {
-        WorldSampler worldSampler = GetComponent<WorldSampler>();
+        WorldSampler worldSampler = worldManager.GetWorldSampler();
         MeshData meshData = MeshGenerator.GenerateTerrainFromSampler(
             worldSampler,
             241,

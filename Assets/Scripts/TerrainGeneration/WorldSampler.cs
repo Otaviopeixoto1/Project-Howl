@@ -10,30 +10,119 @@ using UnityEngine;
 /// <summary>
 /// Class used to sample the entire map and handle the blending between different (neighbouring) biome cells
 /// </summary>
-
-[RequireComponent(typeof(WorldManager))]
-public class WorldSampler : MonoBehaviour
+public class WorldSampler
 {
-    [SerializeField]
-    private WorldManager worldManager;
-     
-    [SerializeField]
-    [Range(1,20)]
-    private float heightMultiplier = 1f;
-
-    [SerializeField]
     [Range(1,240)]
-    private int biomeMapSize = 240;
+    public int biomeMapSize;
 
-    [SerializeField]
     [Range(0.01f,1)]
-    private float biomeMapScale = 1f;
+    public float biomeMapScale = 1f;
+
+    public int biomeGridSize;
 
 
-    void Awake()
+    public BiomeSampler biomeIdSampler;
+    public List<BiomeSampler> biomeSamplers; //convert to array
+
+    //Graph structure used to store information about neighbouring biomes (maybe blending between them):
+    public BiomeLinks biomeLinks; 
+
+
+
+
+
+    /// <summary>
+    /// Constructor used when generating the biome samplers for the first time
+    /// </summary>
+    public WorldSampler(BiomeSampler biomeIdSampler, List<BiomeSampler> biomeSamplers, WorldGenerationSettings worldGenerationSettings, WorldTopographyGenerator worldTopographyGenerator)
     {
-        worldManager = GetComponent<WorldManager>();
+        this.biomeIdSampler = biomeIdSampler;
+        this.biomeSamplers = biomeSamplers;
+        this.biomeMapSize = worldGenerationSettings.biomeMapSize;
+        this.biomeMapScale = worldGenerationSettings.biomeMapScale;
+        this.biomeGridSize = worldGenerationSettings.biomeGridSize;
+        
+
+        
+        AssignBiomes(worldGenerationSettings,worldTopographyGenerator);
     }
+
+    /// <summary>
+    /// Constructor used for loading previously generated world biome samplers into a world sampler
+    /// </summary>
+    public WorldSampler(BiomeSampler biomeIdSampler, List<BiomeSampler> biomeSamplers, BiomeLinks biomeLinks, WorldGenerationSettings worldGenerationSettings)
+    {
+        this.biomeIdSampler = biomeIdSampler;
+        this.biomeSamplers = biomeSamplers;
+        this.biomeLinks = biomeLinks;
+        this.biomeMapSize = worldGenerationSettings.biomeMapSize;
+        this.biomeMapScale = worldGenerationSettings.biomeMapScale;
+        this.biomeGridSize = worldGenerationSettings.biomeGridSize;
+        
+    }
+
+    /// <summary>
+    /// Assigns the biomes and heightmaps of each of the previously generated BiomeSamplers
+    /// </summary>
+    public void AssignBiomes(WorldGenerationSettings worldGenerationSettings, WorldTopographyGenerator worldTopographyGenerator)
+    {
+        worldGenerationSettings.biomeGridSize = biomeGridSize; //use the one fro WorldGenSettings
+        worldGenerationSettings.Apply();
+        if (biomeSamplers.Count == (biomeGridSize + 1) * (biomeGridSize + 1))
+        {
+            for (int i = 0; i < biomeSamplers.Count; i++)
+            {
+                TopographySettings topographySettings = worldGenerationSettings.GetTopographySettings(i);
+
+                biomeSamplers[i].biomeType = topographySettings.biomeType;
+                biomeSamplers[i].heightMap = worldTopographyGenerator.GetHeightMapGenerator(topographySettings);
+            }
+        }
+        else
+        {
+            Debug.Log("biomeGridSize is incompatible with the number of biome samplers");
+        }
+
+        GenerateWorldAtlas(worldGenerationSettings);
+
+        biomeLinks = new BiomeLinks(biomeGridSize);
+        biomeLinks.GenerateLinksFromGrid(); 
+    }
+
+    /// <summary>
+    /// Generates a texture map of the world
+    /// </summary>
+    private void GenerateWorldAtlas(WorldGenerationSettings worldGenerationSettings)
+    {
+        int size = biomeMapSize;
+        Texture2D worldtexture = new Texture2D(size + 1, size  + 1);
+        Color[] colormap = new Color[(size + 1) * (size + 1)];
+
+        for (int y = 0; y <= size; y++)
+        {
+            for (int x = 0; x <= size; x++)
+            {
+                int cellId = BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, biomeGridSize);
+                GenerationSettings genSettings = worldGenerationSettings.GetGenerationSettings(cellId);
+                Texture2D baseTexture = genSettings.baseTexture;
+                float scale = genSettings.baseTextureScale;
+
+
+                colormap[x + (size + 1) * y] = baseTexture.GetPixelBilinear(x/scale, y/scale);
+            }
+        }
+        worldtexture.SetPixels(colormap);
+        worldtexture.Apply();
+
+        string atlasPath = "/Map/BiomeMaps/worldAtlas.png";
+        System.IO.File.WriteAllBytes(Application.dataPath + atlasPath, worldtexture.EncodeToPNG());
+    }
+
+
+
+
+
+
 
 
 
@@ -52,35 +141,34 @@ public class WorldSampler : MonoBehaviour
             return 0f;
         }
 
-        BiomeSampler biomeIdSampler = worldManager.GetBiomeIdSampler();
-        int gridSize = WorldManager.biomeGridSize;
-        int cellId = BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, gridSize);
+
+        int cellId = BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, biomeGridSize);
 
 
-        BiomeSampler biomeSampler = worldManager.GetBiomeSampler(cellId);
+        BiomeSampler biomeSampler = biomeSamplers[cellId];
         float cellValue = biomeSampler.SampleBiome(x,y).r;
-        float finalHeight = biomeSampler.SampleHeight(x,y) * cellValue; 
-        float totalValue = cellValue;
+        float finalHeight = biomeSampler.SampleHeight(x,y) * cellValue * cellValue; 
+        float totalValue = cellValue * cellValue;
 
 
         if (cellValue < 1.1) // add this as a threashold parameter
         {
-            foreach (int neighbourId in worldManager.GetNeighbours(cellId))
+            foreach (int neighbourId in biomeLinks.GetLinks(cellId))
             {
-                BiomeSampler neighbourSampler = worldManager.GetBiomeSampler(neighbourId);
+                BiomeSampler neighbourSampler = biomeSamplers[neighbourId];
                 float nCellValue = neighbourSampler.SampleBiome(x,y).r;
-                float nheight = neighbourSampler.SampleHeight(x,y) * nCellValue;
-                totalValue += nCellValue;
+                float nheight = neighbourSampler.SampleHeight(x,y) * nCellValue * nCellValue;
+                totalValue += nCellValue * nCellValue;
                 finalHeight += nheight;
             }
         }                                   
         finalHeight /= (totalValue + 0.001f); 
 
-        return finalHeight * heightMultiplier;
+        return finalHeight;
     }
 
 
-    public Color SampleTexture(float _x, float _y)
+    public Color SampleAtlas(float _x, float _y)
     {
         float x = biomeMapScale * _x;
         float y = biomeMapScale * _y;
@@ -90,28 +178,27 @@ public class WorldSampler : MonoBehaviour
             return Color.black;
         }
 
-        BiomeSampler biomeIdSampler = worldManager.GetBiomeIdSampler();
-        int gridSize = WorldManager.biomeGridSize;
-        int cellId = BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, gridSize);
+
+        int cellId = BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, biomeGridSize);
 
 
-        BiomeSampler biomeSampler = worldManager.GetBiomeSampler(cellId);
+        BiomeSampler biomeSampler = biomeSamplers[cellId];
         float cellValue = biomeSampler.SampleBiome(x,y).r;
         Color finalColor = biomeSampler.displayColor * cellValue;
         float totalValue = cellValue;
 
-        /*
+        
         if (cellValue < 0.9)
         {
-            foreach (int neighbourId in biomeManager.GetNeighbours(cellId))
+            foreach (int neighbourId in biomeLinks.GetLinks(cellId))
             {
-                BiomeSampler neighbourSampler = biomeManager.GetBiomeSampler(neighbourId);
+                BiomeSampler neighbourSampler = biomeSamplers[neighbourId];
                 float nCellValue = neighbourSampler.SampleBiome(x,y).r;
                 Color nColor = neighbourSampler.displayColor * nCellValue;
                 totalValue += nCellValue;
                 finalColor += nColor;
             }
-        }*/
+        }
         finalColor /= (totalValue + 0.001f); 
 
         return finalColor;
@@ -127,28 +214,26 @@ public class WorldSampler : MonoBehaviour
             return Color.black;
         }
 
-        BiomeSampler biomeIdSampler = worldManager.GetBiomeIdSampler();
-        int gridSize = WorldManager.biomeGridSize;
-        int cellId = BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, gridSize);
+        int cellId = BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, biomeGridSize);
 
 
-        BiomeSampler biomeSampler = worldManager.GetBiomeSampler(cellId);
+        BiomeSampler biomeSampler = biomeSamplers[cellId];
         float cellValue = biomeSampler.SampleBiome(x,y).r;
         Color finalColor = biomeSampler.displayColor * cellValue;
         float totalValue = cellValue;
 
-        /*
+        
         if (cellValue < 0.9)
         {
-            foreach (int neighbourId in biomeManager.GetNeighbours(cellId))
+            foreach (int neighbourId in biomeLinks.GetLinks(cellId))
             {
-                BiomeSampler neighbourSampler = biomeManager.GetBiomeSampler(neighbourId);
+                BiomeSampler neighbourSampler = biomeSamplers[neighbourId];
                 float nCellValue = neighbourSampler.SampleBiome(x,y).r;
                 Color nColor = neighbourSampler.displayColor * nCellValue;
                 totalValue += nCellValue;
                 finalColor += nColor;
             }
-        }*/
+        }
         finalColor /= (totalValue + 0.001f); 
 
         return finalColor;
