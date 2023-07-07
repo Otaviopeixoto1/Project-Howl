@@ -29,6 +29,9 @@ public class WorldGenerationSettings : ScriptableObject
     [Range(0.01f,1)]
     public float biomeMapScale = 0.05f;
 
+    [Range(0,1)]
+    public float biomeCellJitter = 0.5f;
+
 
     //Displayed List for available biomes
     public List<BiomeSettings> biomeGenerationSettings = new List<BiomeSettings>();
@@ -51,7 +54,7 @@ public class WorldGenerationSettings : ScriptableObject
     }
 
     //always apply before requesting for world generation data
-    public void Apply()
+    public void ApplyGenerationSettings()
     {
         UnityEngine.Random.InitState(worldSeed);
         Dictionary<Biomes,BiomeSettings> availableBiomes = GetAvailableBiomes();
@@ -158,6 +161,7 @@ public class WorldGenerationSettings : ScriptableObject
         return randomElement;
     }
 
+    
     //gets the topography settings based on cell index. Only call after apply
     public TopographySettings GetTopographySettings(int index)
     {

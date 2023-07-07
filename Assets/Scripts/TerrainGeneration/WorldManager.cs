@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Class used to manage the biome generation and assigning each biome cell a unique BiomeSampler
+/// Class used to manage the world generation 
 /// </summary>
 
-//Change name: WorldManager
+//Manage the setup for generation settings as well as weather (clouds), world events, etc ...
+
 public class WorldManager : MonoBehaviour
 {
     public delegate void LoadEvent();
@@ -37,13 +38,42 @@ public class WorldManager : MonoBehaviour
         BiomeMapGenerator biomeMapGenerator = ScriptableObject.CreateInstance<BiomeMapGenerator>();
         biomeMapGenerator.cellularSeed = WorldGenerationSettings.worldSeed;
         biomeMapGenerator.gridDimension = worldGenerationSettings.biomeGridSize; 
-        biomeMapGenerator.cellularJitter = 0.5f; //use the WorldGenerationSettings
+        biomeMapGenerator.cellularJitter = worldGenerationSettings.biomeCellJitter; 
         biomeMapGenerator.ApplySettings();
 
         BiomeSampler biomeIdSampler = BiomeMapBaker.BakeBiomeCellIds(biomeMapGenerator);
         List<BiomeSampler> biomeSamplers = BiomeMapBaker.BakeSingleBiomes(biomeMapGenerator, biomeIdSampler, 1.2f);
 
-        worldSampler = new WorldSampler(biomeIdSampler, biomeSamplers ,worldGenerationSettings, worldTopographyGenerator);
+        //the biomes should be assigned here !!!
+        AssignBiomes(biomeSamplers, worldGenerationSettings.biomeGridSize);
+        
+
+
+        worldSampler = new WorldSampler(biomeIdSampler, biomeSamplers ,worldGenerationSettings);
+
+    }
+
+    /// <summary>
+    /// Assigns the biomes and heightmaps of each of the previously generated BiomeSamplers
+    /// </summary>
+    public void AssignBiomes(List<BiomeSampler> biomeSamplers, int biomeGridSize)
+    {
+        worldGenerationSettings.ApplyGenerationSettings();
+
+        if (biomeSamplers.Count == (biomeGridSize + 1) * (biomeGridSize + 1))
+        {
+            for (int i = 0; i < biomeSamplers.Count; i++)
+            {
+                TopographySettings topographySettings = worldGenerationSettings.GetTopographySettings(i);
+
+                biomeSamplers[i].biomeType = topographySettings.biomeType;
+                biomeSamplers[i].heightMap = worldTopographyGenerator.GetHeightMapGenerator(topographySettings);
+            }
+        }
+        else
+        {
+            Debug.Log("biomeGridSize is incompatible with the number of biome samplers");
+        }
 
     }
 
@@ -72,7 +102,7 @@ public class WorldManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("Error Loading BiomeSamplers");      
+            Debug.Log("Unable to load map data");      
             return false; 
         }
         

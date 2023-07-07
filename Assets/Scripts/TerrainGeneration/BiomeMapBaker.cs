@@ -222,12 +222,12 @@ public static class BiomeMapBaker
     /// </summary>
     public static BiomeSamplersData LoadBaked()
     {
-        if (!System.IO.File.Exists(Application.dataPath + "/Map/BiomeMaps/mapdata.json"))
+        if (!System.IO.File.Exists(Application.dataPath + "/Map/mapdata.json"))
         {
             return null;
         }
 
-        string json = File.ReadAllText(Application.dataPath + "/Map/BiomeMaps/mapdata.json");
+        string json = File.ReadAllText(Application.dataPath + "/Map/mapdata.json");
         BiomeMapData biomeMapData = JsonUtility.FromJson<BiomeMapData>(json);
 
         int gridSize = biomeMapData.biomeGridSize;
@@ -307,7 +307,7 @@ public static class BiomeMapBaker
         
         BiomeMapData bmd = new BiomeMapData(biomeGridSize,fullBiomeMapData,biomeMaps, biomeLinks);
 
-        File.WriteAllText(Application.dataPath + "/Map/BiomeMaps/mapdata.json", JsonUtility.ToJson(bmd,true));
+        File.WriteAllText(Application.dataPath + "/Map/mapdata.json", JsonUtility.ToJson(bmd,true));
 
 
     }

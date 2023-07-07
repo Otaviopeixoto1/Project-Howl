@@ -34,7 +34,7 @@ public class WorldSampler
     /// <summary>
     /// Constructor used when generating the biome samplers for the first time
     /// </summary>
-    public WorldSampler(BiomeSampler biomeIdSampler, List<BiomeSampler> biomeSamplers, WorldGenerationSettings worldGenerationSettings, WorldTopographyGenerator worldTopographyGenerator)
+    public WorldSampler(BiomeSampler biomeIdSampler, List<BiomeSampler> biomeSamplers, WorldGenerationSettings worldGenerationSettings)
     {
         this.biomeIdSampler = biomeIdSampler;
         this.biomeSamplers = biomeSamplers;
@@ -43,8 +43,10 @@ public class WorldSampler
         this.biomeGridSize = worldGenerationSettings.biomeGridSize;
         
 
-        
-        AssignBiomes(worldGenerationSettings,worldTopographyGenerator);
+        this.biomeLinks = new BiomeLinks(biomeGridSize);
+        this.biomeLinks.GenerateLinksFromGrid(); 
+        //AssignBiomes(worldGenerationSettings,worldTopographyGenerator);
+        GenerateWorldAtlas(worldGenerationSettings);
     }
 
     /// <summary>
@@ -61,33 +63,7 @@ public class WorldSampler
         
     }
 
-    /// <summary>
-    /// Assigns the biomes and heightmaps of each of the previously generated BiomeSamplers
-    /// </summary>
-    public void AssignBiomes(WorldGenerationSettings worldGenerationSettings, WorldTopographyGenerator worldTopographyGenerator)
-    {
-        worldGenerationSettings.biomeGridSize = biomeGridSize; //use the one fro WorldGenSettings
-        worldGenerationSettings.Apply();
-        if (biomeSamplers.Count == (biomeGridSize + 1) * (biomeGridSize + 1))
-        {
-            for (int i = 0; i < biomeSamplers.Count; i++)
-            {
-                TopographySettings topographySettings = worldGenerationSettings.GetTopographySettings(i);
-
-                biomeSamplers[i].biomeType = topographySettings.biomeType;
-                biomeSamplers[i].heightMap = worldTopographyGenerator.GetHeightMapGenerator(topographySettings);
-            }
-        }
-        else
-        {
-            Debug.Log("biomeGridSize is incompatible with the number of biome samplers");
-        }
-
-        GenerateWorldAtlas(worldGenerationSettings);
-
-        biomeLinks = new BiomeLinks(biomeGridSize);
-        biomeLinks.GenerateLinksFromGrid(); 
-    }
+    
 
     /// <summary>
     /// Generates a texture map of the world

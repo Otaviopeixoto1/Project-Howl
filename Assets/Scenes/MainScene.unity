@@ -545,7 +545,7 @@ MonoBehaviour:
   m_CustomShadowLayers: 0
   m_ShadowLayerMask: 1
   m_ShadowRenderingLayers: 1
-  m_LightCookieSize: {x: 600, y: 600}
+  m_LightCookieSize: {x: 300, y: 300}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 1
 --- !u!1 &528500178

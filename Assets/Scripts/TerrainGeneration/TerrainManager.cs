@@ -29,6 +29,15 @@ public struct SamplerThreadData
 }
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Add support for getting the terrain normals of this chunk (save the mesh object in order to use GetNormals())
+//Add subchunk class for both setting smaller terrain colliders and for managing details (grass)
+
+//Grass can be added based of the subchunk information and we can cull it more easily
+//each subchunk can be used to get the terrain data for grass.
+//for denser grass, the subchunk vertex positions can be used to interpolate the chunk coordinates and normals
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 public class TerrainChunk
 {
@@ -212,6 +221,7 @@ public class TerrainManager : MonoBehaviour
     void OnDisable()
     {
         WorldManager.OnSuccessfulLoad -= FirstChunkUpdate;
+
     }
 
 
