@@ -58,7 +58,7 @@ Remark about those offsets from the original author:
 
 // 1 / 289
 #define NOISE_SIMPLEX_1_DIV_289 0.00346020761245674740484429065744f
-#define NOISE_SIMPLEX_1_DIV_36 0.027777778f
+#define NOISE_SIMPLEX_1_DIV_25 0.04f
 
 float mod289(float x) {
 	return x - floor(x * NOISE_SIMPLEX_1_DIV_289) * 289.0;
@@ -78,20 +78,20 @@ float4 mod289(float4 x) {
 
 
 
-float mod36(float x) {
-	return x - floor(x * NOISE_SIMPLEX_1_DIV_36) * 36.0;
+float mod25(float x) {
+	return x - floor(x * NOISE_SIMPLEX_1_DIV_25) * 25.0;
 }
 
-float2 mod36(float2 x) {
-	return x - floor(x * NOISE_SIMPLEX_1_DIV_36) * 36.0;
+float2 mod25(float2 x) {
+	return x - floor(x * NOISE_SIMPLEX_1_DIV_25) * 25.0;
 }
 
-float3 mod36(float3 x) {
-	return x - floor(x * NOISE_SIMPLEX_1_DIV_36) * 36.0;
+float3 mod25(float3 x) {
+	return x - floor(x * NOISE_SIMPLEX_1_DIV_25) * 25.0;
 }
 
-float4 mod36(float4 x) {
-	return x - floor(x * NOISE_SIMPLEX_1_DIV_36) * 36.0;
+float4 mod25(float4 x) {
+	return x - floor(x * NOISE_SIMPLEX_1_DIV_25) * 25.0;
 }
 
 
@@ -119,21 +119,21 @@ float4 permute(float4 x) {
 
 
 
-float permute36(float x) {
-	return mod36(
-		x*x*12.0 + x
+float permute25(float x) {
+	return mod25(
+		x*x*10.0 + x
 	);
 }
 
-float3 permute36(float3 x) {
-	return mod36(
-		x*x*12.0 + x
+float3 permute25(float3 x) {
+	return mod25(
+		x*x*10.0 + x
 	);
 }
 
-float4 permute36(float4 x) {
-	return mod36(
-		x*x*12.0 + x
+float4 permute25(float4 x) {
+	return mod25(
+		x*x*10.0 + x
 	);
 }
 
@@ -350,10 +350,10 @@ float snoise(float3 v, float tileSize)
 	float3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y
 	
 // Permutations
-	i = mod36(i);
-	float4 p = permute36(
-		permute36(
-			permute36(
+	i = mod25(i);
+	float4 p = permute25(
+		permute25(
+			permute25(
 					i.z + float4(0.0, i1.z, i2.z, 1.0 )
 			) + i.y + float4(0.0, i1.y, i2.y, 1.0 )
 		) 	+ i.x + float4(0.0, i1.x, i2.x, 1.0 )

@@ -30,14 +30,15 @@ Material:
     m_Ints: []
     m_Floats:
     - _Amplitude: 1.62
-    - _Density: 1
-    - _DispersionSpeed: 0.74
-    - _Frequency: 1
+    - _Density: 0.5
+    - _DispersionSpeed: 0.02
+    - _Frequency: 23.9
     - _Lacunarity: 0.5
-    - _Octaves: 2
+    - _Octaves: 3
     - _Persistence: 2
     - _windSpeed: 0.25
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Offset: {r: -0.22217286, g: -0.30458885, b: 0, a: 0}
     - _WindDirection: {r: 1, g: 1, b: 0.5, a: 1}
   m_BuildTextureStacks: []
