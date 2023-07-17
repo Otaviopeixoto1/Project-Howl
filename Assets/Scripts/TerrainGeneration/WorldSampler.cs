@@ -14,20 +14,19 @@ public class WorldSampler
 {
     [Range(1,240)]
     public int biomeMapSize;
-
     [Range(0.01f,1)]
     public float biomeMapScale = 1f;
-
     public int biomeGridSize;
 
 
     public BiomeSampler biomeIdSampler;
-    public List<BiomeSampler> biomeSamplers; //convert to array
-
-    //Graph structure used to store information about neighbouring biomes (maybe blending between them):
+    public List<BiomeSampler> biomeSamplers; 
     public BiomeLinks biomeLinks; 
 
 
+    //Generate the terrain structures on the world manager and sample them here
+    //also add a random detail sampler to decite what details will be spawned on each biome
+    
 
 
 
@@ -42,10 +41,9 @@ public class WorldSampler
         this.biomeMapScale = worldGenerationSettings.biomeMapScale;
         this.biomeGridSize = worldGenerationSettings.biomeGridSize;
         
-
         this.biomeLinks = new BiomeLinks(biomeGridSize);
         this.biomeLinks.GenerateLinksFromGrid(); 
-        //AssignBiomes(worldGenerationSettings,worldTopographyGenerator);
+
         GenerateWorldAtlas(worldGenerationSettings);
     }
 
@@ -79,7 +77,7 @@ public class WorldSampler
             for (int x = 0; x <= size; x++)
             {
                 int cellId = BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, biomeGridSize);
-                GenerationSettings genSettings = worldGenerationSettings.GetGenerationSettings(cellId);
+                PrimaryGenerationSettings genSettings = worldGenerationSettings.GetPrimarySettings(cellId);
                 Texture2D baseTexture = genSettings.baseTexture;
                 float scale = genSettings.baseTextureScale;
 
@@ -93,14 +91,6 @@ public class WorldSampler
         string atlasPath = "/Map/BiomeMaps/worldAtlas.png";
         System.IO.File.WriteAllBytes(Application.dataPath + atlasPath, worldtexture.EncodeToPNG());
     }
-
-
-
-
-
-
-
-
 
 
 

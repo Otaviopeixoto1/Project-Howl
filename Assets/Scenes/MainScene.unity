@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18210429, g: 0.2278013, b: 0.30738822, a: 1}
+  m_IndirectSpecularColor: {r: 0.18210432, g: 0.22780123, b: 0.3073882, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -256,7 +256,7 @@ MonoBehaviour:
   viewerWorldPos: {x: 0, y: 0}
   thresholdForMeshUpdate: 0.1
   thresholdForColliderUpdate: 0.1
-  testMaterial: {fileID: 2100000, guid: 8c9f9f20c75946508bfa6dc1cc6716cb, type: 2}
+  terrainMaterial: {fileID: 2100000, guid: 8c9f9f20c75946508bfa6dc1cc6716cb, type: 2}
   chunkSize: 240
   chunkScale: 1
   chunkMeshLodBias: 0

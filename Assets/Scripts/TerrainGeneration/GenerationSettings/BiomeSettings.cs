@@ -36,12 +36,12 @@ public struct TopographySettings
 
 
 
-public struct GenerationSettings
+public struct PrimaryGenerationSettings
 {
     public readonly Texture2D baseTexture; 
     public readonly float baseTextureScale; 
 
-    public GenerationSettings(Texture2D baseTexture, float baseTextureScale)
+    public PrimaryGenerationSettings(Texture2D baseTexture, float baseTextureScale)
     {
         this.baseTexture = baseTexture;
         this.baseTextureScale = baseTextureScale;
@@ -55,11 +55,18 @@ public struct GenerationSettings
 [CreateAssetMenu(fileName = "BiomeSettings", menuName = "ScriptableObjects/WorldGeneration/BiomeSettings", order = 1)] 
 public class BiomeSettings : ScriptableObject
 {
-    [Header("Generation Settings")]
+    [Header("Primary Settings")]
     public Biomes biome = Biomes.Forest;
     public Texture2D baseTexture;
     public float baseTextureScale = 1f;
-    // add the terrain details here
+    
+    // add the terrain details here:
+    //public TerrainDetailSettings terrainDetailSettings;
+
+
+
+
+
 
 
     [Header("Topography Settings")]
@@ -82,6 +89,9 @@ public class BiomeSettings : ScriptableObject
     [MinMaxSlider(0.01f,10)]
     public Vector2 noisePersistenceRange;
 
+
+
+
     public static BiomeSettings HighMountains { 
         get 
         {
@@ -101,9 +111,9 @@ public class BiomeSettings : ScriptableObject
     }
 
 
-    public GenerationSettings GetGenerationSettings()
+    public PrimaryGenerationSettings GetPrimarySettings()
     {
-        return new GenerationSettings(baseTexture, baseTextureScale);
+        return new PrimaryGenerationSettings(baseTexture, baseTextureScale);
     }
 
     public TopographySettings GetTopographySettings()

@@ -36,7 +36,8 @@ public class ChunkThreadManager
                                                                     mapData.meshLodBias,
                                                                     true
                                                                     );
-
+		
+		// Use a different function for the collider mesh
 		MeshData colliderData = MeshGenerator.GenerateTerrainFromSampler(mapData.sampler, 
                                                                     mapData.chunkSize + 1, 
                                                                     mapData.chunkSize + 1, 

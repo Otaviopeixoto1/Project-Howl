@@ -1,5 +1,8 @@
 using UnityEngine;
 
+
+
+
 public class MeshData
 {
     public Vector3[] vertices;
@@ -50,6 +53,21 @@ public class MeshData
 }
 
 
+//a struct used as a wrapper for all the data returned in the ChunkGenerator
+public struct ChunkData
+{
+    public MeshData meshData;
+    public ChunkData(MeshData meshData)
+    {
+        this.meshData = meshData;
+    }
+
+}
+
+
+
+
+//Rename for ChunkGenerator
 public static class MeshGenerator
 {
 
@@ -73,7 +91,6 @@ public static class MeshGenerator
     
 
     //Using MapGenerator as sampler:
-
     public static MeshData GenerateTerrainFromSampler(MapGenerator sampler, int meshWidth, int meshHeight, float meshScale, int lodBias = 0,bool isThread = false)
     {
         AnimationCurve heightCurve;
@@ -126,7 +143,7 @@ public static class MeshGenerator
 
 
 
-
+    //Using WorldSampler as a sampler
     public static MeshData GenerateTerrainFromSampler(WorldSampler sampler, int meshWidth, int meshHeight, float meshScale, Vector2 sampleOffset, int lodBias = 0, bool isThread = false)
     {
         int widthIncrement = CalculateLodIncrement(meshWidth,lodBias);

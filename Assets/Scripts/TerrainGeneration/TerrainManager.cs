@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using System.Threading;
 using UnityEngine;
 
 
@@ -40,6 +39,7 @@ public class TerrainManager : MonoBehaviour
     private List<TerrainChunk> visibleChunks = new List<TerrainChunk>();
     private ChunkThreadManager chunkThreadManager;
 
+    private TerrainObjectsManager terrainObjectsManager;
 
 
     private WorldSampler worldSampler;
@@ -63,7 +63,7 @@ public class TerrainManager : MonoBehaviour
                                                   
 
     [SerializeField]
-    private Material testMaterial;
+    private Material terrainMaterial;
     [SerializeField]
     [Range(10,240)]
     private int chunkSize = 240;
@@ -75,6 +75,11 @@ public class TerrainManager : MonoBehaviour
     private int chunkColliderLodBias = 6;
     [SerializeField]
     private float normalizedViewDist = 1.2f;
+
+
+
+
+
 
     void Awake()
     {
@@ -115,14 +120,20 @@ public class TerrainManager : MonoBehaviour
     private void FirstChunkUpdate()
     {
         worldSampler = worldManager.GetWorldSampler();
-        testMaterial.SetFloat("_atlasScale", 1/worldSampler.GetBiomeMapScale());
+        terrainMaterial.SetFloat("_atlasScale", 1/worldSampler.GetBiomeMapScale());
+
 
 
         viewerWorldPos = new Vector2(viewer.position.x, viewer.position.z);
 
-        Vector2Int chunkCoords = WorldToChunkCoords(viewerWorldPos);
+        Vector2Int viewerChunkCoords = WorldToChunkCoords(viewerWorldPos);
         
-        UpdateVisibleChunks(chunkCoords.x, chunkCoords.y);
+        UpdateVisibleChunks(viewerChunkCoords.x, viewerChunkCoords.y);
+        
+        //the objects manager will be updated here on the terrain manager
+        terrainObjectsManager = new TerrainObjectsManager(this, worldSampler);
+        terrainObjectsManager.UpdateObjects();
+
         WorldManager.OnSuccessfulLoad -= FirstChunkUpdate;
     }
 
@@ -130,10 +141,11 @@ public class TerrainManager : MonoBehaviour
 
     void Update()
     {
-        viewerWorldPos = new Vector2(viewer.position.x, viewer.position.z);
+        //viewerWorldPos = new Vector2(viewer.position.x, viewer.position.z);
+        viewerWorldPos.x = viewer.position.x;
+        viewerWorldPos.y = viewer.position.z;
 
-
-        Vector2Int chunkCoords = WorldToChunkCoords(viewerWorldPos);
+        Vector2Int viewerChunkCoords = WorldToChunkCoords(viewerWorldPos);
 
         //for the current case, it doesnt make sense to update the chunks unless the chunk coordinate has changed
         // (the player moved from one chunk to another)
@@ -143,7 +155,7 @@ public class TerrainManager : MonoBehaviour
         if (Vector3.Distance(viewerWorldPos, lastViewerPos) > thresholdForMeshUpdate * chunkSize * chunkScale)
         {
             lastViewerPos = viewerWorldPos;
-            UpdateVisibleChunks(chunkCoords.x, chunkCoords.y);
+            UpdateVisibleChunks(viewerChunkCoords.x, viewerChunkCoords.y);
         }
         
         
@@ -186,7 +198,7 @@ public class TerrainManager : MonoBehaviour
                 else
                 {
                     SamplerThreadData mapData = new SamplerThreadData(worldSampler, viewChunkCoord, chunkSize, chunkScale, chunkMeshLodBias, chunkColliderLodBias);
-                    terrainChunks.Add(viewChunkCoord, new TerrainChunk(viewChunkCoord, mapData, this.transform, testMaterial, chunkThreadManager));
+                    terrainChunks.Add(viewChunkCoord, new TerrainChunk(viewChunkCoord, mapData, this.transform, terrainMaterial, chunkThreadManager));
                     //all chunks start as visible
                     visibleChunks.Add(terrainChunks[viewChunkCoord]);
                 }
@@ -199,10 +211,17 @@ public class TerrainManager : MonoBehaviour
 
 
 
+    public TerrainChunk GetCurrentChunk()
+    {
+        Vector2Int viewerChunkCoords = WorldToChunkCoords(viewer.position);
+        return terrainChunks[viewerChunkCoords];
+    }
 
 
-
-
+    public List<TerrainChunk> GetVisibleChunks()
+    {
+        return visibleChunks;
+    }
 
 
 

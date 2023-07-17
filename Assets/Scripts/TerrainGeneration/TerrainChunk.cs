@@ -4,29 +4,53 @@ using UnityEngine;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Add support for getting the terrain normals of this chunk (save the mesh object in order to use GetNormals())
-//Add subchunk class for both setting smaller terrain colliders and for managing details (grass)
+//the chunk will request all the information about objects during the threaded calculations
+//in the thread we will generate the quad tree containing all necessary data 
+
+
 
 //Grass can be added based of the subchunk information and we can cull it more easily
 //each subchunk can be used to get the terrain data for grass.
 //for denser grass, the subchunk vertex positions can be used to interpolate the chunk coordinates and normals
+
+//Add a slow update function in a coroutine to check a non visible chunk array for distance, if the chunk is too far
+//destroy it ! (Remember to remove it from the dictionary)
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+public class ChunkDataTree // Quadtree to store the chunk objects information as well as all other relevant data
+{
+
+    //Save the data tree to a save file as well
+}
+
+//subchunk will contain data for interpolating and generating dense point clouds for a specific terrain sections
+public class SubChunk
+{
+    
+    public SubChunk()
+    {
+
+    }
+}
 
 
 public class TerrainChunk
 {
-    GameObject chunkObject; // all of these variables should be readonly
-    MeshRenderer meshRenderer;
-    MeshFilter meshFilter;
-    MeshCollider meshCollider;
+    private GameObject chunkObject; 
+    private MeshRenderer meshRenderer;
+    private MeshFilter meshFilter;
+    private MeshCollider meshCollider;
 
-    int chunkSize; //size refers to the mesh size (number of mesh vertices along x and y - 1)
-    float scale;
-    Vector2Int position;
-    Vector2 worldPosition;
-    Bounds bounds;
+    private int chunkSize; //chunkSize refers to the number of mesh vertices -1 along x and y 
+    private float scale;
+    private Vector2Int position;
+    private Vector2 worldPosition;
+    private Bounds bounds;
 
-    Texture2D debugTexture;
+    //private Texture2D debugTexture;
 
     
 
@@ -39,7 +63,8 @@ public class TerrainChunk
         bounds = new Bounds(worldPosition, Vector2.one * chunkSize * scale);
 
         chunkObject = new GameObject("Terrain Chunk");
-        chunkObject.layer = 6;
+        chunkObject.layer = 6; //terrain layer
+
         meshRenderer = chunkObject.AddComponent<MeshRenderer>();
         meshFilter = chunkObject.AddComponent<MeshFilter>();
         meshCollider = chunkObject.AddComponent<MeshCollider>();
@@ -54,7 +79,9 @@ public class TerrainChunk
         chunkObject.transform.parent = parent;
 
         //SetVisible(false);
+        
 
+        //Request Chunk data !!!
         threadManager.RequestMeshData(mapData, OnMeshDataReceived);
     }
 
@@ -62,7 +89,8 @@ public class TerrainChunk
 
     
     private void OnMeshDataReceived(MeshData meshData, MeshData colliderData)  
-    {                                           
+    {                  
+        //chunkMesh = meshData.CreateMesh();                         
         meshFilter.mesh = meshData.CreateMesh();
         meshCollider.sharedMesh = colliderData.CreateMesh(skipNormals:true);
         //meshRenderer.material.SetTexture("_BaseMap", debugTexture);
@@ -94,6 +122,19 @@ public class TerrainChunk
         return chunkObject.activeSelf;
     }
 
+    public List<Vector3> GetVertices()
+    {
+        List<Vector3> vertices = new List<Vector3>();
+        meshFilter.mesh.GetVertices(vertices);
+        return vertices;
+    }
+
+
+    //this is called to add a new terrain object into this chunk
+    public void AddTerrainObject()
+    {
+
+    }
 
 
     //gets a subchunk based on world position of this chunk and the provided world position 
@@ -129,12 +170,3 @@ public class TerrainChunk
 }
 
 
-public class SubChunk
-{
-
-    
-    public SubChunk()
-    {
-
-    }
-}

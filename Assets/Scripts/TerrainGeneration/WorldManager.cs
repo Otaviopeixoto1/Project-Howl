@@ -49,7 +49,7 @@ public class WorldManager : MonoBehaviour
         
 
 
-        worldSampler = new WorldSampler(biomeIdSampler, biomeSamplers ,worldGenerationSettings);
+        worldSampler = new WorldSampler(biomeIdSampler, biomeSamplers, worldGenerationSettings);
 
     }
 

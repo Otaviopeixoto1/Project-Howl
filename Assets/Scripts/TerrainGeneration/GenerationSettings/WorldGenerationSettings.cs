@@ -172,9 +172,9 @@ public class WorldGenerationSettings : ScriptableObject
 
 
 
-    public GenerationSettings GetGenerationSettings(int index)
+    public PrimaryGenerationSettings GetPrimarySettings(int index)
     {
-        return  worldSettings[index].GetGenerationSettings();
+        return  worldSettings[index].GetPrimarySettings();
     }
 
 
