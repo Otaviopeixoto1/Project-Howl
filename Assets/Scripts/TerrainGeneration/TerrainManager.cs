@@ -80,6 +80,14 @@ public class TerrainManager : MonoBehaviour
 
 
 
+/////////////////////- JUST FOR TESTING -///////////////////////////
+    [SerializeField]
+    private Material detailTestMaterial;
+////////////////////////////////////////////////////////////////////
+
+
+
+
 
     void Awake()
     {
@@ -113,7 +121,7 @@ public class TerrainManager : MonoBehaviour
     void OnDisable()
     {
         WorldManager.OnSuccessfulLoad -= FirstChunkUpdate;
-
+        terrainObjectsManager.ClearObjects();
     }
 
 
@@ -126,13 +134,15 @@ public class TerrainManager : MonoBehaviour
 
         viewerWorldPos = new Vector2(viewer.position.x, viewer.position.z);
 
+        
+
         Vector2Int viewerChunkCoords = WorldToChunkCoords(viewerWorldPos);
         
         UpdateVisibleChunks(viewerChunkCoords.x, viewerChunkCoords.y);
         
-        //the objects manager will be updated here on the terrain manager
-        terrainObjectsManager = new TerrainObjectsManager(this, worldSampler);
-        terrainObjectsManager.UpdateObjects();
+        //the objects manager will be updated here on the terrain manager       //just for testing
+        terrainObjectsManager = new TerrainObjectsManager(this, worldSampler, detailTestMaterial);
+        //terrainObjectsManager.UpdateObjects(viewerWorldPos, terrainChunks);
 
         WorldManager.OnSuccessfulLoad -= FirstChunkUpdate;
     }
@@ -141,6 +151,12 @@ public class TerrainManager : MonoBehaviour
 
     void Update()
     {
+        //update all terrain details
+        terrainObjectsManager.UpdateObjectChunks(viewerWorldPos, terrainChunks);
+        //terrainObjectsManager.DrawDetails();
+
+
+
         //viewerWorldPos = new Vector2(viewer.position.x, viewer.position.z);
         viewerWorldPos.x = viewer.position.x;
         viewerWorldPos.y = viewer.position.z;
@@ -215,6 +231,12 @@ public class TerrainManager : MonoBehaviour
     {
         Vector2Int viewerChunkCoords = WorldToChunkCoords(viewer.position);
         return terrainChunks[viewerChunkCoords];
+    }
+
+    public SubChunk GetCurrentSubChunk(int subdivision)
+    {
+        Vector2Int viewerChunkCoords = WorldToChunkCoords(viewer.position);
+        return terrainChunks[viewerChunkCoords].GetSubChunk(viewer.position, subdivision);
     }
 
 

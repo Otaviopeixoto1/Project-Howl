@@ -143,9 +143,19 @@ public static class MeshGenerator
 
 
 
-    //Using WorldSampler as a sampler
+    //Using WorldSampler as a sampler. Do meshWidth = meshHeight = chunkSize
+    //rename to GenerateChunkFromSampler
     public static MeshData GenerateTerrainFromSampler(WorldSampler sampler, int meshWidth, int meshHeight, float meshScale, Vector2 sampleOffset, int lodBias = 0, bool isThread = false)
     {
+        //data tree used to store all chunk information
+
+        /*
+        - store all object positions as well as the necessary data to spawn them
+        - store all the details that can spawn in a particular quad
+        - it wont be necessary to store biome type at first, only the necessary infos
+        */
+        //ChunkDataTree dataTree = new ChunkDataTree();
+
         int widthIncrement = CalculateLodIncrement(meshWidth,lodBias);
         int heightIncrement = CalculateLodIncrement(meshHeight,lodBias);
 

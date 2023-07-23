@@ -2,10 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//this class will either be the parent or it will contain the terrain detail manager
-//it will be used for managing the positions occupied by the terrain objects
-//this is necessary so that we dont draw terrain details inside other details or objects
-
 public class TerrainObjectsManager
 {
     //The terrain manager will be used to get the current player position and the chunk data
@@ -25,9 +21,20 @@ public class TerrainObjectsManager
     //the object manager wont only place details but also GameObjects (prefabs). 
     //The details are just handled specially by gpu instancing
 
-    private TerrainDetailsManager terrainDetailsManager;
-    
+    private DetailChunk testChunk;
 
+    private Vector2Int previousChunkPos;
+    private Vector2Int previousSubChunkPos; //used to check if the player moved 
+
+
+    private int subChunkSubdivision = 3;
+
+
+    private DetailChunk[] detailChunks = new DetailChunk[9];
+    //private Dictionary<Vector2Int, DetailChunk> detailChunks = new Dictionary<Vector2Int, DetailChunk>();
+
+    
+    private Material testMaterial;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //the object data will be stored in a quadtree. the objects will occupy a certain number of 2d standard sized tiles
@@ -53,30 +60,119 @@ public class TerrainObjectsManager
 
     //this will store and call update on all the specific object managers after deciding what positions should be 
     //updated !
-    public TerrainObjectsManager(TerrainManager terrainManager, WorldSampler worldSampler)
+    public TerrainObjectsManager(TerrainManager terrainManager, WorldSampler worldSampler, Material detailTestMaterial)
     {
         this.terrainManager = terrainManager;
         this.worldSampler = worldSampler;
-        this.terrainDetailsManager = new TerrainDetailsManager();
+
+
+        this.testMaterial = detailTestMaterial;
+
+        //the object manager will be the one to actually manage the chunks 
+        //the detail manager will just receive data and update all the details that are being drawn
+        //this.testChunk = new DetailChunk(detailTestMaterial);
     }
 
 
-    /*
-    private IEnumerator WaitForChunkGeneration()
+
+
+    //Called every frame to check if we need to generate a new subchunk
+    public void UpdateObjectChunks(Vector2 viewerWorldPos, Dictionary<Vector2Int,TerrainChunk> terrainChunks)
     {
+        Vector2Int chunkPos = terrainManager.WorldToChunkCoords(viewerWorldPos);
+        TerrainChunk currentChunk = terrainChunks[chunkPos];
 
-    }*/
+        if (!currentChunk.hasMesh)
+        {
+            return;
+        } 
+        //draw the terrain details
+        testChunk?.Draw();
+        //DrawDetails();
 
-    public void UpdateObjects()
-    {
-        //Get the subchunks with data on the objects on them and the details that can be spawned
+        Vector2Int subChunkPos = currentChunk.WorldToSubChunkCoords(viewerWorldPos, subChunkSubdivision); 
+ 
+        if (subChunkPos == previousSubChunkPos && chunkPos == previousChunkPos)
+        {
+            return;
+        }   
+        
+        //if both tests passed, the player has moved enough so that the chunks being rendered have to be updated
 
-        //THIS HAS TO BE ASYNC, we wait until the object has a mesh before getting the vertices
-        //TerrainManager.StartCoroutine(WaitForChunkGeneration());
-        //List<Vector3> positions = terrainManager.GetCurrentChunk().GetVertices();
+
+        Vector2Int subChunkDisplacement = subChunkPos - previousSubChunkPos;
+
+        previousChunkPos = chunkPos;
+        previousSubChunkPos = subChunkPos;
+
         
 
-        //terrainDetailsManager.UpdateDetails(positions);
+        DetailChunk[] newDetailChunks = new DetailChunk[9];
+        List<int> reusedChunks = new List<int>();
+
+        for (int y = 0; y < 3; y++)
+        {
+            for (int x = 0; x < 3; x++)
+            {
+                int index = x + 3 * y;
+
+                int oldX = x + subChunkDisplacement.x;
+                int oldY = y + subChunkDisplacement.y;
+
+                if (oldX >= 0 && oldX <= 2 && oldY >= 0 && oldY <= 2)
+                {
+                    int oldIndex = oldX + 3 * oldY;
+
+                    if (detailChunks[oldIndex] != null)
+                    {
+                        reusedChunks.Add(oldIndex);
+                        newDetailChunks[index] = detailChunks[oldIndex];
+                    }
+                    else
+                    {
+                        //newDetailChunks[index] = new DetailChunk(testMaterial);
+                    }
+                }
+                else
+                {
+                    //newDetailChunks[index] = new DetailChunk(testMaterial);
+                }
+
+
+            }
+        }
+
+        for (int i = 0; i < detailChunks.Length; i++)
+        {
+            if (!reusedChunks.Contains(i))
+            {
+                detailChunks[i]?.Clear();
+            }
+        }
+
+        detailChunks = newDetailChunks;
+
+
+        //Take the subchunk as argument
+        testChunk?.Clear();
+        testChunk = new DetailChunk(testMaterial, terrainManager.GetCurrentSubChunk(subChunkSubdivision));
+        //testChunk.SetupDetails(terrainManager.GetCurrentChunk().GetBounds(), positions);
+        
+    }
+
+
+    private void DrawDetails()
+    {
+        foreach (DetailChunk detailChunk in detailChunks)
+        {
+            detailChunk?.Draw();
+        }
+    }
+
+
+    public void ClearObjects()
+    {
+        testChunk.Clear();
     }
 
 }

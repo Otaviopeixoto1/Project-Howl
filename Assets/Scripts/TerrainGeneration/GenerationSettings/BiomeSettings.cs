@@ -62,7 +62,7 @@ public class BiomeSettings : ScriptableObject
     
     // add the terrain details here:
     //public TerrainDetailSettings terrainDetailSettings;
-
+    public TerrainDetailSettings terrainDetailSettings;
 
 
 
