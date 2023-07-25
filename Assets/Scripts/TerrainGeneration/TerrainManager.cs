@@ -140,9 +140,8 @@ public class TerrainManager : MonoBehaviour
         
         UpdateVisibleChunks(viewerChunkCoords.x, viewerChunkCoords.y);
         
-        //the objects manager will be updated here on the terrain manager       //just for testing
         terrainObjectsManager = new TerrainObjectsManager(this, worldSampler, detailTestMaterial);
-        //terrainObjectsManager.UpdateObjects(viewerWorldPos, terrainChunks);
+
 
         WorldManager.OnSuccessfulLoad -= FirstChunkUpdate;
     }
@@ -151,13 +150,6 @@ public class TerrainManager : MonoBehaviour
 
     void Update()
     {
-        //update all terrain details
-        terrainObjectsManager.UpdateObjectChunks(viewerWorldPos, terrainChunks);
-        //terrainObjectsManager.DrawDetails();
-
-
-
-        //viewerWorldPos = new Vector2(viewer.position.x, viewer.position.z);
         viewerWorldPos.x = viewer.position.x;
         viewerWorldPos.y = viewer.position.z;
 
@@ -174,7 +166,8 @@ public class TerrainManager : MonoBehaviour
             UpdateVisibleChunks(viewerChunkCoords.x, viewerChunkCoords.y);
         }
         
-        
+        //Update all terrain details
+        terrainObjectsManager.UpdateObjectChunks(viewerWorldPos, terrainChunks);
         
         chunkThreadManager.CheckThreads();
     }
@@ -244,6 +237,14 @@ public class TerrainManager : MonoBehaviour
     {
         return visibleChunks;
     }
+
+
+
+
+
+
+
+
 
 
 

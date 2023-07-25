@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//the detail chunk will sample the biome texture to identify what can be drawn and where
+//for better performance and logistic, a single atlas texture can be used for all details !!
+//this way we dont have to use different materials, every material samples the same texture 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 public class DetailChunk 
@@ -11,19 +16,25 @@ public class DetailChunk
     //ADD A CLASS FOR EACH DETAIL THAT GENERATES THE CORRESPONDING BUFFERS FOR THEM
 
     public Material material;
+
+    //Each chunk must have a different property block so that they dont share the same meshPropertiesBuffer
+    public MaterialPropertyBlock propertyBlock;
     private ComputeBuffer meshPropertiesBuffer;
     private ComputeBuffer argsBuffer;
     private Mesh mesh;
     private Bounds bounds;
 
+    private SubChunk subChunk;
+
 
     // Mesh Properties struct to be read from the GPU.
-    // Size() is a convenience funciton which returns the stride of the struct.
     private struct DetailMeshProperties 
     {
         public Matrix4x4 mat;
         public Vector4 color;
 
+
+        // Size() is a convenience funciton which returns the stride of the struct.
         public static int Size() {
             return
                 sizeof(float) * 4 * 4 + // matrix;
@@ -32,14 +43,20 @@ public class DetailChunk
     }
 
 
-    //Also initiallize with a SubChunk given as argument and discontinue the use of setup functions publically
     //Use a terrainDetailsSettings to initialize this
     public DetailChunk(Material material, SubChunk subChunk)
     {
         this.material = material;
         this.mesh = CreateQuad();
+        this.subChunk = subChunk;
         this.bounds = subChunk.GetBounds();
-        InitializeBuffers(subChunk.GetVertices());
+        this.propertyBlock = new MaterialPropertyBlock();
+        if (subChunk.IsReady())
+        {
+            InitializeBuffers(subChunk.GetVertices());
+        }
+        
+
     }
 
 
@@ -53,6 +70,7 @@ public class DetailChunk
 
         // Argument buffer used by DrawMeshInstancedIndirect.
         uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
+
         // Arguments for drawing mesh.
         // 0 == number of triangle indices, 1 == population, others are only relevant if drawing submeshes.
         args[0] = (uint)mesh.GetIndexCount(0);
@@ -80,7 +98,8 @@ public class DetailChunk
 
         meshPropertiesBuffer = new ComputeBuffer(population, DetailMeshProperties.Size());
         meshPropertiesBuffer.SetData(properties);
-        material.SetBuffer("_Properties", meshPropertiesBuffer);
+        propertyBlock.SetBuffer("_Properties", meshPropertiesBuffer);
+        //material.SetBuffer("_Properties", meshPropertiesBuffer);
     }
 
     // Create a quad mesh
@@ -130,15 +149,21 @@ public class DetailChunk
 
     public void Draw()
     {   
-        if (mesh != null)
+        if (meshPropertiesBuffer != null && argsBuffer != null)
         {
-            Graphics.DrawMeshInstancedIndirect(mesh, 0, material, bounds, argsBuffer);
+            Graphics.DrawMeshInstancedIndirect(mesh, 0, material, bounds, argsBuffer, properties:propertyBlock);
         }
+        else if (subChunk.IsReady())
+        {
+            InitializeBuffers(subChunk.GetVertices());
+        }
+        
         
     }
 
 
-    public void Clear() {
+    public void Clear() 
+    {
         if (meshPropertiesBuffer != null) {
             meshPropertiesBuffer.Release();
         }

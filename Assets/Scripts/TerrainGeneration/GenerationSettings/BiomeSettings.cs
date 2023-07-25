@@ -59,9 +59,6 @@ public class BiomeSettings : ScriptableObject
     public Biomes biome = Biomes.Forest;
     public Texture2D baseTexture;
     public float baseTextureScale = 1f;
-    
-    // add the terrain details here:
-    //public TerrainDetailSettings terrainDetailSettings;
     public TerrainDetailSettings terrainDetailSettings;
 
 
