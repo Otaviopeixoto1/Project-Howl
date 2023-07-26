@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Custom_InstancedIndirectColor
+  m_Name: GPUInstancingMaterial
   m_Shader: {fileID: 4800000, guid: dc080ea17401edd1b86908d7edbed32b, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0

@@ -21,3 +21,5 @@ MonoBehaviour:
   noiseFrequencyRange: {x: 0.01, y: 0.11600716}
   noiseLacunarityRange: {x: 0.24243084, y: 0.4924308}
   noisePersistenceRange: {x: 6.06, y: 10}
+  terrainDetailSettings: {fileID: 11400000, guid: 0a4409063a60616cb88470da141239ee,
+    type: 2}

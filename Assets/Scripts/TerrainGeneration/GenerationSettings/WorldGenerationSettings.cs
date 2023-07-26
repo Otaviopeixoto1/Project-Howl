@@ -59,6 +59,7 @@ public class WorldGenerationSettings : ScriptableObject
         UnityEngine.Random.InitState(worldSeed);
         Dictionary<Biomes,BiomeSettings> availableBiomes = GetAvailableBiomes();
         Debug.Log("assingning new biomes. Seed = " + worldSeed);
+
         switch (worldMapType)
         {
             case WorldMapType.Default:
@@ -140,7 +141,7 @@ public class WorldGenerationSettings : ScriptableObject
         } 
     }
 
-    //selects a rando element from the list and moves int to the back;
+    //selects a random element from the list and moves int to the back;
     private Biomes RandomStackSelect(List<Biomes> list, int end, int start = 0)
     {
         if (start < 0)
@@ -170,11 +171,25 @@ public class WorldGenerationSettings : ScriptableObject
         return worldSettings[index].GetTopographySettings();
     }
 
-
-
     public PrimaryGenerationSettings GetPrimarySettings(int index)
     {
-        return  worldSettings[index].GetPrimarySettings();
+        return worldSettings[index].GetPrimarySettings();
+    }
+
+    public TerrainDetailSettings GetDetailSettings(int index)
+    {
+        return worldSettings[index].terrainDetailSettings;
+    }
+
+    public Dictionary<Biomes, TerrainDetailSettings> GetAllDetailSettings()
+    {
+        Dictionary<Biomes,TerrainDetailSettings> detailGenSettings = new Dictionary<Biomes, TerrainDetailSettings>();
+
+        foreach(BiomeSettings settings in biomeGenerationSettings)
+        {
+            detailGenSettings[settings.biome] = settings.terrainDetailSettings;
+        }
+        return detailGenSettings;
     }
 
 

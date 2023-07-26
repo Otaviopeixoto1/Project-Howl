@@ -1,4 +1,4 @@
-Shader "Custom/InstancedIndirectColor" {
+Shader "Custom/InstancedIndirect" {
     SubShader {
         Tags { "RenderType" = "Opaque" }
 

@@ -59,11 +59,6 @@ public class BiomeSettings : ScriptableObject
     public Biomes biome = Biomes.Forest;
     public Texture2D baseTexture;
     public float baseTextureScale = 1f; 
-    public TerrainDetailSettings terrainDetailSettings;
-
-
-
-
 
 
     [Header("Topography Settings")]
@@ -85,6 +80,9 @@ public class BiomeSettings : ScriptableObject
     public Vector2 noiseLacunarityRange;
     [MinMaxSlider(0.01f,10)]
     public Vector2 noisePersistenceRange;
+
+    [Header("Terrain Object Generation Settings")]
+    public TerrainDetailSettings terrainDetailSettings;
 
 
 
@@ -125,6 +123,7 @@ public class BiomeSettings : ScriptableObject
             noisePersistenceRange
         );
     }
+
 
     
 }

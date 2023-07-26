@@ -7,6 +7,7 @@ public class TerrainObjectsManager
     private TerrainManager terrainManager;
     private WorldSampler worldSampler;//this will contain the generation settings that will contain the detail settings
 
+    private TerrainChunk currentChunk;
     private Vector2Int currentChunkPos;
     private Vector2Int currentSubChunkPos; //used to check if the player moved 
 
@@ -34,7 +35,7 @@ public class TerrainObjectsManager
     public void UpdateObjectChunks(Vector2 viewerWorldPos, Dictionary<Vector2Int,TerrainChunk> terrainChunks)
     {
         Vector2Int chunkPos = terrainManager.WorldToChunkCoords(viewerWorldPos);
-        TerrainChunk currentChunk = terrainChunks[chunkPos];
+        currentChunk = terrainChunks[chunkPos];
         Vector2Int subChunkPos = currentChunk.WorldToGlobalSubChunkCoords(viewerWorldPos, subChunkSubdivision);
         
         DrawDetails();
@@ -97,7 +98,14 @@ public class TerrainObjectsManager
                 
                 TerrainChunk nChunk = terrainChunks[nChunkPos];
 
-                detailChunks[index] = new DetailChunk(testMaterial, nChunk.GetSubChunkFromGlobalPos(nSubChunkPos, subChunkSubdivision));
+                int subChunkSize =  currentChunk.GetSize()/MathMisc.TwoPowX(subChunkSubdivision);
+                Vector2 nWorldPos = (nSubChunkPos - (MathMisc.TwoPowX(subChunkSubdivision - 1) - 0.5f) *  Vector2.one) * subChunkSize;
+
+                ///////////////////////////////////////////////////////////////////////////////////////////////////
+                TerrainDetailSettings detailSettings = worldSampler.SampleDetails(nWorldPos.x,nWorldPos.y);
+                //worldSampler.SampleDetails(nWorldPos.x,nWorldPos.y);////////////////////////////////////////////
+
+                detailChunks[index] = new DetailChunk(testMaterial, nChunk.GetSubChunk(nWorldPos, subChunkSubdivision));
                 
             }
         }

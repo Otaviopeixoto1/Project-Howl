@@ -23,9 +23,8 @@ public class WorldSampler
     public List<BiomeSampler> biomeSamplers; 
     public BiomeLinks biomeLinks; 
 
+    public Dictionary<Biomes, TerrainDetailSettings> detailGenSettings; 
 
-    //Generate the terrain structures on the world manager and sample them here
-    //also add a random detail sampler to decite what details will be spawned on each biome
     
 
 
@@ -45,6 +44,7 @@ public class WorldSampler
         this.biomeLinks.GenerateLinksFromGrid(); 
 
         GenerateWorldAtlas(worldGenerationSettings);
+        this.detailGenSettings = worldGenerationSettings.GetAllDetailSettings();
     }
 
     /// <summary>
@@ -58,6 +58,7 @@ public class WorldSampler
         this.biomeMapSize = worldGenerationSettings.biomeMapSize;
         this.biomeMapScale = worldGenerationSettings.biomeMapScale;
         this.biomeGridSize = worldGenerationSettings.biomeGridSize;
+        this.detailGenSettings = worldGenerationSettings.GetAllDetailSettings();
         
     }
 
@@ -109,7 +110,6 @@ public class WorldSampler
 
 
         int cellId = BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, biomeGridSize);
-
 
         BiomeSampler biomeSampler = biomeSamplers[cellId];
         float cellValue = biomeSampler.SampleBiome(x,y).r;
@@ -205,6 +205,31 @@ public class WorldSampler
         return finalColor;
     }
     
+    public Biomes SampleBiome(float _x, float _y) 
+    {
+
+        float x = biomeMapScale * _x;
+        float y = biomeMapScale * _y;
+
+        
+        if (x < 0 || y < 0 || x > biomeMapSize || y > biomeMapSize)
+        {
+            return Biomes.HighMountains;
+        }
+
+        int cellId = BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, biomeGridSize);
+
+        BiomeSampler biomeSampler = biomeSamplers[cellId];
+        
+
+        return biomeSampler.biomeType;
+    }
+
+    public TerrainDetailSettings SampleDetails(float _x, float _y) 
+    {
+        return detailGenSettings[SampleBiome(_x,_y)];
+    }
+
     public float GetBiomeMapScale()
     {
         return biomeMapScale;

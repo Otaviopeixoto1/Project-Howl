@@ -129,8 +129,6 @@ public class QuadChunk
         
         int subChunkSize = chunkSize/MathMisc.TwoPowX(subdivision);
 
-
-        //FIX THIS, IT WILL BE EASIER
         Vector2 worldPos = (globalPos - (MathMisc.TwoPowX(subdivision - 1) - 0.5f) *  Vector2.one) * subChunkSize;
         
         Vector2Int subChunkPos = WorldToSubChunkCoords(worldPos, subdivision);

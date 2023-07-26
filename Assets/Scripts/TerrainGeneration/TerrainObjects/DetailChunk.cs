@@ -23,7 +23,6 @@ public class DetailChunk
     private ComputeBuffer argsBuffer;
     private Mesh mesh;
     private Bounds bounds;
-
     private SubChunk subChunk;
 
 
