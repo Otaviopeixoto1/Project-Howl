@@ -51,22 +51,25 @@ public class DetailChunk
         this.subChunk = subChunk;
         this.bounds = subChunk.GetBounds();
         this.propertyBlock = new MaterialPropertyBlock();
+
         if (subChunk.IsReady())
         {
-            InitializeBuffers(subChunk.GetVertices());
+            //subChunk should contain the chunk data tree. USE IT TO ELIMINATE OCCUPIED POSITIONS
+            InitializeBuffers();
         }
         
 
     }
 
 
-
-
-
-
-    private void InitializeBuffers(List<Vector3> positions) {
+    //pass in the subchunk and all data necessary to sample different biomes as well
+    private void InitializeBuffers() {
         
+        List<Vector3> positions = subChunk.GetVertices();
         int population = positions.Count;
+        /*
+            Use the generation settings to get the grid of points 
+        */
 
         // Argument buffer used by DrawMeshInstancedIndirect.
         uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
@@ -101,6 +104,34 @@ public class DetailChunk
         propertyBlock.SetBuffer("_Properties", meshPropertiesBuffer);
         //material.SetBuffer("_Properties", meshPropertiesBuffer);
     }
+
+    public void Draw()
+    {   
+        if (meshPropertiesBuffer != null && argsBuffer != null)
+        {
+            Graphics.DrawMeshInstancedIndirect(mesh, 0, material, bounds, argsBuffer, properties:propertyBlock);
+        }
+        else if (subChunk.IsReady())
+        {
+            InitializeBuffers();
+        }
+        
+        
+    }
+
+    public void Clear() 
+    {
+        if (meshPropertiesBuffer != null) {
+            meshPropertiesBuffer.Release();
+        }
+        meshPropertiesBuffer = null;
+
+        if (argsBuffer != null) {
+            argsBuffer.Release();
+        }
+        argsBuffer = null;
+    }
+
 
     // Create a quad mesh
     private Mesh CreateQuad(float width = 1f, float height = 1f) {
@@ -145,34 +176,5 @@ public class DetailChunk
     }
 
 
-    
-
-    public void Draw()
-    {   
-        if (meshPropertiesBuffer != null && argsBuffer != null)
-        {
-            Graphics.DrawMeshInstancedIndirect(mesh, 0, material, bounds, argsBuffer, properties:propertyBlock);
-        }
-        else if (subChunk.IsReady())
-        {
-            InitializeBuffers(subChunk.GetVertices());
-        }
-        
-        
-    }
-
-
-    public void Clear() 
-    {
-        if (meshPropertiesBuffer != null) {
-            meshPropertiesBuffer.Release();
-        }
-        meshPropertiesBuffer = null;
-
-        if (argsBuffer != null) {
-            argsBuffer.Release();
-        }
-        argsBuffer = null;
-    }
 
 }

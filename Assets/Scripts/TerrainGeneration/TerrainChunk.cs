@@ -7,13 +7,26 @@ using UnityEngine;
 //each node must have the data necessary for a subchunk to generate all vertex positions belonging to that node
 public class ChunkTreeNode
 {
-    int index;
-    int size;
-    int depth;
+    public int depth;
+
+    //if the node has no children, it means it will be a totaly free node (can be used to place details)
+    public ChunkTreeNode[] children = new ChunkTreeNode[4];
 
     public ChunkTreeNode()
     {
 
+    }
+
+    public bool IsEmpty()
+    {
+        return true;
+    }
+
+    //returns a list containing fractional positions of all vertices belonging to the children of this node at a 
+    //certain relative depth. A relative depth of 0 gives the vertices of the current node
+    public List<Vector2> GetPositions(int relatDepth)
+    {
+        return null;
     }
 
 }
@@ -22,6 +35,10 @@ public class ChunkDataTree // Quadtree to store the chunk objects information as
 {
     private ChunkTreeNode head;
 
+    //private terrain objects list (a list containing all objects on this tree. they should all be parented to the)
+    //main chunk
+    //the tree data is only deleted when the terrain chunk is deleted, so it will never generate duplicated objects
+    
 
     public ChunkDataTree(ChunkTreeNode head = null)
     {
@@ -237,7 +254,7 @@ public class SubChunk : QuadChunk
         this.worldPosition = relativePos + parentChunk.GetWorldPosition();
 
         this.bounds = new Bounds(new Vector3(worldPosition.x,0,worldPosition.y), 
-                                    new Vector3(1,10,1) * chunkSize * scale);
+                                    new Vector3(1,50,1) * chunkSize * scale);
     }
 
     public override List<Vector3> GetVertices()
@@ -274,6 +291,11 @@ public class SubChunk : QuadChunk
     //Interpolate vertex positions based on the input fractional coordinates 
     public Vector3 SamplePosition(Vector2 fracPos)
     {
+        //vertices start at position * chunkSize and end at (position + Vector2Int.one) * chunkSize
+        //the input position will be translated to chunk position by doing: 
+        //chunkPos = (position + fracPos) * 30 (as long as fracPos is between 0 and 1)
+        //that can be converted into index by doing:
+        //index = x + (parentChunk.GetSize() + 1) * y
         return Vector3.zero;
     }
 
@@ -362,6 +384,7 @@ public class TerrainChunk : QuadChunk
         chunkObject.SetActive(visible);
         if (!visible)
         {
+            vertices?.Clear();
             vertices = null;
         }
     }

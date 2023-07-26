@@ -247,46 +247,6 @@ public class TerrainManager : MonoBehaviour
 
 
 
-
-    //remove these ?
-
-    //Currently NOT WORKING
-    public Vector3 GetNormal(Vector2 worldPos)
-    {
-        if (worldSampler == null)
-        {
-            return Vector3.up;
-        }
-        Vector2Int gridCoords = WorldToGridCoords(worldPos);
-        float u = worldSampler.SampleHeight(gridCoords.x,gridCoords.y + 1);
-        float d = worldSampler.SampleHeight(gridCoords.x,gridCoords.y - 1);
-        float l = worldSampler.SampleHeight(gridCoords.x - 1,gridCoords.y);
-        float r = worldSampler.SampleHeight(gridCoords.x + 1,gridCoords.y);
-
-        Vector3 t1 = new Vector3(0,u-d,1); 
-        Vector3 t2 = new Vector3(1,r-l,0); 
-        return (Vector3.Cross(t1,t2)).normalized;
-    }
-
-    //Currently NOT WORKING
-    public Vector3 GetNormal(Vector3 worldPos)
-    {
-        if (worldSampler == null)
-        {
-            return Vector3.up;
-        }
-        Vector2Int gridCoords = WorldToGridCoords(worldPos);
-        float u = worldSampler.SampleHeight(gridCoords.x,gridCoords.y + 1);
-        float d = worldSampler.SampleHeight(gridCoords.x,gridCoords.y - 1);
-        float l = worldSampler.SampleHeight(gridCoords.x - 1,gridCoords.y);
-        float r = worldSampler.SampleHeight(gridCoords.x + 1,gridCoords.y);
-
-        Vector3 t1 = new Vector3(0,u-d,1); 
-        Vector3 t2 = new Vector3(1,r-l,0); 
-        return (Vector3.Cross(t1,t2)).normalized;
-    }
-
-
     public Vector2Int WorldToGridCoords(Vector2 worldPos)
     {
         int currentChunkX = Mathf.RoundToInt(worldPos.x/(chunkScale));
