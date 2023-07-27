@@ -318,7 +318,7 @@ public class TerrainChunk : QuadChunk
 
     
 
-    public TerrainChunk(Vector2Int position, SamplerThreadData mapData, Transform parent, Material material, ChunkThreadManager threadManager)
+    public TerrainChunk(Vector2Int position, ChunkGenerationThreadData mapData, Transform parent, Material material, ChunkThreadManager threadManager)
     {
         this.chunkSize = mapData.chunkSize;
         this.scale = mapData.chunkScale;
@@ -408,7 +408,7 @@ public class TerrainChunk : QuadChunk
 
 
 
-    public Texture2D CreateDebugTexture(WorldSampler sampler)
+    public Texture2D CreateDebugTexture(WorldGenerator sampler)
     {
         Texture2D tex = new Texture2D(chunkSize + 1, chunkSize + 1);
         Color[] colors = new Color[(chunkSize + 1) * (chunkSize + 1)];

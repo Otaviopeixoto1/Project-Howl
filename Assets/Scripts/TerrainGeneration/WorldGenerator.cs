@@ -10,7 +10,7 @@ using UnityEngine;
 /// <summary>
 /// Class used to sample the entire map and handle the blending between different (neighbouring) biome cells
 /// </summary>
-public class WorldSampler
+public class WorldGenerator
 {
     [Range(1,240)]
     public int biomeMapSize;
@@ -32,7 +32,7 @@ public class WorldSampler
     /// <summary>
     /// Constructor used when generating the biome samplers for the first time
     /// </summary>
-    public WorldSampler(BiomeSampler biomeIdSampler, List<BiomeSampler> biomeSamplers, WorldGenerationSettings worldGenerationSettings)
+    public WorldGenerator(BiomeSampler biomeIdSampler, List<BiomeSampler> biomeSamplers, WorldGenerationSettings worldGenerationSettings)
     {
         this.biomeIdSampler = biomeIdSampler;
         this.biomeSamplers = biomeSamplers;
@@ -50,7 +50,7 @@ public class WorldSampler
     /// <summary>
     /// Constructor used for loading previously generated world biome samplers into a world sampler
     /// </summary>
-    public WorldSampler(BiomeSampler biomeIdSampler, List<BiomeSampler> biomeSamplers, BiomeLinks biomeLinks, WorldGenerationSettings worldGenerationSettings)
+    public WorldGenerator(BiomeSampler biomeIdSampler, List<BiomeSampler> biomeSamplers, BiomeLinks biomeLinks, WorldGenerationSettings worldGenerationSettings)
     {
         this.biomeIdSampler = biomeIdSampler;
         this.biomeSamplers = biomeSamplers;

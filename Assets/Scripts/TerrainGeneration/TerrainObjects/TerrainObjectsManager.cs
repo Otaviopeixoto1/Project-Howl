@@ -5,7 +5,7 @@ using UnityEngine;
 public class TerrainObjectsManager
 {
     private TerrainManager terrainManager;
-    private WorldSampler worldSampler;//this will contain the generation settings that will contain the detail settings
+    private WorldGenerator worldGenerator;//this will contain the generation settings that will contain the detail settings
 
     private TerrainChunk currentChunk;
     private Vector2Int currentChunkPos;
@@ -18,10 +18,10 @@ public class TerrainObjectsManager
     private Material testMaterial;
     
 
-    public TerrainObjectsManager(TerrainManager terrainManager, WorldSampler worldSampler, Material detailTestMaterial)
+    public TerrainObjectsManager(TerrainManager terrainManager, WorldGenerator worldGenerator, Material detailTestMaterial)
     {
         this.terrainManager = terrainManager;
-        this.worldSampler = worldSampler;
+        this.worldGenerator = worldGenerator;
 
 
         this.testMaterial = detailTestMaterial;
@@ -102,7 +102,7 @@ public class TerrainObjectsManager
                 Vector2 nWorldPos = (nSubChunkPos - (MathMisc.TwoPowX(subChunkSubdivision - 1) - 0.5f) *  Vector2.one) * subChunkSize;
 
                 ///////////////////////////////////////////////////////////////////////////////////////////////////
-                TerrainDetailSettings detailSettings = worldSampler.SampleDetails(nWorldPos.x,nWorldPos.y);
+                TerrainDetailSettings detailSettings = worldGenerator.SampleDetails(nWorldPos.x, nWorldPos.y);
                 //worldSampler.SampleDetails(nWorldPos.x,nWorldPos.y);////////////////////////////////////////////
 
                 detailChunks[index] = new DetailChunk(testMaterial, nChunk.GetSubChunk(nWorldPos, subChunkSubdivision));

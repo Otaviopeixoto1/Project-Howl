@@ -21,12 +21,12 @@ public class WorldManager : MonoBehaviour
     [SerializeField]
     private WorldTopographyGenerator worldTopographyGenerator; 
 
-    private WorldSampler worldSampler;
+    private WorldGenerator worldGenerator;
 
 
-    public WorldSampler GetWorldSampler()
+    public WorldGenerator GetWorldGenerator()
     {
-        return worldSampler;
+        return worldGenerator;
     }
 
     /// <summary>
@@ -49,7 +49,7 @@ public class WorldManager : MonoBehaviour
         
 
 
-        worldSampler = new WorldSampler(biomeIdSampler, biomeSamplers, worldGenerationSettings);
+        worldGenerator = new WorldGenerator(biomeIdSampler, biomeSamplers, worldGenerationSettings);
 
     }
 
@@ -93,7 +93,7 @@ public class WorldManager : MonoBehaviour
             //biomeGridSize = loadedSamplerData.gridSize;
             BiomeLinks biomeLinks = loadedSamplerData.biomeLinks;
 
-            worldSampler = new WorldSampler(biomeIdSampler, biomeSamplers, biomeLinks, worldGenerationSettings);
+            worldGenerator = new WorldGenerator(biomeIdSampler, biomeSamplers, biomeLinks, worldGenerationSettings);
             //Check for missing data
             //if missing, generate again. If cant generate, return false
 
@@ -114,15 +114,15 @@ public class WorldManager : MonoBehaviour
     /// </summary>
     public bool Save()
     {
-        BiomeSampler biomeIdSampler = worldSampler.biomeIdSampler;
-        List<BiomeSampler> biomeSamplers = worldSampler.biomeSamplers;
+        BiomeSampler biomeIdSampler = worldGenerator.biomeIdSampler;
+        List<BiomeSampler> biomeSamplers = worldGenerator.biomeSamplers;
 
         if (biomeSamplers == null || biomeIdSampler == null)
         {
             return false;
         }
         Debug.Log("Saving Data");
-        BiomeMapBaker.SaveBaked(worldSampler.biomeGridSize, biomeIdSampler, biomeSamplers, biomeLinks: worldSampler.biomeLinks);
+        BiomeMapBaker.SaveBaked(worldGenerator.biomeGridSize, biomeIdSampler, biomeSamplers, biomeLinks: worldGenerator.biomeLinks);
         return true;
     }
 

@@ -91,7 +91,7 @@ public static class MeshGenerator
     
 
     //Using MapGenerator as sampler:
-    public static MeshData GenerateTerrainFromSampler(MapGenerator sampler, int meshWidth, int meshHeight, float meshScale, int lodBias = 0,bool isThread = false)
+    public static MeshData GenerateTerrainChunk(MapGenerator sampler, int meshWidth, int meshHeight, float meshScale, int lodBias = 0,bool isThread = false)
     {
         AnimationCurve heightCurve;
         if(isThread)
@@ -145,7 +145,7 @@ public static class MeshGenerator
 
     //Using WorldSampler as a sampler. Do meshWidth = meshHeight = chunkSize
     //rename to GenerateChunkFromSampler
-    public static MeshData GenerateTerrainFromSampler(WorldSampler sampler, int meshWidth, int meshHeight, float meshScale, Vector2 sampleOffset, int lodBias = 0, bool isThread = false)
+    public static MeshData GenerateTerrainChunk(WorldGenerator sampler, int meshWidth, int meshHeight, float meshScale, Vector2 sampleOffset, int lodBias = 0, bool isThread = false)
     {
         //data tree used to store all chunk information
 

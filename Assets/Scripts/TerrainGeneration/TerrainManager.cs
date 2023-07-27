@@ -4,28 +4,7 @@ using System;
 using UnityEngine;
 
 
-/// <summary>
-/// Struct used to pass the world sampler and other data to the chunk generation threads
-/// </summary>
-public struct SamplerThreadData
-{
-    public readonly WorldSampler sampler;
-    public readonly Vector2 chunkPosition;
-    public readonly int chunkSize;
-    public readonly float chunkScale;
-    public readonly int meshLodBias;
-    public readonly int colliderLodBias;
 
-    public SamplerThreadData (WorldSampler sampler,Vector2 gridPosition, int chunkSize, float chunkScale, int meshLodBias, int colliderLodBias)
-    {
-        this.sampler = sampler;
-        this.chunkPosition = gridPosition * chunkSize;
-        this.chunkSize = chunkSize;
-        this.chunkScale = chunkScale;
-        this.meshLodBias = meshLodBias;
-        this.colliderLodBias = colliderLodBias;
-    }
-}
 
 
 
@@ -42,7 +21,7 @@ public class TerrainManager : MonoBehaviour
     private TerrainObjectsManager terrainObjectsManager;
 
 
-    private WorldSampler worldSampler;
+    private WorldGenerator worldGenerator;
     private WorldManager worldManager;
 
 
@@ -127,8 +106,8 @@ public class TerrainManager : MonoBehaviour
 
     private void FirstChunkUpdate()
     {
-        worldSampler = worldManager.GetWorldSampler();
-        terrainMaterial.SetFloat("_atlasScale", 1/worldSampler.GetBiomeMapScale());
+        worldGenerator = worldManager.GetWorldGenerator();
+        terrainMaterial.SetFloat("_atlasScale", 1/worldGenerator.GetBiomeMapScale());
 
 
 
@@ -140,7 +119,7 @@ public class TerrainManager : MonoBehaviour
         
         UpdateVisibleChunks(viewerChunkCoords.x, viewerChunkCoords.y);
         
-        terrainObjectsManager = new TerrainObjectsManager(this, worldSampler, detailTestMaterial);
+        terrainObjectsManager = new TerrainObjectsManager(this, worldGenerator, detailTestMaterial);
 
 
         WorldManager.OnSuccessfulLoad -= FirstChunkUpdate;
@@ -206,8 +185,8 @@ public class TerrainManager : MonoBehaviour
                 }
                 else
                 {
-                    SamplerThreadData mapData = new SamplerThreadData(worldSampler, viewChunkCoord, chunkSize, chunkScale, chunkMeshLodBias, chunkColliderLodBias);
-                    terrainChunks.Add(viewChunkCoord, new TerrainChunk(viewChunkCoord, mapData, this.transform, terrainMaterial, chunkThreadManager));
+                    ChunkGenerationThreadData chunkData = new ChunkGenerationThreadData(worldGenerator, viewChunkCoord, chunkSize, chunkScale, chunkMeshLodBias, chunkColliderLodBias);
+                    terrainChunks.Add(viewChunkCoord, new TerrainChunk(viewChunkCoord, chunkData, this.transform, terrainMaterial, chunkThreadManager));
                     //all chunks start as visible
                     visibleChunks.Add(terrainChunks[viewChunkCoord]);
                 }

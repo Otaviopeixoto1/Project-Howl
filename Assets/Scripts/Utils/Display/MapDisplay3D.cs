@@ -54,7 +54,7 @@ public class MapDisplay3D : MapDisplay
         {
             //float[,] map = mapGenerator.GenerateMap();
             //MeshData meshData = MeshGenerator.GenerateTerrainFromMap(map, meshScale);
-            MeshData meshData = MeshGenerator.GenerateTerrainFromSampler(mapGenerator, meshWidth, meshHeight, meshScale, lodBias);
+            MeshData meshData = MeshGenerator.GenerateTerrainChunk(mapGenerator, meshWidth, meshHeight, meshScale, lodBias);
 
             currentMesh = meshData.CreateMesh();
             currentMesh.MarkDynamic();

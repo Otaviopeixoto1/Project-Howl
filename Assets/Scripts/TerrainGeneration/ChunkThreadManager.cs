@@ -1,6 +1,32 @@
 using System;
 using System.Threading;
 using System.Collections.Generic;
+using UnityEngine;
+
+
+/// <summary>
+/// Struct used to pass the world sampler and other data to the chunk generation threads
+/// </summary>
+public struct ChunkGenerationThreadData
+{
+    public readonly WorldGenerator worldGenerator;
+    public readonly Vector2 chunkPosition;
+    public readonly int chunkSize;
+    public readonly float chunkScale;
+    public readonly int meshLodBias;
+    public readonly int colliderLodBias;
+
+    public ChunkGenerationThreadData (WorldGenerator worldGenerator,Vector2 gridPosition, int chunkSize, float chunkScale, int meshLodBias, int colliderLodBias)
+    {
+        this.worldGenerator = worldGenerator;
+        this.chunkPosition = gridPosition * chunkSize;
+        this.chunkSize = chunkSize;
+        this.chunkScale = chunkScale;
+        this.meshLodBias = meshLodBias;
+        this.colliderLodBias = colliderLodBias;
+    }
+}
+
 
 public class ChunkThreadManager
 {
@@ -19,7 +45,7 @@ public class ChunkThreadManager
 		}
     }
 
-    public void RequestMeshData(SamplerThreadData mapData, Action<MeshData, MeshData> callback) {
+    public void RequestMeshData(ChunkGenerationThreadData mapData, Action<MeshData, MeshData> callback) {
 		ThreadStart threadStart = delegate{
 			MeshDataThread(mapData, callback);
 		};
@@ -27,18 +53,18 @@ public class ChunkThreadManager
 		new Thread(threadStart).Start();
 	}
 
-	private void MeshDataThread(SamplerThreadData mapData, Action<MeshData, MeshData> callback) {
-		MeshData meshData = MeshGenerator.GenerateTerrainFromSampler(mapData.sampler, 
-                                                                    mapData.chunkSize + 1, 
-                                                                    mapData.chunkSize + 1, 
-                                                                    mapData.chunkScale, 
-                                                                    mapData.chunkPosition,
-                                                                    mapData.meshLodBias,
-                                                                    true
-                                                                    );
+	private void MeshDataThread(ChunkGenerationThreadData mapData, Action<MeshData, MeshData> callback) {
+		MeshData meshData = MeshGenerator.GenerateTerrainChunk(mapData.worldGenerator, 
+                                                                mapData.chunkSize + 1, 
+                                                                mapData.chunkSize + 1, 
+                                                                mapData.chunkScale, 
+                                                                mapData.chunkPosition,
+                                                                mapData.meshLodBias,
+                                                                true
+                                                                );
 		
 		// Use a different function for the collider mesh
-		MeshData colliderData = MeshGenerator.GenerateTerrainFromSampler(mapData.sampler, 
+		MeshData colliderData = MeshGenerator.GenerateTerrainChunk(mapData.worldGenerator, 
                                                                     mapData.chunkSize + 1, 
                                                                     mapData.chunkSize + 1, 
                                                                     mapData.chunkScale, 

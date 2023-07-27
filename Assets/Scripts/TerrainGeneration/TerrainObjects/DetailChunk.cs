@@ -69,6 +69,10 @@ public class DetailChunk
         /*
             Use the generation settings to get the grid of points 
         */
+        if (population == 0)
+        {
+            return;
+        }
 
         // Argument buffer used by DrawMeshInstancedIndirect.
         uint[] args = new uint[5] { 0, 0, 0, 0, 0 };

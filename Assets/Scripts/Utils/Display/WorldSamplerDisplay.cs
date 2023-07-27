@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(WorldSampler))]
+[RequireComponent(typeof(WorldGenerator))]
 public class WorldSamplerDisplay : MonoBehaviour
 {
     [SerializeField]
@@ -35,9 +35,9 @@ public class WorldSamplerDisplay : MonoBehaviour
 
     public void DisplayTerrainMesh()// get world coordinates as input !
     {
-        WorldSampler worldSampler = worldManager.GetWorldSampler();
-        MeshData meshData = MeshGenerator.GenerateTerrainFromSampler(
-            worldSampler,
+        WorldGenerator worldGenerator = worldManager.GetWorldGenerator();
+        MeshData meshData = MeshGenerator.GenerateTerrainChunk(
+            worldGenerator,
             241,
             241,
             1f,
@@ -55,7 +55,7 @@ public class WorldSamplerDisplay : MonoBehaviour
         {
             return;
         }
-        WorldSampler worldSampler = GetComponent<WorldSampler>();
+        WorldGenerator worldSampler = GetComponent<WorldGenerator>();
 
         Texture2D texture = new Texture2D(241,241);
 
