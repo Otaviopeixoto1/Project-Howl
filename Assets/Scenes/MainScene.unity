@@ -262,7 +262,6 @@ MonoBehaviour:
   chunkMeshLodBias: 0
   chunkColliderLodBias: 6
   normalizedViewDist: 1.2
-  detailTestMaterial: {fileID: 2100000, guid: cf6c52bed7034309aad74e1f40255b19, type: 2}
 --- !u!4 &324677539
 Transform:
   m_ObjectHideFlags: 0

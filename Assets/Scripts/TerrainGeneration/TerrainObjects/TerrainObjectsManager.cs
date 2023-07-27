@@ -99,13 +99,15 @@ public class TerrainObjectsManager
                 TerrainChunk nChunk = terrainChunks[nChunkPos];
 
                 int subChunkSize =  currentChunk.GetSize()/MathMisc.TwoPowX(subChunkSubdivision);
-                Vector2 nWorldPos = (nSubChunkPos - (MathMisc.TwoPowX(subChunkSubdivision - 1) - 0.5f) *  Vector2.one) * subChunkSize;
+                Vector2 nSubChunkWorldPos = SubChunk.GlobalSubChunkToWorldCoords(nSubChunkPos, subChunkSubdivision, subChunkSize);
+
+                SubChunk nSubChunk = nChunk.GetSubChunk(nSubChunkWorldPos, subChunkSubdivision);
 
                 ///////////////////////////////////////////////////////////////////////////////////////////////////
-                TerrainDetailSettings detailSettings = worldGenerator.SampleDetails(nWorldPos.x, nWorldPos.y);
+                TerrainDetailSettings[] detailSettings = worldGenerator.GetDetailsOnBounds(nSubChunk.GetBounds());
                 //worldSampler.SampleDetails(nWorldPos.x,nWorldPos.y);////////////////////////////////////////////
-
-                detailChunks[index] = new DetailChunk(testMaterial, nChunk.GetSubChunk(nWorldPos, subChunkSubdivision));
+                
+                detailChunks[index] = new DetailChunk(testMaterial, nSubChunk);
                 
             }
         }

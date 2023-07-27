@@ -172,7 +172,7 @@ public static class MeshGenerator
         {
             for (int x = 0; x < meshWidth; x += widthIncrement)
             {
-                meshData.vertices[vertexIndex] = (new Vector3(x, sampler.SampleHeight(x + sampleOffset.x, y + sampleOffset.y), y) 
+                meshData.vertices[vertexIndex] = (new Vector3(x, sampler.GetHeight(x + sampleOffset.x, y + sampleOffset.y), y) 
                                                 + centerOffset) * meshScale;
                 meshData.uvs[vertexIndex] = new Vector2(x/(float)meshWidth, y/(float)meshHeight);
                 meshData.atlasUvs[vertexIndex] = new Vector2(((x/(float)meshWidth) + sampleOffset.x)/(float)meshWidth, ((y/(float)meshHeight) + sampleOffset.y)/(float)meshHeight);

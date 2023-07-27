@@ -9,6 +9,14 @@ public enum WorldMapType
 }
 
 
+public struct GlobalGenerationSettings
+{
+    public readonly Material defaultDetailMaterial;
+    public GlobalGenerationSettings(Material defaultDetailMaterial)
+    {
+        this.defaultDetailMaterial = defaultDetailMaterial;
+    }
+}
 
 
 //Stores the information about the map style, as well as information for generating heightmaps of 
@@ -21,7 +29,8 @@ public class WorldGenerationSettings : ScriptableObject
     
     public WorldMapType worldMapType = WorldMapType.Default;
 
-    
+
+    [Header("Biome Settings")]
     public int biomeGridSize = 4; // only makes sense if its a grid world type (WorldMapType.Default)
 
     public int biomeMapSize = 240;
@@ -33,10 +42,12 @@ public class WorldGenerationSettings : ScriptableObject
     public float biomeCellJitter = 0.5f;
 
 
-    //Displayed List for available biomes
+    
     public List<BiomeSettings> biomeGenerationSettings = new List<BiomeSettings>();
     private BiomeSettings[] worldSettings;
 
+    [Header("Global Generation Settings")]
+    public Material defaultDetailMaterial;
 
 
 
@@ -162,6 +173,11 @@ public class WorldGenerationSettings : ScriptableObject
         return randomElement;
     }
 
+    public GlobalGenerationSettings GetGlobalGenerationSettings()
+    {
+        return new GlobalGenerationSettings(defaultDetailMaterial);
+    }
+
     
     //gets the topography settings based on cell index. Only call after apply
     public TopographySettings GetTopographySettings(int index)
@@ -197,6 +213,7 @@ public class WorldGenerationSettings : ScriptableObject
     {
         return false;
     }
+
 
 
 

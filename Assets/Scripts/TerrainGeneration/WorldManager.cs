@@ -8,6 +8,7 @@ using UnityEngine;
 
 //Manage the setup for generation settings as well as weather (clouds), world events, etc ...
 
+[RequireComponent(typeof(TerrainManager))]
 public class WorldManager : MonoBehaviour
 {
     public delegate void LoadEvent();
@@ -15,6 +16,8 @@ public class WorldManager : MonoBehaviour
     public static event LoadEvent OnSave;
     public static event LoadEvent OnSuccessfulLoad;
 
+
+    private TerrainManager terrainManager;
 
     [SerializeField]
     private WorldGenerationSettings worldGenerationSettings;
@@ -132,10 +135,12 @@ public class WorldManager : MonoBehaviour
 
     void Start()
     {
+        terrainManager = GetComponent<TerrainManager>();
+
         if(Load())
         {
             Debug.Log("Successful Load");
-            OnSuccessfulLoad();
+            //OnSuccessfulLoad();
         }
         else
         {
@@ -145,7 +150,9 @@ public class WorldManager : MonoBehaviour
             Save();
             //OnSave();
             Load(); // has to be loaded again due to bug
-            OnSuccessfulLoad();
+            //OnSuccessfulLoad();
+            
         }
+        terrainManager.Setup(this, worldGenerator, worldGenerationSettings.GetGlobalGenerationSettings());
     }
 }

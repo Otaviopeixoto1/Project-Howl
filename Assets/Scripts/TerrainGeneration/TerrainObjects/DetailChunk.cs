@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-//the detail chunk will sample the biome texture to identify what can be drawn and where
-//for better performance and logistic, a single atlas texture can be used for all details !!
-//this way we dont have to use different materials, every material samples the same texture 
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 public class DetailChunk 
 {
-    //ADD SUPPORT FOR MULTIPLE DETAIL TYPES !
-    //ADD A CLASS FOR EACH DETAIL THAT GENERATES THE CORRESPONDING BUFFERS FOR THEM
+
+    /*
+    THE MATERIAL MUST BE THE SAME FOR ALL DETAILS AND ALL DETAILS SHOULD SAMPLE THE SAME ATLAS !!
+    
+    
+    */
+
 
     public Material material;
 
@@ -42,7 +40,12 @@ public class DetailChunk
     }
 
 
-    //Use a terrainDetailsSettings to initialize this
+    //Use a terrainDetailsSettings to initialize this.
+    /*
+    DETAIL SETTING SHOULD ONLY AFFECT THE BUFFER INITIALIZATION, unless we are overriding the detail material !! 
+    
+    EVERYTHING ELSE SHOULD WORK THE SAME
+    */
     public DetailChunk(Material material, SubChunk subChunk)
     {
         this.material = material;
@@ -110,6 +113,11 @@ public class DetailChunk
 
     public void Draw()
     {   
+        /*
+        if there was a problem with detail settings (eg: they are all null), then draw nothing
+        */
+
+
         if (meshPropertiesBuffer != null && argsBuffer != null)
         {
             Graphics.DrawMeshInstancedIndirect(mesh, 0, material, bounds, argsBuffer, properties:propertyBlock);

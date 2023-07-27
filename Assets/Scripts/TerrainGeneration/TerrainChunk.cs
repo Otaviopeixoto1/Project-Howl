@@ -285,6 +285,10 @@ public class SubChunk : QuadChunk
         return parentChunk.IsReady();
     }
 
+    public static Vector2 GlobalSubChunkToWorldCoords(Vector2 gSubChunkCoords, int subdivision, int subChunkSize)
+    {
+        return (gSubChunkCoords - (MathMisc.TwoPowX(subdivision - 1) - 0.5f) *  Vector2.one) * subChunkSize;
+    }
 
     //Interpolate vertex positions based on the input fractional coordinates 
     public Vector3 SamplePosition(Vector2 fracPos)
@@ -417,7 +421,7 @@ public class TerrainChunk : QuadChunk
         {
             for (int x = 0; x <= chunkSize; x += 1)
             {
-                colors[x + y * (chunkSize + 1)] = sampler.SampleColor((x + worldPosition.x)/scale, (y + worldPosition.y)/scale);
+                colors[x + y * (chunkSize + 1)] = sampler.GetColor((x + worldPosition.x)/scale, (y + worldPosition.y)/scale);
             }
         }
         tex.SetPixels(colors);

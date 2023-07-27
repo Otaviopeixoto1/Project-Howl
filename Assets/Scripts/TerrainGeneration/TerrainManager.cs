@@ -11,7 +11,6 @@ using UnityEngine;
 
 
 
-[RequireComponent(typeof(WorldManager))]
 public class TerrainManager : MonoBehaviour
 {  
     private Dictionary<Vector2Int, TerrainChunk> terrainChunks = new Dictionary<Vector2Int, TerrainChunk>();
@@ -57,21 +56,10 @@ public class TerrainManager : MonoBehaviour
 
 
 
-
-
-/////////////////////- JUST FOR TESTING -///////////////////////////
-    [SerializeField]
-    private Material detailTestMaterial;
-////////////////////////////////////////////////////////////////////
-
-
-
-
-
     void Awake()
     {
-        chunkThreadManager = new ChunkThreadManager();
-        worldManager = GetComponent<WorldManager>();
+        //chunkThreadManager = new ChunkThreadManager();
+        enabled = false;
     }
 
     void Start()
@@ -93,20 +81,22 @@ public class TerrainManager : MonoBehaviour
     }
     void OnEnable()
     {
-        WorldManager.OnSuccessfulLoad += FirstChunkUpdate;
+        //WorldManager.OnSuccessfulLoad += Setup;
     }
 
 
     void OnDisable()
     {
-        WorldManager.OnSuccessfulLoad -= FirstChunkUpdate;
-        terrainObjectsManager.ClearObjects();
+        //WorldManager.OnSuccessfulLoad -= Setup;
+        terrainObjectsManager?.ClearObjects();
     }
 
 
-    private void FirstChunkUpdate()
+    public void Setup(WorldManager worldManager, WorldGenerator worldGenerator, GlobalGenerationSettings globalGenerationSettings)
     {
-        worldGenerator = worldManager.GetWorldGenerator();
+        this.chunkThreadManager = new ChunkThreadManager();
+        this.worldManager = worldManager;
+        this.worldGenerator = worldGenerator;
         terrainMaterial.SetFloat("_atlasScale", 1/worldGenerator.GetBiomeMapScale());
 
 
@@ -119,10 +109,10 @@ public class TerrainManager : MonoBehaviour
         
         UpdateVisibleChunks(viewerChunkCoords.x, viewerChunkCoords.y);
         
-        terrainObjectsManager = new TerrainObjectsManager(this, worldGenerator, detailTestMaterial);
+        terrainObjectsManager = new TerrainObjectsManager(this, worldGenerator, globalGenerationSettings.defaultDetailMaterial);
 
-
-        WorldManager.OnSuccessfulLoad -= FirstChunkUpdate;
+        enabled = true;
+        //WorldManager.OnSuccessfulLoad -= Setup;
     }
 
 

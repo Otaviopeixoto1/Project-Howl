@@ -15,7 +15,9 @@ public class TerrainDetailSettings : ScriptableObject
 {
     public float density = 1f;//amount of grass quads generated per vertex on the terrain chunk mesh
     public DetailMeshType meshType = DetailMeshType.Quad;
-    public Material material;
+
+    [Tooltip("This material will override the default material used in the detail rendering")]
+    public Material materialOverride; 
 
     [Header("Atlas Texture Settings")]
     public Texture2D atlasTexture;

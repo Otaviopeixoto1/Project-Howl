@@ -12,9 +12,7 @@ using UnityEngine;
 /// </summary>
 public class WorldGenerator
 {
-    [Range(1,240)]
     public int biomeMapSize;
-    [Range(0.01f,1)]
     public float biomeMapScale = 1f;
     public int biomeGridSize;
 
@@ -97,7 +95,7 @@ public class WorldGenerator
 
 
 
-    public float SampleHeight(float _x, float _y) 
+    public float GetHeight(float _x, float _y) 
     {
 
         float x = biomeMapScale * _x;
@@ -170,7 +168,7 @@ public class WorldGenerator
         return finalColor;
     }
 
-    public Color SampleColor(float _x, float _y)
+    public Color GetColor(float _x, float _y)
     {
         float x = biomeMapScale * _x;
         float y = biomeMapScale * _y;
@@ -205,7 +203,7 @@ public class WorldGenerator
         return finalColor;
     }
     
-    public Biomes SampleBiome(float _x, float _y) 
+    public Biomes GetBiome(float _x, float _y) 
     {
 
         float x = biomeMapScale * _x;
@@ -225,9 +223,42 @@ public class WorldGenerator
         return biomeSampler.biomeType;
     }
 
-    public TerrainDetailSettings SampleDetails(float _x, float _y) 
+    public TerrainDetailSettings GetDetails(float _x, float _y) 
     {
-        return detailGenSettings[SampleBiome(_x,_y)];
+        Biomes biome = GetBiome(_x,_y);
+        if (detailGenSettings.ContainsKey(biome))
+        {
+            return detailGenSettings[biome];
+        }
+        else
+        {
+            return null;
+        }
+        
+    }
+
+    public TerrainDetailSettings[] GetDetailsOnBounds(Bounds bounds) 
+    {
+        TerrainDetailSettings[] allDetails = new TerrainDetailSettings[4]
+        {
+            GetDetails(bounds.center.x - bounds.extents.x, bounds.center.y - bounds.extents.y),
+            GetDetails(bounds.center.x + bounds.extents.x, bounds.center.y - bounds.extents.y),
+            GetDetails(bounds.center.x - bounds.extents.x, bounds.center.y + bounds.extents.y),
+            GetDetails(bounds.center.x + bounds.extents.x, bounds.center.y + bounds.extents.y)
+        };
+        /*
+        
+        List<TerrainDetailSettings> uniqueDetails = new List<TerrainDetailSettings>();
+        foreach(TerrainDetailSettings detail in allDetails)
+        {
+            if (!uniqueDetails.Contains(detail))
+            {
+                uniqueDetails.Add(detail);
+            }
+        }*/
+
+        return allDetails;
+
     }
 
     public float GetBiomeMapScale()

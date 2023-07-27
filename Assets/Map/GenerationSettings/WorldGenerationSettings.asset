@@ -12,11 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3aed98fd993dc84ac9d91f3924e80488, type: 3}
   m_Name: WorldGenerationSettings
   m_EditorClassIdentifier: 
-  worldSeed: 350
   worldMapType: 0
   biomeGridSize: 4
+  biomeMapSize: 240
+  biomeMapScale: 0.05
+  biomeCellJitter: 0.5
   biomeGenerationSettings:
   - {fileID: 11400000, guid: 72469c1e55b913c2cae1467b2f911e53, type: 2}
   - {fileID: 11400000, guid: 3914b2c643090281facfb4988a7bc1ff, type: 2}
   - {fileID: 11400000, guid: 26f49bb48db86e96cacca017045145f7, type: 2}
   - {fileID: 11400000, guid: cbd5a8faeba4b2d0fb5df17f80766cd3, type: 2}
+  defaultDetailMaterial: {fileID: 2100000, guid: cf6c52bed7034309aad74e1f40255b19,
+    type: 2}

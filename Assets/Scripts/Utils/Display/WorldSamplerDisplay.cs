@@ -55,7 +55,7 @@ public class WorldSamplerDisplay : MonoBehaviour
         {
             return;
         }
-        WorldGenerator worldSampler = GetComponent<WorldGenerator>();
+        WorldGenerator worldGenerator = GetComponent<WorldGenerator>();
 
         Texture2D texture = new Texture2D(241,241);
 
@@ -66,7 +66,7 @@ public class WorldSamplerDisplay : MonoBehaviour
             for (int y = 0; y < 241; y++)
             {
                 
-                colorMap[x + y * 241] = worldSampler.SampleColor(x,y);
+                colorMap[x + y * 241] = worldGenerator.GetColor(x,y);
             }
         }
         texture.SetPixels(colorMap);
