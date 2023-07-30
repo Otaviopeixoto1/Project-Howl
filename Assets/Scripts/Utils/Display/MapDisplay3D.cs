@@ -54,7 +54,7 @@ public class MapDisplay3D : MapDisplay
         {
             //float[,] map = mapGenerator.GenerateMap();
             //MeshData meshData = MeshGenerator.GenerateTerrainFromMap(map, meshScale);
-            MeshData meshData = MeshGenerator.GenerateTerrainChunk(mapGenerator, meshWidth, meshHeight, meshScale, lodBias);
+            MeshData meshData = ChunkGenerator.GenerateRectMesh(mapGenerator, meshWidth, meshHeight, meshScale, lodBias);
 
             currentMesh = meshData.CreateMesh();
             currentMesh.MarkDynamic();
@@ -68,7 +68,7 @@ public class MapDisplay3D : MapDisplay
         else
         {
             //Debug.Log("updating Verts");
-            Vector3[] vertices = MeshGenerator.CalculateMeshVertices(mapGenerator, meshWidth, meshHeight, meshScale,lodBias);
+            Vector3[] vertices = ChunkGenerator.CalculateMeshVertices(mapGenerator, meshWidth, meshHeight, meshScale,lodBias);
             currentMesh.SetVertices(vertices);
             currentMesh.RecalculateNormals();
             meshRenderer.sharedMaterial = mapMaterial;

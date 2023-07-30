@@ -36,9 +36,8 @@ public class WorldSamplerDisplay : MonoBehaviour
     public void DisplayTerrainMesh()// get world coordinates as input !
     {
         WorldGenerator worldGenerator = worldManager.GetWorldGenerator();
-        MeshData meshData = MeshGenerator.GenerateTerrainChunk(
+        MeshData meshData = ChunkGenerator.GenerateQuadMesh(
             worldGenerator,
-            241,
             241,
             1f,
             Vector2.zero // offset in world coordinates

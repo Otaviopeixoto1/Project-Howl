@@ -30,7 +30,7 @@ public struct ChunkGenerationThreadData
 
 public class ChunkThreadManager
 {
-    private Queue<MeshThreadInfo> meshDataThreadInfoQueue = new Queue<MeshThreadInfo>();
+    private Queue<ChunkThreadResult> meshDataThreadInfoQueue = new Queue<ChunkThreadResult>();
 
 
     public void CheckThreads()
@@ -39,13 +39,14 @@ public class ChunkThreadManager
         {
 			for (int i = 0; i < meshDataThreadInfoQueue.Count; i++) 
             {
-				MeshThreadInfo threadInfo = meshDataThreadInfoQueue.Dequeue();
-				threadInfo.callback(threadInfo.meshData, threadInfo.colliderData);
+				ChunkThreadResult threadInfo = meshDataThreadInfoQueue.Dequeue();
+				threadInfo.callback(threadInfo.chunkData);
 			}
 		}
     }
 
-    public void RequestMeshData(ChunkGenerationThreadData mapData, Action<MeshData, MeshData> callback) {
+    public void RequestMeshData(ChunkGenerationThreadData mapData, Action<ChunkData> callback) 
+    {
 		ThreadStart threadStart = delegate{
 			MeshDataThread(mapData, callback);
 		};
@@ -53,45 +54,35 @@ public class ChunkThreadManager
 		new Thread(threadStart).Start();
 	}
 
-	private void MeshDataThread(ChunkGenerationThreadData mapData, Action<MeshData, MeshData> callback) {
-		MeshData meshData = MeshGenerator.GenerateTerrainChunk(mapData.worldGenerator, 
-                                                                mapData.chunkSize + 1, 
+	private void MeshDataThread(ChunkGenerationThreadData mapData, Action<ChunkData> callback) 
+    {
+		ChunkData chunkData = ChunkGenerator.GenerateTerrainChunk(mapData.worldGenerator, 
                                                                 mapData.chunkSize + 1, 
                                                                 mapData.chunkScale, 
                                                                 mapData.chunkPosition,
                                                                 mapData.meshLodBias,
-                                                                true
+                                                                mapData.colliderLodBias
                                                                 );
 		
-		// Use a different function for the collider mesh
-		MeshData colliderData = MeshGenerator.GenerateTerrainChunk(mapData.worldGenerator, 
-                                                                    mapData.chunkSize + 1, 
-                                                                    mapData.chunkSize + 1, 
-                                                                    mapData.chunkScale, 
-                                                                    mapData.chunkPosition,
-                                                                    mapData.colliderLodBias,
-                                                                    true
-                                                                    );
 
 
-		lock (meshDataThreadInfoQueue) {
-			meshDataThreadInfoQueue.Enqueue(new MeshThreadInfo(callback, meshData, colliderData));
+		lock (meshDataThreadInfoQueue) 
+        {
+			meshDataThreadInfoQueue.Enqueue(new ChunkThreadResult(callback, chunkData));
 		}
 	}
     
     /// <summary>
     /// struct used to send the calculated chunk mesh data from other threads to the main thread
     /// </summary>
-    private struct MeshThreadInfo {
-		public readonly Action<MeshData,MeshData> callback;
-		public readonly MeshData meshData;
-		public readonly MeshData colliderData;
+    private struct ChunkThreadResult {
+		public readonly Action<ChunkData> callback;
+		public readonly ChunkData chunkData;
 
-		public MeshThreadInfo (Action<MeshData, MeshData> callback, MeshData meshData, MeshData colliderData)
+		public ChunkThreadResult (Action<ChunkData> callback, ChunkData chunkData)
 		{
 			this.callback = callback;
-			this.meshData = meshData;
-			this.colliderData = colliderData;
+			this.chunkData = chunkData;
 		}
 		
 	}

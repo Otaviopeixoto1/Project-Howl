@@ -56,10 +56,14 @@ public class MeshData
 //a struct used as a wrapper for all the data returned in the ChunkGenerator
 public struct ChunkData
 {
-    public MeshData meshData;
-    public ChunkData(MeshData meshData)
+    public readonly MeshData meshData;
+    public readonly MeshData colliderData;
+    public readonly ChunkDataTree dataTree;
+    public ChunkData(MeshData meshData, MeshData colliderData, ChunkDataTree dataTree)
     {
         this.meshData = meshData;
+        this.colliderData = colliderData;
+        this.dataTree = dataTree;
     }
 
 }
@@ -68,7 +72,7 @@ public struct ChunkData
 
 
 //Rename for ChunkGenerator
-public static class MeshGenerator
+public static class ChunkGenerator
 {
 
     public static int CalculateLodIncrement(int dim, int lodBias)
@@ -91,7 +95,7 @@ public static class MeshGenerator
     
 
     //Using MapGenerator as sampler:
-    public static MeshData GenerateTerrainChunk(MapGenerator sampler, int meshWidth, int meshHeight, float meshScale, int lodBias = 0,bool isThread = false)
+    public static MeshData GenerateRectMesh(MapGenerator sampler, int meshWidth, int meshHeight, float meshScale, int lodBias = 0,bool isThread = false)
     {
         AnimationCurve heightCurve;
         if(isThread)
@@ -142,45 +146,33 @@ public static class MeshGenerator
     }
 
 
-
-    //Using WorldSampler as a sampler. Do meshWidth = meshHeight = chunkSize
-    //rename to GenerateChunkFromSampler
-    public static MeshData GenerateTerrainChunk(WorldGenerator sampler, int meshWidth, int meshHeight, float meshScale, Vector2 sampleOffset, int lodBias = 0, bool isThread = false)
+    //Using WorldGenerator as a sampler
+    public static MeshData GenerateQuadMesh(WorldGenerator sampler, int meshSize, float meshScale, Vector2 sampleOffset, int lodBias = 0)
     {
-        //data tree used to store all chunk information
-
-        /*
-        - store all object positions as well as the necessary data to spawn them
-        - store all the details that can spawn in a particular quad
-        - it wont be necessary to store biome type at first, only the necessary infos
-        */
-        //ChunkDataTree dataTree = new ChunkDataTree();
-
-        int widthIncrement = CalculateLodIncrement(meshWidth,lodBias);
-        int heightIncrement = CalculateLodIncrement(meshHeight,lodBias);
+        int increment = CalculateLodIncrement(meshSize,lodBias);
 
 
-        int widthVertices = ((meshWidth - 1)/widthIncrement) + 1;
-        int heightVertices = ((meshHeight - 1)/heightIncrement) + 1;
-        MeshData meshData = new MeshData(widthVertices, heightVertices);
+        int vertices = ((meshSize - 1)/increment) + 1;
 
-        Vector3 centerOffset = new Vector3(-(meshWidth - 1)/2f, 0, -(meshHeight - 1)/2f);
+        MeshData meshData = new MeshData(vertices, vertices);
+
+        Vector3 centerOffset = new Vector3(-(meshSize - 1)/2f, 0, -(meshSize - 1)/2f);
 
         int vertexIndex = 0;
 
-        for (int y = 0; y < meshHeight; y += heightIncrement)
+        for (int y = 0; y < meshSize; y += increment)
         {
-            for (int x = 0; x < meshWidth; x += widthIncrement)
+            for (int x = 0; x < meshSize; x += increment)
             {
                 meshData.vertices[vertexIndex] = (new Vector3(x, sampler.GetHeight(x + sampleOffset.x, y + sampleOffset.y), y) 
                                                 + centerOffset) * meshScale;
-                meshData.uvs[vertexIndex] = new Vector2(x/(float)meshWidth, y/(float)meshHeight);
-                meshData.atlasUvs[vertexIndex] = new Vector2(((x/(float)meshWidth) + sampleOffset.x)/(float)meshWidth, ((y/(float)meshHeight) + sampleOffset.y)/(float)meshHeight);
+                meshData.uvs[vertexIndex] = new Vector2(x/(float)meshSize, y/(float)meshSize);
+                meshData.atlasUvs[vertexIndex] = new Vector2(((x/(float)meshSize) + sampleOffset.x)/(float)meshSize, ((y/(float)meshSize) + sampleOffset.y)/(float)meshSize);
 
-                if (x < (meshWidth - 1) && y < (meshHeight - 1))
+                if (x < (meshSize - 1) && y < (meshSize - 1))
                 {
-                    meshData.AddTriangle(vertexIndex, vertexIndex + widthVertices, vertexIndex + widthVertices + 1 );
-                    meshData.AddTriangle(vertexIndex, vertexIndex + widthVertices + 1, vertexIndex + 1 );
+                    meshData.AddTriangle(vertexIndex, vertexIndex + vertices, vertexIndex + vertices + 1 );
+                    meshData.AddTriangle(vertexIndex, vertexIndex + vertices + 1, vertexIndex + 1 );
                 }
 
 
@@ -189,6 +181,38 @@ public static class MeshGenerator
         }
 
         return meshData;
+    }
+
+
+
+    //Using WorldSampler as a sampler
+    public static ChunkData GenerateTerrainChunk(WorldGenerator sampler, int meshSize, float meshScale, Vector2 sampleOffset, int meshLodBias = 0,int colliderLodBias = 0)
+    {
+        //data tree used to store all chunk information
+
+        //store the starting depth on the WorldGenerator veriable
+
+        //sampleOffset is already in world coords so its simple to get the chunk bounds !!!
+        ChunkDataTree dataTree = new ChunkDataTree(sampler,3);
+
+        //- STORE ALL BIOME DETAILS THAT CAN SPAWN ON A CHUNK SUBDIVISION
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        //TerrainDetailSettings[] detailSettings = sampler.GetDetails();
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+        //store all object positions as well as the necessary data to spawn them
+        //THE LEAFS OF THE TREE WILL CONTAIN THE OBJECTS PRESENT IN THEM, DONT SEARCH FROM TOP TO BOTTOM 
+        //SEARCH FOR EMPTY QUADS at the bottom of the tree
+        
+        
+        
+        MeshData terrainMesh = GenerateQuadMesh(sampler,meshSize,meshScale,sampleOffset,meshLodBias);
+        MeshData colliderMesh = GenerateQuadMesh(sampler,meshSize,meshScale,sampleOffset,colliderLodBias);
+
+        
+
+        return new ChunkData(terrainMesh, colliderMesh, dataTree);
         
     }
 

@@ -12,9 +12,11 @@ public enum WorldMapType
 public struct GlobalGenerationSettings
 {
     public readonly Material defaultDetailMaterial;
-    public GlobalGenerationSettings(Material defaultDetailMaterial)
+    public readonly int subChunkSubdivision;
+    public GlobalGenerationSettings(Material defaultDetailMaterial, int subChunkSubdivision)
     {
         this.defaultDetailMaterial = defaultDetailMaterial;
+        this.subChunkSubdivision = subChunkSubdivision;
     }
 }
 
@@ -47,6 +49,7 @@ public class WorldGenerationSettings : ScriptableObject
     private BiomeSettings[] worldSettings;
 
     [Header("Global Generation Settings")]
+    public int subChunkSubdivision = 3;
     public Material defaultDetailMaterial;
 
 
@@ -175,7 +178,7 @@ public class WorldGenerationSettings : ScriptableObject
 
     public GlobalGenerationSettings GetGlobalGenerationSettings()
     {
-        return new GlobalGenerationSettings(defaultDetailMaterial);
+        return new GlobalGenerationSettings(defaultDetailMaterial, subChunkSubdivision);
     }
 
     

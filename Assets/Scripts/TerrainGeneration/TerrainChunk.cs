@@ -5,52 +5,129 @@ using UnityEngine;
 
 
 //each node must have the data necessary for a subchunk to generate all vertex positions belonging to that node
-public class ChunkTreeNode
+public class QuadNode
 {
-    public int depth;
+    private int index;
+    private Vector2Int position;
+    private int depth;
+    private QuadNode[] children;
 
-    //if the node has no children, it means it will be a totaly free node (can be used to place details)
-    public ChunkTreeNode[] children = new ChunkTreeNode[4];
 
-    public ChunkTreeNode()
+    //all the objects that FILL this node
+    private List<TerrainObject> objects = new List<TerrainObject>();
+
+    public QuadNode(Vector2Int position, int index, int depth, QuadNode[] children = null)
+    {   
+        this.position = position;
+        this.index = index;
+        this.depth = depth;
+        this.children = children;
+
+    }
+    public void Subdivide()
     {
+        this.children = new QuadNode[4]
+        {
+            new QuadNode(Vector2Int.zero  + 2 * position, 0, depth+1),
+            new QuadNode(Vector2Int.right + 2 * position, 1, depth+1),
+            new QuadNode(Vector2Int.up    + 2 * position, 2, depth+1),
+            new QuadNode(Vector2Int.one   + 2 * position, 3, depth+1)
+        };
+    }
 
+    //bounds of this subchunk in fractional coordinates relative to the main chunk
+    public Bounds GetBounds() 
+    {
+        Vector2 center = (position + 0.5f * Vector2.one) / MathMisc.TwoPowX(depth);
+        Vector2 size = Vector2.one / MathMisc.TwoPowX(depth);
+
+        return new Bounds(center, size);
+    }
+
+    public void AddObject(TerrainObject terrainObject)
+    {
+        //Change the TerrainObject position
+        //terrainObject.position = (position + 0.5f * Vector2.one) / MathMisc.TwoPowX(depth);
+        objects.Add(terrainObject);
+    }
+
+    public int GetObjectsCount()
+    {
+        int count = objects.Count;
+        if (children == null)
+        {
+            return count;
+        }
+
+        foreach(QuadNode child in children)
+        {
+            count += (child == null)? 0 : child.GetObjectsCount();
+        }
+
+        
+
+        return count;
+    }
+
+    public QuadNode[] GetChildren()
+    {
+        return children;
     }
 
     public bool IsEmpty()
     {
-        return true;
+        //return GetObjectsCount() == 0;
+        return objects.Count == 0;
     }
-
-    //returns a list containing fractional positions of all vertices belonging to the children of this node at a 
-    //certain relative depth. A relative depth of 0 gives the vertices of the current node
-    public List<Vector2> GetPositions(int relatDepth)
+    /*
+    public bool IsFilled()
     {
-        return null;
-    }
+        //if the entire node is filled, we wont need to store information on its children
+        //so the children list will be null
+        return (children == null) && !IsEmpty();
+    }*/
 
 }
 
 public class ChunkDataTree // Quadtree to store the chunk objects information as well as all other relevant data
 {
-    private ChunkTreeNode head;
+    private QuadNode head;
+    
+    //All the subchunk nodes that are created when the tree is generated
+    private QuadNode[] subChunkNodes;
 
-    //private terrain objects list (a list containing all objects on this tree. they should all be parented to the)
-    //main chunk
     //the tree data is only deleted when the terrain chunk is deleted, so it will never generate duplicated objects
     
 
-    public ChunkDataTree(ChunkTreeNode head = null)
+    public ChunkDataTree(WorldGenerator worldGenerator, int startDepth = 0)
     {
-        if (head != null)
+        this.head = new QuadNode(Vector2Int.zero, 0, 0);
+
+        Queue<QuadNode> startQueue = new Queue<QuadNode>();
+        startQueue.Enqueue(head);
+
+
+        for (int i = 0; i < startDepth; i++)
         {
-            this.head = head;
+            Queue<QuadNode> newQueue = new Queue<QuadNode>();
+            
+            while(startQueue.Count > 0)
+            {
+                QuadNode currentNode = startQueue.Dequeue();
+                currentNode.Subdivide();
+
+                foreach (QuadNode child in currentNode.GetChildren())
+                {
+                    newQueue.Enqueue(child);
+                }
+            }
+
+            startQueue = newQueue;
         }
-        else
-        {
-            this.head = new ChunkTreeNode();
-        }
+
+        subChunkNodes = startQueue.ToArray();
     }
+
 
 
     //Save the data tree to a save file as well;
@@ -82,7 +159,7 @@ public class ChunkDataTree // Quadtree to store the chunk objects information as
     }
 
 
-    public List<ChunkTreeNode> GetFreeNodes()
+    public List<QuadNode> GetFreeNodes()
     {
         //Check what subchunks are empty and return their vertices in a single (non-sorted) list
         //SubChunk(position, int size, int chunkSize, List<Vector3> mainVertices);
@@ -356,12 +433,12 @@ public class TerrainChunk : QuadChunk
 
 
     
-    private void OnMeshDataReceived(MeshData meshData, MeshData colliderData)  
+    private void OnMeshDataReceived(ChunkData chunkData)  
     {                  
         //chunkMesh = meshData.CreateMesh();
         isReady = true;                         
-        meshFilter.mesh = meshData.CreateMesh();
-        meshCollider.sharedMesh = colliderData.CreateMesh(skipNormals:true);
+        meshFilter.mesh = chunkData.meshData.CreateMesh();
+        meshCollider.sharedMesh = chunkData.colliderData.CreateMesh(skipNormals:true);
         //meshRenderer.material.SetTexture("_BaseMap", debugTexture);
     }
 

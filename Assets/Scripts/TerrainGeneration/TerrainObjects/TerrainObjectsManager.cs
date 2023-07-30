@@ -2,6 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+public class TerrainObject
+{
+    
+}
+
+
+
 public class TerrainObjectsManager
 {
     private TerrainManager terrainManager;
@@ -15,16 +23,16 @@ public class TerrainObjectsManager
 
     private DetailChunk[] detailChunks;
 
-    private Material testMaterial;
+    private Material detailMaterial;
     
 
-    public TerrainObjectsManager(TerrainManager terrainManager, WorldGenerator worldGenerator, Material detailTestMaterial)
+    public TerrainObjectsManager(TerrainManager terrainManager, WorldGenerator worldGenerator, Material detailMaterial)
     {
         this.terrainManager = terrainManager;
         this.worldGenerator = worldGenerator;
 
 
-        this.testMaterial = detailTestMaterial;
+        this.detailMaterial = detailMaterial;
         this.detailChunks = new DetailChunk[9];
     }
 
@@ -103,11 +111,13 @@ public class TerrainObjectsManager
 
                 SubChunk nSubChunk = nChunk.GetSubChunk(nSubChunkWorldPos, subChunkSubdivision);
 
+
+                //DONT USE THE WORLD GENERATOR HERE. Generate everything in the ChunkGenerator !
                 ///////////////////////////////////////////////////////////////////////////////////////////////////
-                TerrainDetailSettings[] detailSettings = worldGenerator.GetDetailsOnBounds(nSubChunk.GetBounds());
+                //TerrainDetailSettings[] detailSettings = worldGenerator.GetDetailsOnBounds(nSubChunk.GetBounds());
                 //worldSampler.SampleDetails(nWorldPos.x,nWorldPos.y);////////////////////////////////////////////
                 
-                detailChunks[index] = new DetailChunk(testMaterial, nSubChunk);
+                detailChunks[index] = new DetailChunk(detailMaterial, nSubChunk);
                 
             }
         }

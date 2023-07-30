@@ -109,7 +109,11 @@ public class TerrainManager : MonoBehaviour
         
         UpdateVisibleChunks(viewerChunkCoords.x, viewerChunkCoords.y);
         
-        terrainObjectsManager = new TerrainObjectsManager(this, worldGenerator, globalGenerationSettings.defaultDetailMaterial);
+        terrainObjectsManager = new TerrainObjectsManager(
+            this, 
+            worldGenerator, 
+            globalGenerationSettings.defaultDetailMaterial
+        );
 
         enabled = true;
         //WorldManager.OnSuccessfulLoad -= Setup;
