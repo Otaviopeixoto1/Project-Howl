@@ -21,7 +21,9 @@ public class WorldGenerator
     public List<BiomeSampler> biomeSamplers; 
     public BiomeLinks biomeLinks; 
 
-    public Dictionary<Biomes, TerrainDetailSettings> detailGenSettings; 
+    public int subChunkSubdivision;
+
+    //public Dictionary<Biomes, TerrainDetailSettings> detailGenSettings; 
 
     
 
@@ -42,7 +44,8 @@ public class WorldGenerator
         this.biomeLinks.GenerateLinksFromGrid(); 
 
         GenerateWorldAtlas(worldGenerationSettings);
-        this.detailGenSettings = worldGenerationSettings.GetAllDetailSettings();
+        this.subChunkSubdivision = worldGenerationSettings.subChunkSubdivision;
+        //this.detailGenSettings = worldGenerationSettings.GetAllDetailSettings();
     }
 
     /// <summary>
@@ -56,7 +59,8 @@ public class WorldGenerator
         this.biomeMapSize = worldGenerationSettings.biomeMapSize;
         this.biomeMapScale = worldGenerationSettings.biomeMapScale;
         this.biomeGridSize = worldGenerationSettings.biomeGridSize;
-        this.detailGenSettings = worldGenerationSettings.GetAllDetailSettings();
+        this.subChunkSubdivision = worldGenerationSettings.subChunkSubdivision;
+        //this.detailGenSettings = worldGenerationSettings.GetAllDetailSettings();
         
     }
 
@@ -223,6 +227,7 @@ public class WorldGenerator
         return biomeSampler.biomeType;
     }
 
+    /*
     public TerrainDetailSettings GetDetails(float _x, float _y) 
     {
         Biomes biome = GetBiome(_x,_y);
@@ -246,20 +251,11 @@ public class WorldGenerator
             GetDetails(bounds.center.x - bounds.extents.x, bounds.center.y + bounds.extents.y),
             GetDetails(bounds.center.x + bounds.extents.x, bounds.center.y + bounds.extents.y)
         };
-        /*
-        
-        List<TerrainDetailSettings> uniqueDetails = new List<TerrainDetailSettings>();
-        foreach(TerrainDetailSettings detail in allDetails)
-        {
-            if (!uniqueDetails.Contains(detail))
-            {
-                uniqueDetails.Add(detail);
-            }
-        }*/
+
 
         return allDetails;
 
-    }
+    }*/
 
     public float GetBiomeMapScale()
     {

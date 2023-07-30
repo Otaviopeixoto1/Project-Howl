@@ -13,26 +13,26 @@ public class TerrainObject
 public class TerrainObjectsManager
 {
     private TerrainManager terrainManager;
-    private WorldGenerator worldGenerator;//this will contain the generation settings that will contain the detail settings
-
     private TerrainChunk currentChunk;
     private Vector2Int currentChunkPos;
     private Vector2Int currentSubChunkPos; //used to check if the player moved 
 
-    private const int subChunkSubdivision = 3;
+    private int subChunkSubdivision = 3;
 
     private DetailChunk[] detailChunks;
 
     private Material detailMaterial;
+
+    private Dictionary<Biomes, TerrainDetailSettings> biomeDetails;
     
 
-    public TerrainObjectsManager(TerrainManager terrainManager, WorldGenerator worldGenerator, Material detailMaterial)
+    public TerrainObjectsManager(TerrainManager terrainManager, GlobalGenerationSettings globalGenerationSettings)
     {
         this.terrainManager = terrainManager;
-        this.worldGenerator = worldGenerator;
 
+        this.subChunkSubdivision = globalGenerationSettings.subChunkSubdivision;
 
-        this.detailMaterial = detailMaterial;
+        this.detailMaterial = globalGenerationSettings.defaultDetailMaterial;
         this.detailChunks = new DetailChunk[9];
     }
 
@@ -110,12 +110,6 @@ public class TerrainObjectsManager
                 Vector2 nSubChunkWorldPos = SubChunk.GlobalSubChunkToWorldCoords(nSubChunkPos, subChunkSubdivision, subChunkSize);
 
                 SubChunk nSubChunk = nChunk.GetSubChunk(nSubChunkWorldPos, subChunkSubdivision);
-
-
-                //DONT USE THE WORLD GENERATOR HERE. Generate everything in the ChunkGenerator !
-                ///////////////////////////////////////////////////////////////////////////////////////////////////
-                //TerrainDetailSettings[] detailSettings = worldGenerator.GetDetailsOnBounds(nSubChunk.GetBounds());
-                //worldSampler.SampleDetails(nWorldPos.x,nWorldPos.y);////////////////////////////////////////////
                 
                 detailChunks[index] = new DetailChunk(detailMaterial, nSubChunk);
                 

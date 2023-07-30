@@ -59,11 +59,13 @@ public struct ChunkData
     public readonly MeshData meshData;
     public readonly MeshData colliderData;
     public readonly ChunkDataTree dataTree;
-    public ChunkData(MeshData meshData, MeshData colliderData, ChunkDataTree dataTree)
+    public readonly Biomes[] biomeMap;
+    public ChunkData(MeshData meshData, MeshData colliderData, ChunkDataTree dataTree, Biomes[] biomeMap)
     {
         this.meshData = meshData;
         this.colliderData = colliderData;
         this.dataTree = dataTree;
+        this.biomeMap = biomeMap;
     }
 
 }
@@ -186,20 +188,33 @@ public static class ChunkGenerator
 
 
     //Using WorldSampler as a sampler
-    public static ChunkData GenerateTerrainChunk(WorldGenerator sampler, int meshSize, float meshScale, Vector2 sampleOffset, int meshLodBias = 0,int colliderLodBias = 0)
+    //- THE SAMPLING HAPPENS IN UNSCALED COORDINATES (IT DOESNT TAKE INTO ACCOUNT THE MESH SCALE USED BY THE CHUNK)
+    public static ChunkData GenerateTerrainChunk(WorldGenerator worldGenerator, int chunkSize, float meshScale, Vector2Int sampleOffset, int meshLodBias = 0,int colliderLodBias = 0)
     {
         //data tree used to store all chunk information
 
-        //store the starting depth on the WorldGenerator veriable
+        //store the starting depth on the WorldGenerator variable
+        ChunkDataTree dataTree = new ChunkDataTree(worldGenerator.subChunkSubdivision);
+        
+        int subChunkCount = MathMisc.TwoPowX(worldGenerator.subChunkSubdivision);
+        int subChunkLength = chunkSize/subChunkCount;
 
-        //sampleOffset is already in world coords so its simple to get the chunk bounds !!!
-        ChunkDataTree dataTree = new ChunkDataTree(sampler,3);
+        Biomes[] biomeMap = new Biomes[(subChunkCount + 1) * (subChunkCount + 1)];
 
-        //- STORE ALL BIOME DETAILS THAT CAN SPAWN ON A CHUNK SUBDIVISION
+        int startY = sampleOffset.y - chunkSize/2;
+        int startX = sampleOffset.x - chunkSize/2;
 
-        ///////////////////////////////////////////////////////////////////////////////////////////////////
-        //TerrainDetailSettings[] detailSettings = sampler.GetDetails();
-        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        //Sample the Biomes on each subchunk edge:
+        int i = 0;
+        for (int y = startY; y < startY + chunkSize; y += subChunkLength)
+        {
+            for (int x = startX; x < startX + chunkSize; x += subChunkLength)
+            {
+                biomeMap[i] = worldGenerator.GetBiome(x,y);
+                i++;
+            }
+        }
+    
 
         //store all object positions as well as the necessary data to spawn them
         //THE LEAFS OF THE TREE WILL CONTAIN THE OBJECTS PRESENT IN THEM, DONT SEARCH FROM TOP TO BOTTOM 
@@ -207,12 +222,12 @@ public static class ChunkGenerator
         
         
         
-        MeshData terrainMesh = GenerateQuadMesh(sampler,meshSize,meshScale,sampleOffset,meshLodBias);
-        MeshData colliderMesh = GenerateQuadMesh(sampler,meshSize,meshScale,sampleOffset,colliderLodBias);
+        MeshData terrainMesh = GenerateQuadMesh(worldGenerator,chunkSize + 1,meshScale,sampleOffset,meshLodBias);
+        MeshData colliderMesh = GenerateQuadMesh(worldGenerator,chunkSize + 1,meshScale,sampleOffset,colliderLodBias);
 
         
 
-        return new ChunkData(terrainMesh, colliderMesh, dataTree);
+        return new ChunkData(terrainMesh, colliderMesh, dataTree, biomeMap);
         
     }
 

@@ -36,7 +36,7 @@ public class QuadNode
     }
 
     //bounds of this subchunk in fractional coordinates relative to the main chunk
-    public Bounds GetBounds() 
+    public Bounds GetFractionalBounds() 
     {
         Vector2 center = (position + 0.5f * Vector2.one) / MathMisc.TwoPowX(depth);
         Vector2 size = Vector2.one / MathMisc.TwoPowX(depth);
@@ -94,12 +94,12 @@ public class ChunkDataTree // Quadtree to store the chunk objects information as
     private QuadNode head;
     
     //All the subchunk nodes that are created when the tree is generated
-    private QuadNode[] subChunkNodes;
+    //private QuadNode[] subChunkNodes;
 
     //the tree data is only deleted when the terrain chunk is deleted, so it will never generate duplicated objects
     
 
-    public ChunkDataTree(WorldGenerator worldGenerator, int startDepth = 0)
+    public ChunkDataTree(int startDepth = 0)
     {
         this.head = new QuadNode(Vector2Int.zero, 0, 0);
 
@@ -125,7 +125,22 @@ public class ChunkDataTree // Quadtree to store the chunk objects information as
             startQueue = newQueue;
         }
 
-        subChunkNodes = startQueue.ToArray();
+        //subChunkNodes = startQueue.ToArray();
+
+        startQueue.Clear();
+        /*     
+        while(startQueue.Count > 0)
+        {
+            QuadNode subChunkNode = startQueue.Dequeue();
+
+
+        }*/   
+
+        //- STORE ALL BIOME DETAILS THAT CAN SPAWN ON A CHUNK SUBDIVISION
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        //TerrainDetailSettings[] detailSettings = sampler.GetDetails();
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
 
@@ -176,6 +191,7 @@ public class QuadChunk
     protected Vector2 worldPosition;
     protected Bounds bounds;
     protected bool isReady = false;
+    protected Biomes[] biomeMap;
 
     public QuadChunk()
     {
@@ -190,14 +206,14 @@ public class QuadChunk
         Vector2Int subChunkPos = WorldToSubChunkCoords(worldPos, subdivision);
         int subChunkSize = chunkSize/MathMisc.TwoPowX(subdivision);
 
-        return new SubChunk(subChunkPos, subChunkSize, this);
+        return new SubChunk(subChunkPos, subChunkSize, subdivision, this);
     }
     public SubChunk GetSubChunk(Vector3 worldPos, int subdivision)
     {
         Vector2Int subChunkPos = WorldToSubChunkCoords(worldPos, subdivision);
         int subChunkSize = chunkSize/MathMisc.TwoPowX(subdivision);
 
-        return new SubChunk(subChunkPos, subChunkSize, this);
+        return new SubChunk(subChunkPos, subChunkSize, subdivision, this);
     }
 
 
@@ -210,7 +226,12 @@ public class QuadChunk
         
         Vector2Int subChunkPos = WorldToSubChunkCoords(worldPos, subdivision);
     
-        return new SubChunk(subChunkPos, subChunkSize, this);
+        return new SubChunk(subChunkPos, subChunkSize, subdivision, this);
+    }
+
+    public virtual Biomes[] GetBiomeMap()
+    {
+        return biomeMap;
     }
 
 
@@ -313,12 +334,15 @@ public class SubChunk : QuadChunk
     //world position of this chunk relative to the center(origin) of the parent chunk
     private Vector2 relativePos;
 
-    public SubChunk(Vector2Int position, int size, QuadChunk parentChunk)
+    private int subdivision;
+
+
+    public SubChunk(Vector2Int position, int size, int subdivision, QuadChunk parentChunk)
     {
+        this.subdivision = subdivision;
         this.parentChunk = parentChunk;
         this.position = position;
         this.chunkSize = size;
-
         int parentChunkSize = parentChunk.GetSize();
 
         this.scale = parentChunk.GetScale();
@@ -328,7 +352,7 @@ public class SubChunk : QuadChunk
 
         this.worldPosition = relativePos + parentChunk.GetWorldPosition();
 
-        this.bounds = new Bounds(new Vector3(worldPosition.x,0,worldPosition.y), 
+        this.bounds = new Bounds(new Vector3(worldPosition.x, 0, worldPosition.y), 
                                     new Vector3(1,50,1) * chunkSize * scale);
     }
 
@@ -354,6 +378,34 @@ public class SubChunk : QuadChunk
             }
         }
         return vertices;
+    }
+
+    public List<TerrainDetailSettings> GetDetailsSettings()
+    {
+        if (!IsReady())
+        {
+            return null;
+        }
+
+        Dictionary<Biomes, TerrainDetailSettings> biomeDetails = WorldGenerationSettings.biomeDetails;
+
+        Biomes[] biomeMap = parentChunk.GetBiomeMap();
+
+        List<TerrainDetailSettings> details = new List<TerrainDetailSettings>();
+
+        int subChunkCount = MathMisc.TwoPowX(subdivision);
+
+        for (int j = 0; j < 2; j++)
+        {
+            for (int i = 0; i < 2; i++)
+            { 
+                int index = (position.x + i) + (subChunkCount + 1) * (position.y + j);
+                TerrainDetailSettings detailSettings = biomeDetails[biomeMap[index]];
+            }
+        }
+
+
+        return details;
     }
 
 
@@ -427,18 +479,19 @@ public class TerrainChunk : QuadChunk
         
 
         //RequestChunkData* 
-        threadManager.RequestMeshData(mapData, OnMeshDataReceived);
+        threadManager.RequestMeshData(mapData, OnChunkDataReceived);
     }
 
 
 
     
-    private void OnMeshDataReceived(ChunkData chunkData)  
+    private void OnChunkDataReceived(ChunkData chunkData)  
     {                  
         //chunkMesh = meshData.CreateMesh();
         isReady = true;                         
         meshFilter.mesh = chunkData.meshData.CreateMesh();
         meshCollider.sharedMesh = chunkData.colliderData.CreateMesh(skipNormals:true);
+        this.biomeMap = chunkData.biomeMap;
         //meshRenderer.material.SetTexture("_BaseMap", debugTexture);
     }
 

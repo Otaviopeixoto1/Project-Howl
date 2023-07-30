@@ -10,13 +10,13 @@ using UnityEngine;
 public struct ChunkGenerationThreadData
 {
     public readonly WorldGenerator worldGenerator;
-    public readonly Vector2 chunkPosition;
+    public readonly Vector2Int chunkPosition;
     public readonly int chunkSize;
     public readonly float chunkScale;
     public readonly int meshLodBias;
     public readonly int colliderLodBias;
 
-    public ChunkGenerationThreadData (WorldGenerator worldGenerator,Vector2 gridPosition, int chunkSize, float chunkScale, int meshLodBias, int colliderLodBias)
+    public ChunkGenerationThreadData (WorldGenerator worldGenerator,Vector2Int gridPosition, int chunkSize, float chunkScale, int meshLodBias, int colliderLodBias)
     {
         this.worldGenerator = worldGenerator;
         this.chunkPosition = gridPosition * chunkSize;
@@ -57,7 +57,7 @@ public class ChunkThreadManager
 	private void MeshDataThread(ChunkGenerationThreadData mapData, Action<ChunkData> callback) 
     {
 		ChunkData chunkData = ChunkGenerator.GenerateTerrainChunk(mapData.worldGenerator, 
-                                                                mapData.chunkSize + 1, 
+                                                                mapData.chunkSize, 
                                                                 mapData.chunkScale, 
                                                                 mapData.chunkPosition,
                                                                 mapData.meshLodBias,

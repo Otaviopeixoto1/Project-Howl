@@ -13,10 +13,13 @@ public struct GlobalGenerationSettings
 {
     public readonly Material defaultDetailMaterial;
     public readonly int subChunkSubdivision;
-    public GlobalGenerationSettings(Material defaultDetailMaterial, int subChunkSubdivision)
+    //public readonly Dictionary<Biomes, TerrainDetailSettings> biomeDetails;
+    
+    public GlobalGenerationSettings(Material defaultDetailMaterial, int subChunkSubdivision)//, Dictionary<Biomes, TerrainDetailSettings> biomeDetails)
     {
         this.defaultDetailMaterial = defaultDetailMaterial;
         this.subChunkSubdivision = subChunkSubdivision;
+        //this.biomeDetails = biomeDetails;
     }
 }
 
@@ -51,6 +54,7 @@ public class WorldGenerationSettings : ScriptableObject
     [Header("Global Generation Settings")]
     public int subChunkSubdivision = 3;
     public Material defaultDetailMaterial;
+    public static Dictionary<Biomes, TerrainDetailSettings> biomeDetails;
 
 
 
@@ -72,7 +76,15 @@ public class WorldGenerationSettings : ScriptableObject
     {
         UnityEngine.Random.InitState(worldSeed);
         Dictionary<Biomes,BiomeSettings> availableBiomes = GetAvailableBiomes();
-        Debug.Log("assingning new biomes. Seed = " + worldSeed);
+
+        //setting all the biome details in a single dict
+        biomeDetails = new Dictionary<Biomes, TerrainDetailSettings>();    
+        foreach (Biomes biome in availableBiomes.Keys)
+        {
+            biomeDetails[biome] = availableBiomes[biome].terrainDetailSettings;
+        }
+
+        Debug.Log("assingning new biomes: Seed = " + worldSeed);
 
         switch (worldMapType)
         {
@@ -198,17 +210,6 @@ public class WorldGenerationSettings : ScriptableObject
     public TerrainDetailSettings GetDetailSettings(int index)
     {
         return worldSettings[index].terrainDetailSettings;
-    }
-
-    public Dictionary<Biomes, TerrainDetailSettings> GetAllDetailSettings()
-    {
-        Dictionary<Biomes,TerrainDetailSettings> detailGenSettings = new Dictionary<Biomes, TerrainDetailSettings>();
-
-        foreach(BiomeSettings settings in biomeGenerationSettings)
-        {
-            detailGenSettings[settings.biome] = settings.terrainDetailSettings;
-        }
-        return detailGenSettings;
     }
 
 
