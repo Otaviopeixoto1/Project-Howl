@@ -97,7 +97,10 @@ public class ChunkDataTree // Quadtree to store the chunk objects information as
     //private QuadNode[] subChunkNodes;
 
     //the tree data is only deleted when the terrain chunk is deleted, so it will never generate duplicated objects
-    
+    public ChunkDataTree(QuadNode head)
+    {
+        this.head = head;
+    }
 
     public ChunkDataTree(int startDepth = 0)
     {
@@ -128,19 +131,6 @@ public class ChunkDataTree // Quadtree to store the chunk objects information as
         //subChunkNodes = startQueue.ToArray();
 
         startQueue.Clear();
-        /*     
-        while(startQueue.Count > 0)
-        {
-            QuadNode subChunkNode = startQueue.Dequeue();
-
-
-        }*/   
-
-        //- STORE ALL BIOME DETAILS THAT CAN SPAWN ON A CHUNK SUBDIVISION
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////
-        //TerrainDetailSettings[] detailSettings = sampler.GetDetails();
-        ///////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
 
@@ -191,12 +181,9 @@ public class QuadChunk
     protected Vector2 worldPosition;
     protected Bounds bounds;
     protected bool isReady = false;
+
+    protected ChunkDataTree dataTree;
     protected Biomes[] biomeMap;
-
-    public QuadChunk()
-    {
-
-    }
 
 
     //gets a subchunk based on world position of this chunk and the provided world position 
@@ -229,11 +216,31 @@ public class QuadChunk
         return new SubChunk(subChunkPos, subChunkSize, subdivision, this);
     }
 
+
+
+////////////////////////////////////////////-WIP-///////////////////////////////////////////////////////////////////
+
+
+    //public ChunkDataTree GetSubDataTree(Vector2Int subChunkPos)
+    //{
+
+    //}
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public virtual Biomes[] GetBiomeMap()
     {
         return biomeMap;
     }
 
+    public virtual ChunkDataTree GetDataTree()
+    {
+        return dataTree;
+    }
 
     
     public virtual List<Vector3> GetVertices()
@@ -343,6 +350,9 @@ public class SubChunk : QuadChunk
         this.parentChunk = parentChunk;
         this.position = position;
         this.chunkSize = size;
+
+
+
         int parentChunkSize = parentChunk.GetSize();
 
         this.scale = parentChunk.GetScale();
@@ -380,18 +390,15 @@ public class SubChunk : QuadChunk
         return vertices;
     }
 
-    public List<TerrainDetailSettings> GetDetailsSettings()
+    public override Biomes[] GetBiomeMap()
     {
         if (!IsReady())
         {
             return null;
         }
 
-        Dictionary<Biomes, TerrainDetailSettings> biomeDetails = WorldGenerationSettings.biomeDetails;
-
         Biomes[] biomeMap = parentChunk.GetBiomeMap();
-
-        List<TerrainDetailSettings> details = new List<TerrainDetailSettings>();
+        Biomes[] subBiomeMap = new Biomes[4];
 
         int subChunkCount = MathMisc.TwoPowX(subdivision);
 
@@ -400,7 +407,43 @@ public class SubChunk : QuadChunk
             for (int i = 0; i < 2; i++)
             { 
                 int index = (position.x + i) + (subChunkCount + 1) * (position.y + j);
+                subBiomeMap[i + 2 * j] = biomeMap[index];
+            }
+        }
+        return subBiomeMap;
+    }
+
+    public List<TerrainDetailSettings> GetDetailsSettings(Dictionary<Biomes, TerrainDetailSettings> biomeDetails)
+    {
+        if (!IsReady())
+        {
+            return null;
+        }
+
+        List<TerrainDetailSettings> details = new List<TerrainDetailSettings>();
+        Biomes[] biomeMap = parentChunk.GetBiomeMap();
+
+        int subChunkCount = MathMisc.TwoPowX(subdivision);
+
+        //Debug.Log(position);
+
+        for (int j = 0; j < 2; j++)
+        {
+            for (int i = 0; i < 2; i++)
+            { 
+                int index = (position.x + i) + (subChunkCount + 1 ) * (position.y + j);
+                if (index < 0 || index >= biomeMap.Length)
+                {
+                    return details;
+                }
+                //Debug.Log(position.x + i + ", " + (position.y + j) + ": " + biomeMap[index] );
                 TerrainDetailSettings detailSettings = biomeDetails[biomeMap[index]];
+                //Debug.Log(biomeMap[index]);
+
+                if (detailSettings != null && !details.Contains(detailSettings))
+                {
+                    details.Add(detailSettings);
+                }
             }
         }
 
@@ -479,7 +522,7 @@ public class TerrainChunk : QuadChunk
         
 
         //RequestChunkData* 
-        threadManager.RequestMeshData(mapData, OnChunkDataReceived);
+        threadManager.RequestChunkData(mapData, OnChunkDataReceived);
     }
 
 
@@ -487,11 +530,13 @@ public class TerrainChunk : QuadChunk
     
     private void OnChunkDataReceived(ChunkData chunkData)  
     {                  
-        //chunkMesh = meshData.CreateMesh();
         isReady = true;                         
         meshFilter.mesh = chunkData.meshData.CreateMesh();
         meshCollider.sharedMesh = chunkData.colliderData.CreateMesh(skipNormals:true);
+
+        this.dataTree = chunkData.dataTree;
         this.biomeMap = chunkData.biomeMap;
+
         //meshRenderer.material.SetTexture("_BaseMap", debugTexture);
     }
 

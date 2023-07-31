@@ -45,16 +45,16 @@ public class ChunkThreadManager
 		}
     }
 
-    public void RequestMeshData(ChunkGenerationThreadData mapData, Action<ChunkData> callback) 
+    public void RequestChunkData(ChunkGenerationThreadData mapData, Action<ChunkData> callback) 
     {
 		ThreadStart threadStart = delegate{
-			MeshDataThread(mapData, callback);
+			ChunkDataThread(mapData, callback);
 		};
 
 		new Thread(threadStart).Start();
 	}
 
-	private void MeshDataThread(ChunkGenerationThreadData mapData, Action<ChunkData> callback) 
+	private void ChunkDataThread(ChunkGenerationThreadData mapData, Action<ChunkData> callback) 
     {
 		ChunkData chunkData = ChunkGenerator.GenerateTerrainChunk(mapData.worldGenerator, 
                                                                 mapData.chunkSize, 

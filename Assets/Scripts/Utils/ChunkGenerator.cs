@@ -153,7 +153,8 @@ public static class ChunkGenerator
     {
         int increment = CalculateLodIncrement(meshSize,lodBias);
 
-
+        int mapSize = sampler.biomeMapSize;
+        float mapChunks = 1/sampler.biomeMapScale ;
         int vertices = ((meshSize - 1)/increment) + 1;
 
         MeshData meshData = new MeshData(vertices, vertices);
@@ -168,8 +169,9 @@ public static class ChunkGenerator
             {
                 meshData.vertices[vertexIndex] = (new Vector3(x, sampler.GetHeight(x + sampleOffset.x, y + sampleOffset.y), y) 
                                                 + centerOffset) * meshScale;
-                meshData.uvs[vertexIndex] = new Vector2(x/(float)meshSize, y/(float)meshSize);
-                meshData.atlasUvs[vertexIndex] = new Vector2(((x/(float)meshSize) + sampleOffset.x)/(float)meshSize, ((y/(float)meshSize) + sampleOffset.y)/(float)meshSize);
+                meshData.uvs[vertexIndex] = new Vector2(x, y)/(float)meshSize;
+                //meshData.atlasUvs[vertexIndex] = new Vector2(((x/(float)meshSize) + sampleOffset.x)/(float)mapSize, ((y/(float)meshSize) + sampleOffset.y)/(float)mapSize);
+                meshData.atlasUvs[vertexIndex] = (meshData.uvs[vertexIndex] + sampleOffset/(float)mapSize - Vector2.one * 0.5f)/(mapChunks);
 
                 if (x < (meshSize - 1) && y < (meshSize - 1))
                 {
@@ -191,9 +193,6 @@ public static class ChunkGenerator
     //- THE SAMPLING HAPPENS IN UNSCALED COORDINATES (IT DOESNT TAKE INTO ACCOUNT THE MESH SCALE USED BY THE CHUNK)
     public static ChunkData GenerateTerrainChunk(WorldGenerator worldGenerator, int chunkSize, float meshScale, Vector2Int sampleOffset, int meshLodBias = 0,int colliderLodBias = 0)
     {
-        //data tree used to store all chunk information
-
-        //store the starting depth on the WorldGenerator variable
         ChunkDataTree dataTree = new ChunkDataTree(worldGenerator.subChunkSubdivision);
         
         int subChunkCount = MathMisc.TwoPowX(worldGenerator.subChunkSubdivision);
@@ -206,10 +205,11 @@ public static class ChunkGenerator
 
         //Sample the Biomes on each subchunk edge:
         int i = 0;
-        for (int y = startY; y < startY + chunkSize; y += subChunkLength)
+        for (int y = startY; y <= startY + chunkSize; y += subChunkLength)
         {
-            for (int x = startX; x < startX + chunkSize; x += subChunkLength)
+            for (int x = startX; x <= startX + chunkSize; x += subChunkLength)
             {
+                //Debug.Log(x/20f + ", " + y/20f );
                 biomeMap[i] = worldGenerator.GetBiome(x,y);
                 i++;
             }

@@ -58,7 +58,6 @@ public class TerrainManager : MonoBehaviour
 
     void Awake()
     {
-        //chunkThreadManager = new ChunkThreadManager();
         enabled = false;
     }
 
@@ -97,7 +96,7 @@ public class TerrainManager : MonoBehaviour
         this.chunkThreadManager = new ChunkThreadManager();
         this.worldManager = worldManager;
         this.worldGenerator = worldGenerator;
-        terrainMaterial.SetFloat("_atlasScale", 1/worldGenerator.GetBiomeMapScale());
+        //terrainMaterial.SetFloat("_atlasScale", 1/worldGenerator.GetBiomeMapScale());
 
 
 

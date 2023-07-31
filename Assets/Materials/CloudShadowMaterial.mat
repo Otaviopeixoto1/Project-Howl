@@ -39,6 +39,6 @@ Material:
     - _windSpeed: 0.25
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Offset: {r: 10.113333, g: 14.159623, b: 0, a: 0}
+    - _Offset: {r: 1.2150183, g: 1.4818562, b: 0, a: 0}
     - _WindDirection: {r: 1, g: 1, b: 0.5, a: 1}
   m_BuildTextureStacks: []

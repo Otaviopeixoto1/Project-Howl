@@ -4,7 +4,7 @@ Shader "TerrainShader"
     {
         _MainTex ("Texture", 2D) = "white" {} //texture atlas
         _colorRamp("ColorRamp", 2D) = "white" {}
-        _atlasScale("Atlas Scale", float) = 1
+        //_atlasScale("Atlas Scale", float) = 1
         _lightIntensityBias("Light Intensity Bias", Range(0.0, 1.0)) = 0
         _ambientLightBias("Ambient Light Bias", Range(0.0, 1.0)) = 0
     }
@@ -30,7 +30,7 @@ Shader "TerrainShader"
         CBUFFER_START(UnityPerMaterial)
         float4 _MainTex_ST;
         float4 _colorRamp_ST;
-        float _atlasScale;
+        //float _atlasScale;
         float _lightIntensityBias;
         float _ambientLightBias;
         CBUFFER_END
@@ -96,7 +96,7 @@ Shader "TerrainShader"
                 o.positionWS = positionInputs.positionWS;
 
 
-                o.atlasUV = v.atlasUV/_atlasScale;
+                o.atlasUV = v.atlasUV;// /_atlasScale
                 o.normal = TransformObjectToWorldNormal(v.normal);
 
 
@@ -110,7 +110,7 @@ Shader "TerrainShader"
 
             half4 frag (Interpolators i) : SV_Target
             {
-                //return 1;
+                //return half4(i.atlasUV.x, i.atlasUV.y, 0, 1);
 
                 //return half4(i.normal,1);
 

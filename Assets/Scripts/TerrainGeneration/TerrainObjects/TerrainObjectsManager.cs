@@ -17,7 +17,7 @@ public class TerrainObjectsManager
     private Vector2Int currentChunkPos;
     private Vector2Int currentSubChunkPos; //used to check if the player moved 
 
-    private int subChunkSubdivision = 3;
+    private int subChunkSubdivision;
 
     private DetailChunk[] detailChunks;
 
@@ -33,6 +33,8 @@ public class TerrainObjectsManager
         this.subChunkSubdivision = globalGenerationSettings.subChunkSubdivision;
 
         this.detailMaterial = globalGenerationSettings.defaultDetailMaterial;
+        this.biomeDetails = globalGenerationSettings.biomeDetails;
+        
         this.detailChunks = new DetailChunk[9];
     }
 
@@ -111,7 +113,7 @@ public class TerrainObjectsManager
 
                 SubChunk nSubChunk = nChunk.GetSubChunk(nSubChunkWorldPos, subChunkSubdivision);
                 
-                detailChunks[index] = new DetailChunk(detailMaterial, nSubChunk);
+                detailChunks[index] = new DetailChunk(detailMaterial, nSubChunk, biomeDetails);
                 
             }
         }

@@ -13,13 +13,13 @@ public struct GlobalGenerationSettings
 {
     public readonly Material defaultDetailMaterial;
     public readonly int subChunkSubdivision;
-    //public readonly Dictionary<Biomes, TerrainDetailSettings> biomeDetails;
+    public readonly Dictionary<Biomes, TerrainDetailSettings> biomeDetails;
     
-    public GlobalGenerationSettings(Material defaultDetailMaterial, int subChunkSubdivision)//, Dictionary<Biomes, TerrainDetailSettings> biomeDetails)
+    public GlobalGenerationSettings(Material defaultDetailMaterial, int subChunkSubdivision, Dictionary<Biomes, TerrainDetailSettings> biomeDetails)
     {
         this.defaultDetailMaterial = defaultDetailMaterial;
         this.subChunkSubdivision = subChunkSubdivision;
-        //this.biomeDetails = biomeDetails;
+        this.biomeDetails = biomeDetails;
     }
 }
 
@@ -40,6 +40,8 @@ public class WorldGenerationSettings : ScriptableObject
 
     public int biomeMapSize = 240;
 
+    public int biomeTextureSize = 241;
+
     [Range(0.01f,1)]
     public float biomeMapScale = 0.05f;
 
@@ -54,22 +56,8 @@ public class WorldGenerationSettings : ScriptableObject
     [Header("Global Generation Settings")]
     public int subChunkSubdivision = 3;
     public Material defaultDetailMaterial;
-    public static Dictionary<Biomes, TerrainDetailSettings> biomeDetails;
 
 
-
-    public Dictionary<Biomes,BiomeSettings> GetAvailableBiomes() // get a list of all biomes in biomeGenerationSettings
-    {
-        Dictionary<Biomes,BiomeSettings> availableBiomes = new Dictionary<Biomes,BiomeSettings>();
-        foreach (BiomeSettings bSettings in biomeGenerationSettings)
-        {
-            if (!availableBiomes.ContainsKey(bSettings.biome))
-            {
-                availableBiomes.Add(bSettings.biome,bSettings);
-            }
-        }
-        return availableBiomes;
-    }
 
     //always apply before requesting for world generation data
     public void ApplyGenerationSettings()
@@ -77,12 +65,6 @@ public class WorldGenerationSettings : ScriptableObject
         UnityEngine.Random.InitState(worldSeed);
         Dictionary<Biomes,BiomeSettings> availableBiomes = GetAvailableBiomes();
 
-        //setting all the biome details in a single dict
-        biomeDetails = new Dictionary<Biomes, TerrainDetailSettings>();    
-        foreach (Biomes biome in availableBiomes.Keys)
-        {
-            biomeDetails[biome] = availableBiomes[biome].terrainDetailSettings;
-        }
 
         Debug.Log("assingning new biomes: Seed = " + worldSeed);
 
@@ -167,6 +149,36 @@ public class WorldGenerationSettings : ScriptableObject
         } 
     }
 
+
+    public Dictionary<Biomes, TerrainDetailSettings> GetBiomeDetails()
+    {
+        Dictionary<Biomes, TerrainDetailSettings> biomeDetails = new Dictionary<Biomes, TerrainDetailSettings>();
+        foreach (BiomeSettings bSettings in biomeGenerationSettings)
+        {
+            if (!biomeDetails.ContainsKey(bSettings.biome))
+            {
+                biomeDetails.Add(bSettings.biome, bSettings.terrainDetailSettings);
+            }
+        }
+        return biomeDetails;
+    }
+
+
+    public Dictionary<Biomes,BiomeSettings> GetAvailableBiomes() // get a list of all biomes in biomeGenerationSettings
+    {
+        Dictionary<Biomes,BiomeSettings> availableBiomes = new Dictionary<Biomes,BiomeSettings>();
+        foreach (BiomeSettings bSettings in biomeGenerationSettings)
+        {
+            if (!availableBiomes.ContainsKey(bSettings.biome))
+            {
+                availableBiomes.Add(bSettings.biome, bSettings);
+            }
+        }
+        return availableBiomes;
+    }
+
+    
+
     //selects a random element from the list and moves int to the back;
     private Biomes RandomStackSelect(List<Biomes> list, int end, int start = 0)
     {
@@ -190,7 +202,7 @@ public class WorldGenerationSettings : ScriptableObject
 
     public GlobalGenerationSettings GetGlobalGenerationSettings()
     {
-        return new GlobalGenerationSettings(defaultDetailMaterial, subChunkSubdivision);
+        return new GlobalGenerationSettings(defaultDetailMaterial, subChunkSubdivision, GetBiomeDetails());
     }
 
     
@@ -212,18 +224,5 @@ public class WorldGenerationSettings : ScriptableObject
         return worldSettings[index].terrainDetailSettings;
     }
 
-
-    private bool IsOnEdge(int index)
-    {
-        return false;
-    }
-
-
-
-
-    void OnValidate()
-    {
-
-    }
 
 }

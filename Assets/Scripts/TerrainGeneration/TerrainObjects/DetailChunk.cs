@@ -5,14 +5,7 @@ using UnityEngine;
 
 public class DetailChunk 
 {
-
-    /*
-    THE MATERIAL MUST BE THE SAME FOR ALL DETAILS AND ALL DETAILS SHOULD SAMPLE THE SAME ATLAS !!
-    
-    
-    */
-
-
+    private Dictionary<Biomes, TerrainDetailSettings> biomeDetails;
     public Material material;
 
     //Each chunk must have a different property block so that they dont share the same meshPropertiesBuffer
@@ -22,6 +15,9 @@ public class DetailChunk
     private Mesh mesh;
     private Bounds bounds;
     private SubChunk subChunk;
+
+    private bool hasDetails = true;
+
 
 
     // Mesh Properties struct to be read from the GPU.
@@ -46,18 +42,19 @@ public class DetailChunk
     
     EVERYTHING ELSE SHOULD WORK THE SAME
     */
-    public DetailChunk(Material material, SubChunk subChunk)
+    public DetailChunk(Material material, SubChunk subChunk, Dictionary<Biomes, TerrainDetailSettings> biomeDetails)
     {
         this.material = material;
         this.mesh = CreateQuad();
         this.subChunk = subChunk;
         this.bounds = subChunk.GetBounds();
         this.propertyBlock = new MaterialPropertyBlock();
+        this.biomeDetails = biomeDetails;
 
         if (subChunk.IsReady())
         {
             //subChunk should contain the chunk data tree. USE IT TO ELIMINATE OCCUPIED POSITIONS
-            InitializeBuffers();
+            InitializeBuffers(subChunk.GetDetailsSettings(biomeDetails));
         }
         
 
@@ -65,13 +62,27 @@ public class DetailChunk
 
 
     //pass in the subchunk and all data necessary to sample different biomes as well
-    private void InitializeBuffers() {
+    private void InitializeBuffers(List<TerrainDetailSettings> detailSettings) 
+    {
+        if(detailSettings.Count == 0)
+        {
+            hasDetails = false;
+            return;
+        }
+
+        //Debug.Log(detailSettings[0]);
+        
         
         List<Vector3> positions = subChunk.GetVertices();
         int population = positions.Count;
         /*
             Use the generation settings to get the grid of points 
         */
+
+
+
+
+
         if (population == 0)
         {
             return;
@@ -113,9 +124,10 @@ public class DetailChunk
 
     public void Draw()
     {   
-        /*
-        if there was a problem with detail settings (eg: they are all null), then draw nothing
-        */
+        if (!hasDetails)
+        {
+            return;
+        }
 
 
         if (meshPropertiesBuffer != null && argsBuffer != null)
@@ -124,7 +136,7 @@ public class DetailChunk
         }
         else if (subChunk.IsReady())
         {
-            InitializeBuffers();
+            InitializeBuffers(subChunk.GetDetailsSettings(biomeDetails));
         }
         
         

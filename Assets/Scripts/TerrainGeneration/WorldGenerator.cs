@@ -12,6 +12,11 @@ using UnityEngine;
 /// </summary>
 public class WorldGenerator
 {
+    
+    //check if there is an atlas on this path, otherwise create one.
+    //Also pass this path to the terrain material
+    public const string atlasPath = "/Map/BiomeMaps/worldAtlas.png";
+    
     public int biomeMapSize;
     public float biomeMapScale = 1f;
     public int biomeGridSize;
@@ -23,7 +28,7 @@ public class WorldGenerator
 
     public int subChunkSubdivision;
 
-    //public Dictionary<Biomes, TerrainDetailSettings> detailGenSettings; 
+
 
     
 
@@ -71,28 +76,31 @@ public class WorldGenerator
     /// </summary>
     private void GenerateWorldAtlas(WorldGenerationSettings worldGenerationSettings)
     {
-        int size = biomeMapSize;
-        Texture2D worldtexture = new Texture2D(size + 1, size  + 1);
-        Color[] colormap = new Color[(size + 1) * (size + 1)];
+        int textureSize = worldGenerationSettings.biomeTextureSize;
+        int mapSize = biomeMapSize;
 
-        for (int y = 0; y <= size; y++)
+        float textureScale = mapSize/(float)(textureSize-1);
+
+        Texture2D atlasTexture = new Texture2D(textureSize, textureSize);
+        Color[] colormap = new Color[(textureSize) * (textureSize)];
+
+        for (int y = 0; y < textureSize; y++)
         {
-            for (int x = 0; x <= size; x++)
+            for (int x = 0; x < textureSize; x++)
             {
-                int cellId = BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, biomeGridSize);
+                int cellId = BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x * textureScale,y * textureScale).r, biomeGridSize);
                 PrimaryGenerationSettings genSettings = worldGenerationSettings.GetPrimarySettings(cellId);
                 Texture2D baseTexture = genSettings.baseTexture;
                 float scale = genSettings.baseTextureScale;
 
 
-                colormap[x + (size + 1) * y] = baseTexture.GetPixelBilinear(x/scale, y/scale);
+                colormap[x + (textureSize) * y] = baseTexture.GetPixelBilinear(x/scale, y/scale);
             }
         }
-        worldtexture.SetPixels(colormap);
-        worldtexture.Apply();
+        atlasTexture.SetPixels(colormap);
+        atlasTexture.Apply();
 
-        string atlasPath = "/Map/BiomeMaps/worldAtlas.png";
-        System.IO.File.WriteAllBytes(Application.dataPath + atlasPath, worldtexture.EncodeToPNG());
+        System.IO.File.WriteAllBytes(Application.dataPath + atlasPath, atlasTexture.EncodeToPNG());
     }
 
 
@@ -219,12 +227,31 @@ public class WorldGenerator
             return Biomes.HighMountains;
         }
 
+        
         int cellId = BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, biomeGridSize);
 
         BiomeSampler biomeSampler = biomeSamplers[cellId];
         
-
+        //Debug.Log(x + ", " + y + ": "+ biomeSampler.biomeType);
         return biomeSampler.biomeType;
+    }
+    public int GetId(float _x, float _y) 
+    {
+
+        float x = biomeMapScale * _x;
+        float y = biomeMapScale * _y;
+
+        
+        if (x < 0 || y < 0 || x > biomeMapSize || y > biomeMapSize)
+        {
+            return 100;
+        }
+
+        
+        int cellId = BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, biomeGridSize);
+        
+
+        return cellId;
     }
 
     /*

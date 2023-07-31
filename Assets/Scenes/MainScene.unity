@@ -931,6 +931,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1038833952531441315, guid: 577006fef970ac96888177047b6ab330,
         type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1038833952531441315, guid: 577006fef970ac96888177047b6ab330,
+        type: 3}
       propertyPath: playerSpeed
       value: 10
       objectReference: {fileID: 0}
