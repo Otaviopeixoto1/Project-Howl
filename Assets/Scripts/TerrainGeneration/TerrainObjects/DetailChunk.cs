@@ -69,24 +69,133 @@ public class DetailChunk
             hasDetails = false;
             return;
         }
+        
+        //List<Vector3> positions = subChunk.GetVertices();
+        //int population = positions.Count;
 
-        //Debug.Log(detailSettings[0]);
+        QuadNode headNode = subChunk.GetDataTree().head;
+
+        List<QuadNode> emptyNodes = new List<QuadNode>();
+        Queue<QuadNode> nodeQueue = new Queue<QuadNode>();
+
+
+        if (headNode.children != null)
+        {
+            nodeQueue.Enqueue(headNode);
+        }
+        else if(headNode.IsEmpty())
+        {
+            //ASSUMING ONLY THE LEAF NODES ARE THE ONES THAT CONTAIN OBJECTS
+            emptyNodes.Add(headNode);
+        }
+
         
+        while (nodeQueue.Count > 0)
+        {
+            QuadNode currentNode = nodeQueue.Dequeue();
+            foreach (QuadNode node in currentNode.children)
+            {
+                if (headNode.children != null)
+                {
+                    nodeQueue.Enqueue(node);
+                }
+                else if(node.IsEmpty())
+                {
+                    //ASSUMING ONLY THE LEAF NODES ARE THE ONES THAT CONTAIN OBJECTS
+                    emptyNodes.Add(node);
+                }
+            }
+
+        }
         
-        List<Vector3> positions = subChunk.GetVertices();
-        int population = positions.Count;
+
+        //assign the positions for each detail
+        List<DetailMeshProperties> meshProperties = new List<DetailMeshProperties>();
+
+        int subChunkSize = subChunk.GetSize();
+
+        foreach (QuadNode emptyNode in emptyNodes)
+        {
+            //loop over details again
+            float step = 1/(subChunkSize * detailSettings[0].density * 2);
+            //this is the bounds relative to the parent chunk
+            Bounds detailRegion = emptyNode.GetFractionalBounds();
+
+            float startX = detailRegion.center.x - detailRegion.extents.x;
+            float startY = detailRegion.center.y - detailRegion.extents.y;
+            float finalX = detailRegion.center.x + detailRegion.extents.x;
+            float finalY = detailRegion.center.y + detailRegion.extents.y;
+
+
+            for (float y = startY; y < finalY; y += step)
+            {
+                for (float x = startX; x < finalX; x += step)
+                {
+                    DetailMeshProperties props = new DetailMeshProperties();
+                    Vector3 position = subChunk.SamplePosition(x,y); // with  0 < x,y < 1
+                    Quaternion rotation = Quaternion.Euler(Random.Range(-180, 180), Random.Range(-180, 180), Random.Range(-180, 180));
+                    Vector3 scale = Vector3.one;
+
+                    props.mat = Matrix4x4.TRS(position, rotation, scale);
+                    props.color = Color.Lerp(Color.red, Color.blue, Random.value);
+
+                    meshProperties.Add(props);
+                    //subChunk.SamplePosition(x,y); // with  0 < x,y < 1
+                }
+            }
+
+
+        }
+
+        int population = meshProperties.Count;
+
+
+
+////////////////////////////////////////////-WIP-///////////////////////////////////////////////////////////////////
         /*
             Use the generation settings to get the grid of points 
         */
+        
+        //sample the points based on a density and the bounds of a given tree node
+        //subChunk.SamplePosition(x,y); with  0 < x,y < 1
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //use the subchunk biome map to draw the specific details belonging to each biome.
+        //INCREASE THE BIOME MAP DENSITY
+        //-add all the details to one single atlas. add a biome parameter inside the detail shader to select the 
+        //appropriate tile. 
+        //-if a biome has nothing in the atlas, just clip and draw nothing !!
+        //-add the density parameter to properly add these details with proper spacing 
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-
+        
 
         if (population == 0)
         {
             return;
         }
+
+
+        /*
+        // Initialize buffer with the given population.
+        DetailMeshProperties[] properties = new DetailMeshProperties[population];
+
+        for (int i = 0; i < population; i++) {
+            DetailMeshProperties props = new DetailMeshProperties();
+            Vector3 position = positions[i];
+            Quaternion rotation = Quaternion.Euler(Random.Range(-180, 180), Random.Range(-180, 180), Random.Range(-180, 180));
+            Vector3 scale = Vector3.one;
+
+            props.mat = Matrix4x4.TRS(position, rotation, scale);
+            props.color = Color.Lerp(Color.red, Color.blue, Random.value);
+
+            properties[i] = props;
+        }*/
+
+
 
         // Argument buffer used by DrawMeshInstancedIndirect.
         uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
@@ -101,23 +210,10 @@ public class DetailChunk
         argsBuffer = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
         argsBuffer.SetData(args);
 
-        // Initialize buffer with the given population.
-        DetailMeshProperties[] properties = new DetailMeshProperties[population];
-
-        for (int i = 0; i < population; i++) {
-            DetailMeshProperties props = new DetailMeshProperties();
-            Vector3 position = positions[i];
-            Quaternion rotation = Quaternion.Euler(Random.Range(-180, 180), Random.Range(-180, 180), Random.Range(-180, 180));
-            Vector3 scale = Vector3.one;
-
-            props.mat = Matrix4x4.TRS(position, rotation, scale);
-            props.color = Color.Lerp(Color.red, Color.blue, Random.value);
-
-            properties[i] = props;
-        }
+        
 
         meshPropertiesBuffer = new ComputeBuffer(population, DetailMeshProperties.Size());
-        meshPropertiesBuffer.SetData(properties);
+        meshPropertiesBuffer.SetData(meshProperties);
         propertyBlock.SetBuffer("_Properties", meshPropertiesBuffer);
         //material.SetBuffer("_Properties", meshPropertiesBuffer);
     }

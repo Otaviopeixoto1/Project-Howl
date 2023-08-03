@@ -154,7 +154,7 @@ public static class ChunkGenerator
         int increment = CalculateLodIncrement(meshSize,lodBias);
 
         int mapSize = sampler.biomeMapSize;
-        float mapChunks = 1/sampler.biomeMapScale ;
+        float mapChunks = 1/sampler.biomeMapScale;
         int vertices = ((meshSize - 1)/increment) + 1;
 
         MeshData meshData = new MeshData(vertices, vertices);

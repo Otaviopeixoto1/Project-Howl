@@ -1009,6 +1009,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerCharacter
       objectReference: {fileID: 0}
+    - target: {fileID: 4155578614842187276, guid: 577006fef970ac96888177047b6ab330,
+        type: 3}
+      propertyPath: fps
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 4673573443691150289, guid: 577006fef970ac96888177047b6ab330,
         type: 3}
       propertyPath: m_LocalScale.x
