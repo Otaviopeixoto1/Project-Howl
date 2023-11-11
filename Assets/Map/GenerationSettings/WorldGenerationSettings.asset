@@ -24,5 +24,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 26f49bb48db86e96cacca017045145f7, type: 2}
   - {fileID: 11400000, guid: cbd5a8faeba4b2d0fb5df17f80766cd3, type: 2}
   subChunkSubdivision: 3
+  detailAtlasWidth: 4
+  detailAtlas: {fileID: 2800000, guid: 64e54a67b3efd8e2daa4775b4f73ac9c, type: 3}
   defaultDetailMaterial: {fileID: 2100000, guid: cf6c52bed7034309aad74e1f40255b19,
     type: 2}

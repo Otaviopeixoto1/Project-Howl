@@ -19,9 +19,8 @@ public class TerrainDetailSettings : ScriptableObject
     [Tooltip("This material will override the default material used in the detail rendering")]
     public Material materialOverride; 
 
-    [Header("Atlas Texture Settings")]
-    public Texture2D atlasTexture;
+    public Vector2Int atlasOffset;
     public Vector2Int size;
-    public Vector2Int offset;
+    public int numVariants;
 
 }

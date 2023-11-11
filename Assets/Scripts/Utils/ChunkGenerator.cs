@@ -73,7 +73,7 @@ public struct ChunkData
 
 
 
-//Rename for ChunkGenerator
+
 public static class ChunkGenerator
 {
 
@@ -113,7 +113,6 @@ public static class ChunkGenerator
         int widthIncrement = CalculateLodIncrement(meshWidth,lodBias);
         int heightIncrement = CalculateLodIncrement(meshHeight,lodBias);
 
-        //Debug.Log( widthIncrement +", " + heightIncrement);
 
         int widthVertices = ((meshWidth - 1)/widthIncrement) + 1;
         int heightVertices = ((meshHeight - 1)/heightIncrement) + 1;

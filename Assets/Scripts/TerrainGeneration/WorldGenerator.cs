@@ -12,7 +12,6 @@ using UnityEngine;
 /// </summary>
 public class WorldGenerator
 {
-    
     //check if there is an atlas on this path, otherwise create one.
     //Also pass this path to the terrain material
     public const string atlasPath = "/Map/BiomeMaps/worldAtlas.png";

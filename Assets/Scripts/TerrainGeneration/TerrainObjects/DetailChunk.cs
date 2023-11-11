@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -7,6 +8,7 @@ public class DetailChunk
 {
     private Dictionary<Biomes, TerrainDetailSettings> biomeDetails;
     public Material material;
+    public Vector2 atlasSize;
 
     //Each chunk must have a different property block so that they dont share the same meshPropertiesBuffer
     public MaterialPropertyBlock propertyBlock;
@@ -18,23 +20,27 @@ public class DetailChunk
 
     private bool hasDetails = true;
 
-
-
+    
     // Mesh Properties struct to be read from the GPU.
     private struct DetailMeshProperties 
     {
         public Matrix4x4 mat;
-        public Vector4 color;
+        public Vector4 offsetScale;
+        public Vector3 normal;
+        public Vector2 atlasUV;
 
 
         // Size() is a convenience funciton which returns the stride of the struct.
         public static int Size() {
             return
                 sizeof(float) * 4 * 4 + // matrix;
-                sizeof(float) * 4;      // color;
+                sizeof(float) * 4 +     // offsetScale;
+                sizeof(float) * 3 +     // normal;
+                sizeof(float) * 2;      // atlasUVs;
+
         }
     }
-
+    
 
     //Use a terrainDetailsSettings to initialize this.
     /*
@@ -42,24 +48,47 @@ public class DetailChunk
     
     EVERYTHING ELSE SHOULD WORK THE SAME
     */
-    public DetailChunk(Material material, SubChunk subChunk, Dictionary<Biomes, TerrainDetailSettings> biomeDetails)
+    public DetailChunk(Material material, Vector2 atlasSize, SubChunk subChunk, Dictionary<Biomes, TerrainDetailSettings> biomeDetails)
     {
         this.material = material;
-        this.mesh = CreateQuad();
+        this.atlasSize = atlasSize;
+        this.mesh = CreateQuad(0.6f, 0.6f);
         this.subChunk = subChunk;
-        this.bounds = subChunk.GetBounds();
+        this.bounds = subChunk.Bounds;
         this.propertyBlock = new MaterialPropertyBlock();
         this.biomeDetails = biomeDetails;
 
         if (subChunk.IsReady())
         {
             //subChunk should contain the chunk data tree. USE IT TO ELIMINATE OCCUPIED POSITIONS
-            InitializeBuffers(subChunk.GetDetailsSettings(biomeDetails));
+            InitializeBuffers(GetDetailsSettings(subChunk, biomeDetails));
         }
         
 
     }
 
+    //Currently only gets a 2x2 grid of details. Improve this: 
+    // -Store every biome present in chunk in list of unique biomes
+    // -Create a list of every possible terrain detail setting based on the present biomes
+    // -Sample and interpolate the original biome map when build subchunk and instance details based
+    //  on the biome sampled
+    // -THE SUBCHUNK SHOULD CONTAIN BIOME INFO AS WELL
+    private List<TerrainDetailSettings> GetDetailsSettings(SubChunk subChunk, Dictionary<Biomes, TerrainDetailSettings> biomeDetails)
+    {
+        Biomes[] biomeMap = subChunk.GetBiomeMap();
+
+        List<TerrainDetailSettings> detailList = new List<TerrainDetailSettings>();
+        
+        for (int i = 0; i < 4; i++)
+        {
+            if (biomeDetails[biomeMap[i]] != null)
+            {
+                detailList.Add(biomeDetails[biomeMap[i]]);
+            }
+        }
+
+        return detailList;
+    }
 
     //pass in the subchunk and all data necessary to sample different biomes as well
     private void InitializeBuffers(List<TerrainDetailSettings> detailSettings) 
@@ -67,17 +96,16 @@ public class DetailChunk
         if(detailSettings.Count == 0)
         {
             hasDetails = false;
+            Debug.Log("no details");
             return;
         }
         
-        //List<Vector3> positions = subChunk.GetVertices();
-        //int population = positions.Count;
 
         QuadNode headNode = subChunk.GetDataTree().head;
 
         List<QuadNode> emptyNodes = new List<QuadNode>();
         Queue<QuadNode> nodeQueue = new Queue<QuadNode>();
-
+        
 
         if (headNode.children != null)
         {
@@ -85,7 +113,6 @@ public class DetailChunk
         }
         else if(headNode.IsEmpty())
         {
-            //ASSUMING ONLY THE LEAF NODES ARE THE ONES THAT CONTAIN OBJECTS
             emptyNodes.Add(headNode);
         }
 
@@ -95,29 +122,36 @@ public class DetailChunk
             QuadNode currentNode = nodeQueue.Dequeue();
             foreach (QuadNode node in currentNode.children)
             {
+                // Look at the entire tree and get only the empty leaf nodes
                 if (headNode.children != null)
                 {
                     nodeQueue.Enqueue(node);
                 }
                 else if(node.IsEmpty())
                 {
-                    //ASSUMING ONLY THE LEAF NODES ARE THE ONES THAT CONTAIN OBJECTS
                     emptyNodes.Add(node);
                 }
             }
 
         }
-        
 
-        //assign the positions for each detail
+
         List<DetailMeshProperties> meshProperties = new List<DetailMeshProperties>();
+        int subChunkSize = subChunk.ChunkSize;
 
-        int subChunkSize = subChunk.GetSize();
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+        // Search for biomes with bfs and add all biome chunks in a dict
+        // Then fill each biome patch individually
+        /////////////////////////////////////////////////////////////////////////////////////////////////
 
         foreach (QuadNode emptyNode in emptyNodes)
         {
-            //loop over details again
-            float step = 1/(subChunkSize * detailSettings[0].density * 2);
+            float step = 1/(subChunkSize * detailSettings[0].density);
+            Vector2 atlasOffset = detailSettings[0].atlasOffset/atlasSize;
+            Vector2 size = detailSettings[0].size/atlasSize;
+
+            int variants = detailSettings[0].numVariants;
+
             //this is the bounds relative to the parent chunk
             Bounds detailRegion = emptyNode.GetFractionalBounds();
 
@@ -126,21 +160,30 @@ public class DetailChunk
             float finalX = detailRegion.center.x + detailRegion.extents.x;
             float finalY = detailRegion.center.y + detailRegion.extents.y;
 
-
+            // sample the maps with: 0 < x,y < 1
             for (float y = startY; y < finalY; y += step)
             {
                 for (float x = startX; x < finalX; x += step)
                 {
+                    //sample biome map check on detailSettings
                     DetailMeshProperties props = new DetailMeshProperties();
-                    Vector3 position = subChunk.SamplePosition(x,y); // with  0 < x,y < 1
-                    Quaternion rotation = Quaternion.Euler(Random.Range(-180, 180), Random.Range(-180, 180), Random.Range(-180, 180));
+                    float sampleX = x + Random.Range(-step * 0.3f,step * 0.3f);
+                    float sampleY = y + Random.Range(-step * 0.3f,step * 0.3f);
+                    Vector3 position = subChunk.SamplePosition(sampleX,sampleY); 
+                    Vector3 terrainNormal = subChunk.SampleNormal(sampleX,sampleY);
+                    Vector2 atlasUV = subChunk.SampleAUV(sampleX,sampleY);
+                    Quaternion rotation = Quaternion.FromToRotation(Vector3.up, terrainNormal) * Quaternion.Euler(15, 0, 0);
+                    //Quaternion.FromToRotation(Vector3.up, normal);                              * Quaternion.Euler(15, 0, 0)
+                    //Quaternion rotation = Quaternion.identity;
                     Vector3 scale = Vector3.one;
 
                     props.mat = Matrix4x4.TRS(position, rotation, scale);
-                    props.color = Color.Lerp(Color.red, Color.blue, Random.value);
+                    int variant = Random.Range(0,variants);
+                    props.offsetScale = new Vector4(atlasOffset.x + size.x * variant, atlasOffset.y, size.x, size.y);
+                    props.normal = terrainNormal;
+                    props.atlasUV = atlasUV;
 
                     meshProperties.Add(props);
-                    //subChunk.SamplePosition(x,y); // with  0 < x,y < 1
                 }
             }
 
@@ -148,52 +191,10 @@ public class DetailChunk
         }
 
         int population = meshProperties.Count;
-
-
-
-////////////////////////////////////////////-WIP-///////////////////////////////////////////////////////////////////
-        /*
-            Use the generation settings to get the grid of points 
-        */
-        
-        //sample the points based on a density and the bounds of a given tree node
-        //subChunk.SamplePosition(x,y); with  0 < x,y < 1
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //use the subchunk biome map to draw the specific details belonging to each biome.
-        //INCREASE THE BIOME MAP DENSITY
-        //-add all the details to one single atlas. add a biome parameter inside the detail shader to select the 
-        //appropriate tile. 
-        //-if a biome has nothing in the atlas, just clip and draw nothing !!
-        //-add the density parameter to properly add these details with proper spacing 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-        
-
         if (population == 0)
         {
             return;
         }
-
-
-        /*
-        // Initialize buffer with the given population.
-        DetailMeshProperties[] properties = new DetailMeshProperties[population];
-
-        for (int i = 0; i < population; i++) {
-            DetailMeshProperties props = new DetailMeshProperties();
-            Vector3 position = positions[i];
-            Quaternion rotation = Quaternion.Euler(Random.Range(-180, 180), Random.Range(-180, 180), Random.Range(-180, 180));
-            Vector3 scale = Vector3.one;
-
-            props.mat = Matrix4x4.TRS(position, rotation, scale);
-            props.color = Color.Lerp(Color.red, Color.blue, Random.value);
-
-            properties[i] = props;
-        }*/
 
 
 
@@ -215,7 +216,6 @@ public class DetailChunk
         meshPropertiesBuffer = new ComputeBuffer(population, DetailMeshProperties.Size());
         meshPropertiesBuffer.SetData(meshProperties);
         propertyBlock.SetBuffer("_Properties", meshPropertiesBuffer);
-        //material.SetBuffer("_Properties", meshPropertiesBuffer);
     }
 
     public void Draw()
@@ -232,7 +232,7 @@ public class DetailChunk
         }
         else if (subChunk.IsReady())
         {
-            InitializeBuffers(subChunk.GetDetailsSettings(biomeDetails));
+            InitializeBuffers(GetDetailsSettings(subChunk, biomeDetails));
         }
         
         
@@ -240,14 +240,11 @@ public class DetailChunk
 
     public void Clear() 
     {
-        if (meshPropertiesBuffer != null) {
-            meshPropertiesBuffer.Release();
-        }
+
+        meshPropertiesBuffer?.Release();
         meshPropertiesBuffer = null;
 
-        if (argsBuffer != null) {
-            argsBuffer.Release();
-        }
+        argsBuffer?.Release();
         argsBuffer = null;
     }
 
@@ -259,10 +256,10 @@ public class DetailChunk
         float w = width * .5f;
         float h = height * .5f;
         var vertices = new Vector3[4] {
-            new Vector3(-w, -h, 0),
-            new Vector3(w, -h, 0),
-            new Vector3(-w, h, 0),
-            new Vector3(w, h, 0)
+            new Vector3(-w, 0, 0),
+            new Vector3(w, 0, 0),
+            new Vector3(-w, 2*h, 0),
+            new Vector3(w, 2*h, 0)
         };
 
         var tris = new int[6] {

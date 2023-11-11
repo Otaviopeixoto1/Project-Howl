@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fd9395f71a0ec19280cbd7a2474a41a, type: 3}
   m_Name: GrassDetail
   m_EditorClassIdentifier: 
-  density: 1
+  density: 17
   meshType: 0
-  material: {fileID: 2100000, guid: cf6c52bed7034309aad74e1f40255b19, type: 2}
-  atlasTexture: {fileID: 2800000, guid: 64e54a67b3efd8e2daa4775b4f73ac9c, type: 3}
-  size: {x: 4, y: 1}
-  offset: {x: 0, y: 0}
+  materialOverride: {fileID: 0}
+  atlasOffset: {x: 0, y: 0}
+  size: {x: 32, y: 32}
+  numVariants: 4

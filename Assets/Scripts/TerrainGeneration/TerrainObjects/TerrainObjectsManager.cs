@@ -12,7 +12,6 @@ public class TerrainObject
 
 public class TerrainObjectsManager
 {
-    private TerrainManager terrainManager;
     private TerrainChunk currentChunk;
     private Vector2Int currentChunkPos;
     private Vector2Int currentSubChunkPos; //used to check if the player moved 
@@ -22,18 +21,28 @@ public class TerrainObjectsManager
     private DetailChunk[] detailChunks;
 
     private Material detailMaterial;
+    Vector2 atlasSize;
 
     private Dictionary<Biomes, TerrainDetailSettings> biomeDetails;
     
 
-    public TerrainObjectsManager(TerrainManager terrainManager, GlobalGenerationSettings globalGenerationSettings)
+    public TerrainObjectsManager(DetailGenerationSettings detailGenerationSettings, Texture2D atlasTexture)
     {
-        this.terrainManager = terrainManager;
+        this.subChunkSubdivision = detailGenerationSettings.subChunkSubdivision;
 
-        this.subChunkSubdivision = globalGenerationSettings.subChunkSubdivision;
+        this.detailMaterial = detailGenerationSettings.defaultDetailMaterial;
 
-        this.detailMaterial = globalGenerationSettings.defaultDetailMaterial;
-        this.biomeDetails = globalGenerationSettings.biomeDetails;
+        //TEST: ONLY USING ONE DETAIL FOR NOW:
+        //ALL DETAIL TEXTURES SHOULD BE GROUPED INTO ONE SINGLE ATLAS !!
+        
+        //automatically loading MapAtlas into the detail material _SpriteAtlas
+        this.detailMaterial.SetTexture("_MapAtlas", atlasTexture);
+        Texture2D detailAtlas = detailGenerationSettings.detailAtlas;
+        atlasSize = new Vector2(detailAtlas.width, detailAtlas.height);
+        this.detailMaterial.SetTexture("_SpriteAtlas", detailAtlas);
+        
+
+        this.biomeDetails = detailGenerationSettings.biomeDetails;
         
         this.detailChunks = new DetailChunk[9];
     }
@@ -42,12 +51,11 @@ public class TerrainObjectsManager
 
 
     //Called every frame to draw the terrain details and check if we need to generate new chunks
-    public void UpdateObjectChunks(Vector2 viewerWorldPos, Dictionary<Vector2Int,TerrainChunk> terrainChunks)
-    {
-        Vector2Int chunkPos = terrainManager.WorldToChunkCoords(viewerWorldPos);
+    public void UpdateObjectChunks(Vector2Int chunkPos, Vector2 viewerWorldPos, Dictionary<Vector2Int,TerrainChunk> terrainChunks)
+    {   
         currentChunk = terrainChunks[chunkPos];
         Vector2Int subChunkPos = currentChunk.WorldToGlobalSubChunkCoords(viewerWorldPos, subChunkSubdivision);
-        
+
         DrawDetails();
 
         if (subChunkPos == currentSubChunkPos)
@@ -108,12 +116,12 @@ public class TerrainObjectsManager
                 
                 TerrainChunk nChunk = terrainChunks[nChunkPos];
 
-                int subChunkSize =  currentChunk.GetSize()/MathMisc.TwoPowX(subChunkSubdivision);
+                int subChunkSize =  currentChunk.ChunkSize/MathMisc.TwoPowX(subChunkSubdivision);
                 Vector2 nSubChunkWorldPos = SubChunk.GlobalSubChunkToWorldCoords(nSubChunkPos, subChunkSubdivision, subChunkSize);
 
                 SubChunk nSubChunk = nChunk.GetSubChunk(nSubChunkWorldPos, subChunkSubdivision);
                 
-                detailChunks[index] = new DetailChunk(detailMaterial, nSubChunk, biomeDetails);
+                detailChunks[index] = new DetailChunk(detailMaterial,atlasSize, nSubChunk, biomeDetails);
                 
             }
         }

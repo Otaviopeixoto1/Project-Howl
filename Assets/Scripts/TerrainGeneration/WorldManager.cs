@@ -153,6 +153,6 @@ public class WorldManager : MonoBehaviour
             //OnSuccessfulLoad();
             
         }
-        terrainManager.Setup(this, worldGenerator, worldGenerationSettings.GetGlobalGenerationSettings());
+        terrainManager.Setup(worldGenerator, worldGenerationSettings.GetDetailGenerationSettings());
     }
 }

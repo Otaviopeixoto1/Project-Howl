@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: TerrainMaterial
-  m_Shader: {fileID: 4800000, guid: 679e2c2086e74967d802156467f0b78f, type: 3}
+  m_Name: DetailInstancingMaterial
+  m_Shader: {fileID: 4800000, guid: dc080ea17401edd1b86908d7edbed32b, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -23,8 +23,20 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _DetailAtlas:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MapAtlas:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpriteAtlas:
+        m_Texture: {fileID: 2800000, guid: 64e54a67b3efd8e2daa4775b4f73ac9c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _colorRamp:
@@ -33,9 +45,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _ambientLightBias: 0.54
-    - _atlasScale: 20
-    - _lightIntensityBias: 0.1
-    - atlasScale: 1
+    - _ambientLightBias: 0
+    - _lightIntensityBias: 0
     m_Colors: []
   m_BuildTextureStacks: []

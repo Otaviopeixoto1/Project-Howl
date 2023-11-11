@@ -19,9 +19,7 @@ public class TerrainManager : MonoBehaviour
 
     private TerrainObjectsManager terrainObjectsManager;
 
-
     private WorldGenerator worldGenerator;
-    private WorldManager worldManager;
 
 
     [SerializeField]
@@ -80,38 +78,42 @@ public class TerrainManager : MonoBehaviour
     }
     void OnEnable()
     {
-        //WorldManager.OnSuccessfulLoad += Setup;
     }
 
 
     void OnDisable()
     {
-        //WorldManager.OnSuccessfulLoad -= Setup;
         terrainObjectsManager?.ClearObjects();
     }
 
 
-    public void Setup(WorldManager worldManager, WorldGenerator worldGenerator, GlobalGenerationSettings globalGenerationSettings)
+    public void Setup( WorldGenerator worldGenerator, DetailGenerationSettings detailGenerationSettings)
     {
         this.chunkThreadManager = new ChunkThreadManager();
-        this.worldManager = worldManager;
         this.worldGenerator = worldGenerator;
-        //terrainMaterial.SetFloat("_atlasScale", 1/worldGenerator.GetBiomeMapScale());
-
-
-
-        viewerWorldPos = new Vector2(viewer.position.x, viewer.position.z);
-
+        this.viewerWorldPos = new Vector2(viewer.position.x, viewer.position.z);
         
-
         Vector2Int viewerChunkCoords = WorldToChunkCoords(viewerWorldPos);
         
         UpdateVisibleChunks(viewerChunkCoords.x, viewerChunkCoords.y);
         
-        terrainObjectsManager = new TerrainObjectsManager(this, globalGenerationSettings);
+
+
+        //automatically loading MapAtlas into the detail material
+        Texture2D tex = null;
+        byte[] texData;
+        if (System.IO.File.Exists(Application.dataPath + WorldGenerator.atlasPath))
+        {
+            texData = System.IO.File.ReadAllBytes(Application.dataPath + WorldGenerator.atlasPath);
+            tex = new Texture2D(2, 2); //texture dimensions are resized on load.
+            tex.LoadImage(texData); 
+        }
+
+        this.terrainMaterial.SetTexture("_MainTex", tex);
+        
+        terrainObjectsManager = new TerrainObjectsManager(detailGenerationSettings, tex);
 
         enabled = true;
-        //WorldManager.OnSuccessfulLoad -= Setup;
     }
 
 
@@ -135,7 +137,8 @@ public class TerrainManager : MonoBehaviour
         }
         
         //Update all terrain details
-        terrainObjectsManager.UpdateObjectChunks(viewerWorldPos, terrainChunks);
+        Vector2Int chunkPos = WorldToChunkCoords(viewerWorldPos);
+        terrainObjectsManager.UpdateObjectChunks(chunkPos,viewerWorldPos, terrainChunks);
         
         chunkThreadManager.CheckThreads();
     }
