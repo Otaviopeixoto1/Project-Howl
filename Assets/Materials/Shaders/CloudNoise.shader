@@ -3,7 +3,7 @@ Shader "CustomRenderTexture/Simple"
     Properties
     {
         _Color("Color", Color) = (1,1,1,1)
-        _Tex("InputTex", 2D) = "white" {}
+        _ColorRamp("Color Ramp", 2D) = "white" {}
         _Offset("Offset", Vector) = (0,0,0,0)
         _WindDirection("Wind Direction", Vector) = (1,1,1,1)
         _windSpeed("Wind Speed", Range(0.01,1)) = 1
@@ -32,7 +32,7 @@ Shader "CustomRenderTexture/Simple"
            #pragma target 3.0
  
            float4 _Color;
-           sampler2D _Tex;
+           sampler2D _ColorRamp;
 
            float _Amplitude; 
            int _Octaves;
@@ -73,11 +73,11 @@ Shader "CustomRenderTexture/Simple"
                 }
                 noiseValue /= maxValue;
                 
-                float cloudNoise = (step((  2 *_Density - 1), noiseValue)) ;
+                float cloudNoise = (( _Density + noiseValue)) ;
                 //the step function causes the cloud movement to look weird. Adjust it to make the clouds smoother
                 //add some smooth edges to the clouds defined by cloudNoise
                 //make a color ramp for the clouds !
-                return (cloudNoise);
+                return  tex2D(_ColorRamp, float2(1.0f - cloudNoise,0));
            }
            ENDCG
         }

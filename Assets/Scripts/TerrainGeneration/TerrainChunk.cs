@@ -592,8 +592,8 @@ public class SubChunk : QuadChunk
         float _x = ( x) * ChunkSize * subChunkLength;
         float _y = ( y) * ChunkSize * subChunkLength;
 
-        int x0 = Mathf.Min(parentChunk.ChunkSize, Mathf.Max(  Mathf.FloorToInt(_x), 0 ));
-        int y0 =  Mathf.Min(parentChunk.ChunkSize, Mathf.Max(  Mathf.FloorToInt(_y), 0 ));
+        int x0 = Mathf.Min(parentChunk.ChunkSize - 1, Mathf.Max(  Mathf.FloorToInt(_x), 0 ));
+        int y0 =  Mathf.Min(parentChunk.ChunkSize - 1, Mathf.Max(  Mathf.FloorToInt(_y), 0 ));
 
 
         Vector3 v00 = chunkVertices[x0 + (parentChunk.ChunkSize + 1) * y0];
@@ -622,8 +622,8 @@ public class SubChunk : QuadChunk
         float _x = ( x) * ChunkSize * subChunkLength;
         float _y = ( y) * ChunkSize * subChunkLength;
 
-        int x0 = Mathf.Min(parentChunk.ChunkSize, Mathf.Max(  Mathf.FloorToInt(_x), 0 ));
-        int y0 =  Mathf.Min(parentChunk.ChunkSize, Mathf.Max(  Mathf.FloorToInt(_y), 0 ));
+        int x0 = Mathf.Min(parentChunk.ChunkSize - 1, Mathf.Max(  Mathf.FloorToInt(_x), 0 ));
+        int y0 =  Mathf.Min(parentChunk.ChunkSize - 1, Mathf.Max(  Mathf.FloorToInt(_y), 0 ));
 
 
         Vector3 v00 = chunkNormals[x0 + (parentChunk.ChunkSize + 1) * y0];
@@ -655,8 +655,8 @@ public class SubChunk : QuadChunk
         float _x = ( x) * ChunkSize * subChunkLength;
         float _y = ( y) * ChunkSize * subChunkLength;
 
-        int x0 = Mathf.Min(parentChunk.ChunkSize, Mathf.Max(  Mathf.FloorToInt(_x), 0 ));
-        int y0 =  Mathf.Min(parentChunk.ChunkSize, Mathf.Max(  Mathf.FloorToInt(_y), 0 ));
+        int x0 = Mathf.Min(parentChunk.ChunkSize - 1, Mathf.Max(  Mathf.FloorToInt(_x), 0 ));
+        int y0 =  Mathf.Min(parentChunk.ChunkSize - 1, Mathf.Max(  Mathf.FloorToInt(_y), 0 ));
 
 
         Vector2 v00 = chunkAUVs[x0 + (parentChunk.ChunkSize + 1) * y0];

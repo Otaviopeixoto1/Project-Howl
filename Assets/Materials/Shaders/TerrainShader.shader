@@ -15,15 +15,13 @@ Shader "TerrainShader"
             "RenderType" = "Opaque" 
             "RenderPipeline" = "UniversalPipeline" 
             "UniversalMaterialType" = "Lit"
+            
         }
 
         // Include material cbuffer for all passes. 
         // The cbuffer has to be the same for all passes to make this shader SRP batcher compatible.
         HLSLINCLUDE
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-
-
-
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Input.hlsl"
 
@@ -50,12 +48,9 @@ Shader "TerrainShader"
             #pragma vertex vert
             #pragma fragment frag
 
-            //#pragma multi_compile _ SHADOWS_SCREEN
+
             #pragma multi_compile _ _LIGHT_COOKIES
             #pragma multi_compile_fwdadd_fullshadows
-            //#pragma multi_compile _ _MAIN_LIGHT_SHADOWS
-            //#pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
-
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _SHADOWS_SOFT
             

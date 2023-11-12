@@ -47,9 +47,12 @@ Shader "Unlit/PostProcessOutlines"
 
             sampler2D _CameraDepthTexture;
             sampler2D _CameraNormalsTexture;
-            //sampler2D _GBuffer2;
-            sampler2D _CameraOpaqueTexture;
+            //sampler2D _CameraOpaqueTexture;
+
+            //the camera color:
+            sampler2D _CameraColorAttachmentB;
             sampler2D _SourceTex;
+            //sampler2D _BlitTexture;
             
             float4 _SourceTex_TexelSize;
             float4 _CameraOpaqueTexture_TexelSize;
@@ -113,7 +116,7 @@ Shader "Unlit/PostProcessOutlines"
                 float depthSamples[5];
                 float3 normalSamples[5];
 
-                float4 color = tex2D(_CameraOpaqueTexture, input.texcoord).rgba;
+                float4 color = tex2D(_CameraColorAttachmentB , input.texcoord).rgba;
                 //return color;
 
                 uvSamples[0] = input.texcoord;

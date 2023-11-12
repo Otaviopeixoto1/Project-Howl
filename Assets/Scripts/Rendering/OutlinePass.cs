@@ -24,7 +24,6 @@ public class OutlinePass : ScriptableRenderPass
     public OutlinePass(Material material, OutlineSettings settings)
     {
         m_Material = material;
-        //m_Color = settings.OutlineColor;
         m_DepthLowerThreshold = settings.DepthLowerThreshold;
         m_DepthUpperThreshold = settings.DepthUpperThreshold;
         m_NormalLowerThreshold = settings.NormalLowerThreshold;

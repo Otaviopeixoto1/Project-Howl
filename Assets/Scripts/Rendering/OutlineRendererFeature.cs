@@ -55,7 +55,7 @@ public class OutlineRendererFeature : ScriptableRendererFeature
         if (cameraData.cameraType != CameraType.Game) return;
 
         //generates the opaque and normal textures used by the shader
-        m_OutlinePass.ConfigureInput(ScriptableRenderPassInput.Normal | ScriptableRenderPassInput.Color); 
+        m_OutlinePass.ConfigureInput(ScriptableRenderPassInput.Normal); 
         renderer.EnqueuePass(m_OutlinePass);
     }
     
