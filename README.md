@@ -9,4 +9,8 @@ A small personal project meant for learning some core concepts of the Unity engi
 - Learn about unity's URP (and the SRPs in general) customization by using the ScriptableRendererFeatures to apply unique effects to the scene rendering. In this case I chose to go for the 3D pixel art style as shown in t3ssel8r's channel: https://www.youtube.com/@t3ssel8r
 
 ## Samples
+### Grass Rendering + Cloud Shadows
 ![Alt text](samples/sample1.png?raw=true "Title")
+
+### 3D pixel art: low resolution + color quantization + edge outlines and highlights
+![Alt text](samples/sample2.png?raw=true "Title")
