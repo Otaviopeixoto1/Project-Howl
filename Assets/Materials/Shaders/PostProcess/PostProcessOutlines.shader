@@ -17,7 +17,8 @@ Shader "Unlit/PostProcessOutlines"
             "RenderType" = "Opaque" 
             "RenderingPipeline" = "UniversalPipeline"
         }
-        ZWrite Off Cull Off ZTest Always
+        ZWrite Off Cull Back ZTest LEqual // if somethins is supposed to be drawn in front of the screen, this has to
+                                          // be LEqual instead of Always 
         
         
 
@@ -47,15 +48,18 @@ Shader "Unlit/PostProcessOutlines"
 
             sampler2D _CameraDepthTexture;
             sampler2D _CameraNormalsTexture;
-            //sampler2D _CameraOpaqueTexture;
+            sampler2D _LastCameraDepthTexture;
 
             //the camera color:
-            sampler2D _CameraColorAttachmentB;
-            sampler2D _SourceTex;
-            //sampler2D _BlitTexture;
+            //sampler2D _CameraColorAttachmentB;
+            //sampler2D _CameraOpaqueTexture;
+            //sampler2D _SourceTex;
+            sampler2D _CameraColorTexture;
             
-            float4 _SourceTex_TexelSize;
-            float4 _CameraOpaqueTexture_TexelSize;
+
+            //float4 _SourceTex_TexelSize;
+            //float4 _CameraColorAttachmentB_TexelSize;
+            float4 _CameraColorTexture_TexelSize;
 
 
 
@@ -109,14 +113,18 @@ Shader "Unlit/PostProcessOutlines"
             float4 frag(Varyings input) : SV_Target
             {
                 //return 1;
+
+                //compare depth prepass to the actual depth to discard some outline fragments
+                //return tex2D(_LastCameraDepthTexture, input.texcoord);
+
                 
-                float2 texelSize = float2(_CameraOpaqueTexture_TexelSize.x, _CameraOpaqueTexture_TexelSize.y);
+                float2 texelSize = float2(_CameraColorTexture_TexelSize.x, _CameraColorTexture_TexelSize.y);
 
                 float2 uvSamples[5];
                 float depthSamples[5];
                 float3 normalSamples[5];
 
-                float4 color = tex2D(_CameraColorAttachmentB , input.texcoord).rgba;
+                float4 color = tex2D(_CameraColorTexture , input.texcoord).rgba;
                 //return color;
 
                 uvSamples[0] = input.texcoord;

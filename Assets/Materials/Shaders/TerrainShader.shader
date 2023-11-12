@@ -1,3 +1,9 @@
+
+// ----------------------------------------------------------------------------------------------------------
+// The terrain using this shader wont appear on the depthNormals prepass, its only rendered on the final pass
+// This is NECESSARY for good outlines
+// ----------------------------------------------------------------------------------------------------------
+
 Shader "TerrainShader"
 {
     Properties
@@ -18,6 +24,8 @@ Shader "TerrainShader"
             
         }
 
+        //ZWrite On Cull On ZTest LEqual
+
         // Include material cbuffer for all passes. 
         // The cbuffer has to be the same for all passes to make this shader SRP batcher compatible.
         HLSLINCLUDE
@@ -34,6 +42,9 @@ Shader "TerrainShader"
         CBUFFER_END
         ENDHLSL
 
+        ZWrite On 
+        Cull Back 
+        ZTest LEqual
         
         Pass
         {
@@ -132,7 +143,7 @@ Shader "TerrainShader"
                 
                 float shadowAttenuation = mainLight.shadowAttenuation;
                 
-                return (col) * (toonLighting + 0.5) * saturate(lightColor + _ambientLightBias) * shadowAttenuation ;
+                return (col) * saturate( (toonLighting + 0.5) * lightColor * shadowAttenuation + _ambientLightBias )  ;
             }
             ENDHLSL
         }

@@ -228,7 +228,7 @@ public class DetailChunk
 
         if (meshPropertiesBuffer != null && argsBuffer != null)
         {
-            Graphics.DrawMeshInstancedIndirect(mesh, 0, material, bounds, argsBuffer, properties:propertyBlock);
+            Graphics.DrawMeshInstancedIndirect(mesh, 0, material, bounds, argsBuffer, properties:propertyBlock, layer:6);
         }
         else if (subChunk.IsReady())
         {

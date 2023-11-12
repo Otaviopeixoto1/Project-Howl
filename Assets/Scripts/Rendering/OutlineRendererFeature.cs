@@ -23,7 +23,7 @@ public class OutlineSettings
     [Range(0f, 0.1f)]
     public float NormalUpperThreshold = 0.1f;
 
-
+    
 
 
 
@@ -53,9 +53,9 @@ public class OutlineRendererFeature : ScriptableRendererFeature
     {
         CameraData cameraData = renderingData.cameraData;
         if (cameraData.cameraType != CameraType.Game) return;
-
-        //generates the opaque and normal textures used by the shader
-        m_OutlinePass.ConfigureInput(ScriptableRenderPassInput.Normal); 
+        
+        //generates the normal texture used by the shader.    color texture: ScriptableRenderPassInput.Color
+        m_OutlinePass.ConfigureInput(ScriptableRenderPassInput.Normal ); 
         renderer.EnqueuePass(m_OutlinePass);
     }
     

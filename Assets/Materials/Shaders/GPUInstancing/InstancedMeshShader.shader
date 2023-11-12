@@ -32,6 +32,10 @@ Shader "Custom/InstancedIndirect"
         CBUFFER_END
         ENDHLSL
 
+        ZWrite On 
+        Cull Back 
+        ZTest LEqual
+
         Pass {
 
             Tags 
@@ -132,7 +136,7 @@ Shader "Custom/InstancedIndirect"
 
                 float shadowAttenuation = mainLight.shadowAttenuation;
                 
-                return  col * (toonLighting + 0.5) * saturate(lightColor + _ambientLightBias) * shadowAttenuation;
+                return  col * saturate( (toonLighting + 0.5) * lightColor * shadowAttenuation + _ambientLightBias );
             }
 
             ENDHLSL

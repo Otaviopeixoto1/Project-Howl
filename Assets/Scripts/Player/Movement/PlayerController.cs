@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -41,7 +39,7 @@ public class PlayerController : MonoBehaviour
         //}
 
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.down,out hit ,5, terrainLayer)){
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, 5, terrainLayer)){
  
             groundNormal = hit.normal; 
 

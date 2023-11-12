@@ -1,11 +1,12 @@
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine;
+
 public class OutlinePass : ScriptableRenderPass
 {
     private RTHandle rtTemp;
     private ProfilingSampler m_ProfilingSampler;
-
+    
     Material m_Material;
     //readonly Color m_Color;
     readonly float m_DepthLowerThreshold;
@@ -32,14 +33,14 @@ public class OutlinePass : ScriptableRenderPass
         m_ProfilingSampler = new ProfilingSampler("Outline Pass");
             
         //renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing; //add post processing on outlines
-        renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing; //no post processing on outlines
-    }
+        renderPassEvent = RenderPassEvent.AfterRenderingSkybox; //no post processing on outlines
+    } 
     public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
     {
         base.OnCameraSetup(cmd, ref renderingData);
 
         var colorDesc = renderingData.cameraData.cameraTargetDescriptor;
-        colorDesc.depthBufferBits = 0; // must set to 0 to specify a colour target
+        colorDesc.depthBufferBits = 0; // must set to 0 to specify a color target
         // to use a different format, set .colorFormat or .graphicsFormat
 
         //setup the temporary render target used for blitting
