@@ -136,14 +136,14 @@ Shader "TerrainShader"
 
       
 
-                float toonLighting =  tex2D(_colorRamp, float2(i.lightIntensity,0));
+                float toonLighting =  tex2D(_colorRamp, float2(i.lightIntensity,0)) + 0.5;
 
                 half4 col = tex2D(_MainTex, i.atlasUV);
                 //return half4(i.atlasUV,0,1);
                 
                 float shadowAttenuation = mainLight.shadowAttenuation;
                 
-                return (col) * saturate( (toonLighting + 0.5) * lightColor * shadowAttenuation + _ambientLightBias )  ;
+                return (col) * saturate( toonLighting * lightColor * shadowAttenuation + _ambientLightBias );
             }
             ENDHLSL
         }

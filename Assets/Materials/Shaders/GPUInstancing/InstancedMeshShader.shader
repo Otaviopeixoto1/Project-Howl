@@ -132,11 +132,11 @@ Shader "Custom/InstancedIndirect"
                 clip(tex.a - 0.01);
                 float4 col = tex2D(_MapAtlas, i.auv);
 
-                float toonLighting =  tex2D(_colorRamp, float2(i.lightIntensity,0));
+                float toonLighting =  tex2D(_colorRamp, float2(i.lightIntensity,0)) + 0.5;
 
                 float shadowAttenuation = mainLight.shadowAttenuation;
                 
-                return  col * saturate( (toonLighting + 0.5) * lightColor * shadowAttenuation + _ambientLightBias );
+                return  col * saturate( toonLighting * lightColor * shadowAttenuation + _ambientLightBias );
             }
 
             ENDHLSL
