@@ -209,21 +209,13 @@ public class TerrainManager : MonoBehaviour
         return visibleChunks;
     }
 
-
-
-
-
-
-
-
-
-
     public Vector2Int WorldToGridCoords(Vector2 worldPos)
     {
         int currentChunkX = Mathf.RoundToInt(worldPos.x/(chunkScale));
         int currentChunkY = Mathf.RoundToInt(worldPos.y/(chunkScale));
         return new Vector2Int(currentChunkX, currentChunkY);
     }
+    
     public Vector2Int WorldToGridCoords(Vector3 worldPos)
     {
         int currentChunkX = Mathf.RoundToInt(worldPos.x/(chunkScale));

@@ -63,8 +63,6 @@ public class DetailChunk
             //subChunk should contain the chunk data tree. USE IT TO ELIMINATE OCCUPIED POSITIONS
             InitializeBuffers(GetDetailsSettings(subChunk, biomeDetails));
         }
-        
-
     }
 
     //Currently only gets a 2x2 grid of details. Improve this: 
@@ -96,16 +94,13 @@ public class DetailChunk
         if(detailSettings.Count == 0)
         {
             hasDetails = false;
-            Debug.Log("no details");
             return;
         }
         
-
         QuadNode headNode = subChunk.GetDataTree().head;
 
         List<QuadNode> emptyNodes = new List<QuadNode>();
         Queue<QuadNode> nodeQueue = new Queue<QuadNode>();
-        
 
         if (headNode.children != null)
         {
@@ -115,8 +110,6 @@ public class DetailChunk
         {
             emptyNodes.Add(headNode);
         }
-
-        
         while (nodeQueue.Count > 0)
         {
             QuadNode currentNode = nodeQueue.Dequeue();
@@ -147,9 +140,9 @@ public class DetailChunk
         foreach (QuadNode emptyNode in emptyNodes)
         {
             float step = 1/(subChunkSize * detailSettings[0].density);
+
             Vector2 atlasOffset = detailSettings[0].atlasOffset/atlasSize;
             Vector2 size = detailSettings[0].size/atlasSize;
-
             int variants = detailSettings[0].numVariants;
 
             //this is the bounds relative to the parent chunk
@@ -167,14 +160,14 @@ public class DetailChunk
                 {
                     //sample biome map check on detailSettings
                     DetailMeshProperties props = new DetailMeshProperties();
-                    float sampleX = x + Random.Range(-step * 0.3f,step * 0.3f);
-                    float sampleY = y + Random.Range(-step * 0.3f,step * 0.3f);
+                    float sampleX = x + Random.Range(-step * 0.3f, step * 0.3f);
+                    float sampleY = y + Random.Range(-step * 0.3f, step * 0.3f);
+                    
                     Vector3 position = subChunk.SamplePosition(sampleX,sampleY); 
                     Vector3 terrainNormal = subChunk.SampleNormal(sampleX,sampleY);
-                    Vector2 atlasUV = subChunk.SampleAUV(sampleX,sampleY);
+                    Vector2 atlasUV = subChunk.SampleAtlasUV(sampleX,sampleY);
+
                     Quaternion rotation = Quaternion.FromToRotation(Vector3.up, terrainNormal) * Quaternion.Euler(15, 0, 0);
-                    //Quaternion.FromToRotation(Vector3.up, normal);                              * Quaternion.Euler(15, 0, 0)
-                    //Quaternion rotation = Quaternion.identity;
                     Vector3 scale = Vector3.one;
 
                     props.mat = Matrix4x4.TRS(position, rotation, scale);
@@ -186,23 +179,18 @@ public class DetailChunk
                     meshProperties.Add(props);
                 }
             }
-
-
         }
 
         int population = meshProperties.Count;
         if (population == 0)
         {
+            hasDetails = false;
             return;
         }
 
-
-
         // Argument buffer used by DrawMeshInstancedIndirect.
-        uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
-
-        // Arguments for drawing mesh.
         // 0 == number of triangle indices, 1 == population, others are only relevant if drawing submeshes.
+        uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
         args[0] = (uint)mesh.GetIndexCount(0);
         args[1] = (uint)population;
         args[2] = (uint)mesh.GetIndexStart(0);
@@ -210,8 +198,6 @@ public class DetailChunk
 
         argsBuffer = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
         argsBuffer.SetData(args);
-
-        
 
         meshPropertiesBuffer = new ComputeBuffer(population, DetailMeshProperties.Size());
         meshPropertiesBuffer.SetData(meshProperties);
@@ -224,8 +210,6 @@ public class DetailChunk
         {
             return;
         }
-
-
         if (meshPropertiesBuffer != null && argsBuffer != null)
         {
             Graphics.DrawMeshInstancedIndirect(mesh, 0, material, bounds, argsBuffer, properties:propertyBlock, layer:6);
@@ -234,13 +218,10 @@ public class DetailChunk
         {
             InitializeBuffers(GetDetailsSettings(subChunk, biomeDetails));
         }
-        
-        
     }
 
     public void Clear() 
     {
-
         meshPropertiesBuffer?.Release();
         meshPropertiesBuffer = null;
 

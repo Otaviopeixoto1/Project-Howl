@@ -1,5 +1,5 @@
 using UnityEngine;
-using GD.MinMaxSlider;
+using UnityEngine.UIElements;
 
 public enum Biomes
 {
@@ -73,17 +73,22 @@ public class BiomeSettings : ScriptableObject
     public int noiseOctaves = 4;
 
     //Random range properties:
-
-    [MinMaxSlider(0.01f,2)]
+    #if UNITY_EDITOR 
+    [MinMax(0.01f,2)]
+    #endif
     public Vector2 noiseFrequencyRange;
-    [MinMaxSlider(0.01f,2)]
+    #if UNITY_EDITOR 
+    [MinMax(0.01f,2)]
+    #endif
     public Vector2 noiseLacunarityRange;
-    [MinMaxSlider(0.01f,10)]
+    #if UNITY_EDITOR 
+    [MinMax(0.01f,10)]
+    #endif
     public Vector2 noisePersistenceRange;
+    
 
     [Header("Terrain Object Generation Settings")]
     public TerrainDetailSettings terrainDetailSettings;
-
 
 
 

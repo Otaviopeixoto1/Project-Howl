@@ -1,6 +1,7 @@
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine;
+using UnityEditor;
 
 public class OutlinePass : ScriptableRenderPass
 {
@@ -8,11 +9,8 @@ public class OutlinePass : ScriptableRenderPass
     private ProfilingSampler m_ProfilingSampler;
     
     Material m_Material;
-    //readonly Color m_Color;
-    readonly float m_DepthLowerThreshold;
-    readonly float m_DepthUpperThreshold;
-    readonly float m_NormalLowerThreshold;
-    readonly float m_NormalUpperThreshold;
+
+    OutlineSettings settings;
 
     //RTHandle m_CameraColorTarget; //(color buffer) output target
     static int dLowerID = Shader.PropertyToID("_DLower");
@@ -25,15 +23,9 @@ public class OutlinePass : ScriptableRenderPass
     public OutlinePass(Material material, OutlineSettings settings)
     {
         m_Material = material;
-        m_DepthLowerThreshold = settings.DepthLowerThreshold;
-        m_DepthUpperThreshold = settings.DepthUpperThreshold;
-        m_NormalLowerThreshold = settings.NormalLowerThreshold;
-        m_NormalUpperThreshold = settings.NormalUpperThreshold;
+        this.settings = settings;
 
         m_ProfilingSampler = new ProfilingSampler("Outline Pass");
-            
-        //renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing; //add post processing on outlines
-        renderPassEvent = RenderPassEvent.AfterRenderingSkybox; //no post processing on outlines
     } 
     public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
     {
@@ -45,15 +37,28 @@ public class OutlinePass : ScriptableRenderPass
 
         //setup the temporary render target used for blitting
         RenderingUtils.ReAllocateIfNeeded(ref rtTemp, colorDesc, name: "_TemporaryColorTexture");
-
-
-        //ConfigureTarget(new RenderTargetIdentifier(m_CameraColorTarget, 0, CubemapFace.Unknown, -1));
     }
 
+    public override void OnCameraCleanup(CommandBuffer cmd) 
+    {
 
+    }
 
     //clean-up allocated RTHandle
-    public void ReleaseTargets() {
+    public void Dispose() {
+        #if UNITY_EDITOR
+            if (EditorApplication.isPlaying)
+            {
+                Object.Destroy(m_Material);
+            }
+            else
+            {
+                Object.DestroyImmediate(m_Material);
+            }
+        #else
+                    Object.Destroy(material);
+        #endif
+
         //Debug.Log("releasing");
         rtTemp?.Release();
     }
@@ -67,10 +72,10 @@ public class OutlinePass : ScriptableRenderPass
         if (m_Material == null) return;
         
         CommandBuffer cb = CommandBufferPool.Get(name: "OutlinePass");
-        m_Material.SetFloat(dLowerID,m_DepthLowerThreshold);
-        m_Material.SetFloat(dUpperID,m_DepthUpperThreshold);
-        m_Material.SetFloat(nLowerID,m_NormalLowerThreshold);
-        m_Material.SetFloat(nUpperID,m_NormalUpperThreshold);
+        m_Material.SetFloat(dLowerID,settings.DepthRange.x);
+        m_Material.SetFloat(dUpperID,settings.DepthRange.y);
+        m_Material.SetFloat(nLowerID,settings.NormalRange.x);
+        m_Material.SetFloat(nUpperID,settings.NormalRange.y);
 
 
 
@@ -80,7 +85,7 @@ public class OutlinePass : ScriptableRenderPass
             context.ExecuteCommandBuffer(cb);
             cb.Clear();
             /*
-            Note : should always ExecuteCommandBuffer at least once before using
+            Note : always ExecuteCommandBuffer at least once before using
             ScriptableRenderContext functions (e.g. DrawRenderers) even if you 
             don't queue any commands! This makes sure the frame debugger displays 
             everything under the correct title.

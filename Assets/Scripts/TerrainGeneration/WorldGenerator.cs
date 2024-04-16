@@ -83,6 +83,10 @@ public class WorldGenerator
         Texture2D atlasTexture = new Texture2D(textureSize, textureSize);
         Color[] colormap = new Color[(textureSize) * (textureSize)];
 
+        ///////////////////////////////////////////
+        //increase the resolution !!
+        ///////////////////////////////////////////
+
         for (int y = 0; y < textureSize; y++)
         {
             for (int x = 0; x < textureSize; x++)

@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
-  m_Name: Render Terrain
+  m_Name: RenderTerrain
   m_EditorClassIdentifier: 
   m_Active: 1
   settings:
-    passTag: Render Terrain
+    passTag: RenderTerrain
     Event: 450
     filterSettings:
       RenderQueueType: 0
@@ -26,10 +26,10 @@ MonoBehaviour:
     overrideMaterialPassIndex: 0
     overrideShader: {fileID: 0}
     overrideShaderPassIndex: 0
-    overrideMode: 1
+    overrideMode: 0
     overrideDepthState: 0
     depthCompareFunction: 4
-    enableWrite: 1
+    enableWrite: 0
     stencilSettings:
       overrideStencilState: 0
       stencilReference: 0
@@ -131,8 +131,6 @@ MonoBehaviour:
     blitHDROverlay: {fileID: 4800000, guid: a89bee29cffa951418fc1e2da94d1959, type: 3}
     cameraMotionVector: {fileID: 4800000, guid: c56b7e0d4c7cb484e959caeeedae9bbf,
       type: 3}
-    objectMotionVector: {fileID: 4800000, guid: 7b3ede40266cd49a395def176e1bc486,
-      type: 3}
     screenSpaceLensFlare: {fileID: 4800000, guid: 701880fecb344ea4c9cd0db3407ab287,
       type: 3}
     dataDrivenLensFlare: {fileID: 4800000, guid: 6cda457ac28612740adb23da5d39ea92,
@@ -170,9 +168,8 @@ MonoBehaviour:
   m_Name: OutlineRendererFeature
   m_EditorClassIdentifier: 
   m_Active: 1
+  _event: 400
   Settings:
     OutlineShader: {fileID: 4800000, guid: 2eadaa83fbbfb60b5b632193b0bc28b6, type: 3}
-    DepthLowerThreshold: 0.0043
-    DepthUpperThreshold: 0.0086
-    NormalLowerThreshold: 0.0068
-    NormalUpperThreshold: 0.1
+    DepthRange: {x: 0.0065165157, y: 0.032659907}
+    NormalRange: {x: 0.02866695, y: 0.08541331}

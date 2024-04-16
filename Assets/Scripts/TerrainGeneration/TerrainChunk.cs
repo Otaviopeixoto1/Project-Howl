@@ -81,6 +81,7 @@ public class QuadNode
 
 }
 
+
 // Quadtree to store the chunk objects information as well as all other relevant data
 public class ChunkDataTree 
 {
@@ -123,18 +124,12 @@ public class ChunkDataTree
         startQueue.Clear();
     }
 
-
-
-    //Save the data tree to a save file as well;
-    //Only the relevant data (modifications done by the player)
-
     //Get a data tree that starts at a particular node from this tree
     public ChunkDataTree GetSubTree(int index)
     {
         return null;
         //return new ChunkDataTree();
     }
-
 
     //Convert a position of a tree node to a 3d position relative to the chunk origin
     public Vector3 TreeIdToRelativePos()
@@ -148,7 +143,6 @@ public class ChunkDataTree
         return 0;
     }
 
-
     public List<QuadNode> GetFreeNodes()
     {
         //Check what subchunks are empty and return their vertices in a single (non-sorted) list
@@ -156,6 +150,8 @@ public class ChunkDataTree
         return null;
     }
 }
+
+
 
 
 public class QuadChunk
@@ -344,14 +340,13 @@ public class TerrainChunk : QuadChunk
         
         threadManager.RequestChunkData(mapData, OnChunkDataReceived);
     }
-
-
-
     
     private void OnChunkDataReceived(ChunkData chunkData)  
     {                  
         isReady = true;                         
         meshFilter.mesh = chunkData.meshData.CreateMesh();
+
+        //only set chunk collider for the closest subchunks to the player. Never set it like this
         meshCollider.sharedMesh = chunkData.colliderData.CreateMesh(skipNormals:true);
 
         this.dataTree = chunkData.dataTree;
@@ -372,7 +367,6 @@ public class TerrainChunk : QuadChunk
     {
         return Mathf.Sqrt(Bounds.SqrDistance(viewerWorldPos));
     }
-
 
     public void SetVisible(bool visible)
     {
@@ -425,7 +419,6 @@ public class TerrainChunk : QuadChunk
         return atlasUVs;
     }
     
-
     public Texture2D CreateDebugTexture(WorldGenerator sampler)
     {
         Texture2D tex = new Texture2D(ChunkSize + 1, ChunkSize + 1);
@@ -641,8 +634,8 @@ public class SubChunk : QuadChunk
         return sampledNormal;
     }
 
-    //Interpolate the terrain normal based on the input fractional coordinates 
-    public Vector3 SampleAUV(float x, float y)
+    //interpolate the terrain atlas UV at (x, y)
+    public Vector3 SampleAtlasUV(float x, float y)
     {
         //vertices start at position * chunkSize and end at (position + Vector2Int.one) * chunkSize
         //the input position will be translated to chunk position by doing: 

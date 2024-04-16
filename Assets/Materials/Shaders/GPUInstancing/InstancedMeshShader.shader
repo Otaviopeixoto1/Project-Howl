@@ -91,23 +91,18 @@ Shader "Custom/InstancedIndirect"
                 o.vertex = positionInputs.positionCS;
                 o.interpPositionWS = positionInputs.positionWS;
 
-
                 //o.vertex = TransformObjectToHClip(pos.xyz);
-                        //TransformObjectToHClip UnityObjectToClipPos(pos)
+                                    //TransformObjectToHClip UnityObjectToClipPos(pos)
                 o.centerPositionWS = TransformObjectToWorld(mul(_Properties[instanceID].mat, float4(0,0,0,1)));
-
-
-                
                 o.uv = _Properties[instanceID].offsetScale.xy + (i.uv * _Properties[instanceID].offsetScale.zw);
                 o.auv = _Properties[instanceID].atlasUV;
 
-            
                 //Lighting
                 float3 N = _Properties[instanceID].terrainNormal;    
                 Light mainLight = GetMainLight();
                 float3 L = mainLight.direction;
 
-                o.lightIntensity = saturate(0.5*(dot(N ,L) + 1) + _lightIntensityBias);
+                o.lightIntensity = saturate(0.5*(dot(N, L) + 1) + _lightIntensityBias);
                 return o;
             }
 

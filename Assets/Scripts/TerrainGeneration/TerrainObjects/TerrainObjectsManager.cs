@@ -29,21 +29,15 @@ public class TerrainObjectsManager
     public TerrainObjectsManager(DetailGenerationSettings detailGenerationSettings, Texture2D atlasTexture)
     {
         this.subChunkSubdivision = detailGenerationSettings.subChunkSubdivision;
-
         this.detailMaterial = detailGenerationSettings.defaultDetailMaterial;
-
-        //TEST: ONLY USING ONE DETAIL FOR NOW:
-        //ALL DETAIL TEXTURES SHOULD BE GROUPED INTO ONE SINGLE ATLAS !!
         
-        //automatically loading MapAtlas into the detail material _SpriteAtlas
         this.detailMaterial.SetTexture("_MapAtlas", atlasTexture);
+        
         Texture2D detailAtlas = detailGenerationSettings.detailAtlas;
         atlasSize = new Vector2(detailAtlas.width, detailAtlas.height);
         this.detailMaterial.SetTexture("_SpriteAtlas", detailAtlas);
         
-
         this.biomeDetails = detailGenerationSettings.biomeDetails;
-        
         this.detailChunks = new DetailChunk[9];
     }
 
@@ -85,7 +79,7 @@ public class TerrainObjectsManager
             {
                 int index = (x+1) + 3 * (y+1);
 
-                //the chunk that would be replaced by the curren chunk
+                //the chunk that would be replaced by the current chunk
                 int newX = x - subChunkDisplacement.x;
                 int newY = y - subChunkDisplacement.y;
 
@@ -121,8 +115,7 @@ public class TerrainObjectsManager
 
                 SubChunk nSubChunk = nChunk.GetSubChunk(nSubChunkWorldPos, subChunkSubdivision);
                 
-                detailChunks[index] = new DetailChunk(detailMaterial,atlasSize, nSubChunk, biomeDetails);
-                
+                detailChunks[index] = new DetailChunk(detailMaterial, atlasSize, nSubChunk, biomeDetails);
             }
         }
     }

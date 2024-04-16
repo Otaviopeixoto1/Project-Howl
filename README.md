@@ -10,7 +10,7 @@ A small personal project meant for learning some core concepts of the Unity engi
 
 ## Samples
 ### Grass Rendering + Cloud Shadows
-![Alt text](samples/sample1.png?raw=true "Title")
+![Alt text](samples/sample1.png?raw=true "Toon shaded grass with clouds")
 
 ### 3D pixel art: low resolution + color quantization + edge outlines and highlights
-![Alt text](samples/sample2.png?raw=true "Title")
+![Alt text](samples/sample2.png?raw=true "Outlines from screen space depth and normals")

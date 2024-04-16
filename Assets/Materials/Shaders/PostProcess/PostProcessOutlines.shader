@@ -36,7 +36,7 @@ Shader "Unlit/PostProcessOutlines"
             // The Blit.hlsl file provides the vertex shader (Vert),
             // input structure (Attributes) and output strucutre (Varyings)
             #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
-
+            
 
 
             float _DLower;
@@ -48,19 +48,6 @@ Shader "Unlit/PostProcessOutlines"
 
             sampler2D _CameraDepthTexture;
             sampler2D _CameraNormalsTexture;
-            sampler2D _LastCameraDepthTexture;
-
-            //the camera color:
-            //sampler2D _CameraColorAttachmentB;
-            //sampler2D _CameraOpaqueTexture;
-            //sampler2D _SourceTex;
-            sampler2D _CameraColorTexture;
-            
-
-            //float4 _SourceTex_TexelSize;
-            //float4 _CameraColorAttachmentB_TexelSize;
-            float4 _CameraColorTexture_TexelSize;
-
 
 
             inline float Linear01Depth( float z )
@@ -112,19 +99,14 @@ Shader "Unlit/PostProcessOutlines"
 
             float4 frag(Varyings input) : SV_Target
             {
-                //return 1;
-
-                //compare depth prepass to the actual depth to discard some outline fragments
-                //return tex2D(_LastCameraDepthTexture, input.texcoord);
-
-                
-                float2 texelSize = float2(_CameraColorTexture_TexelSize.x, _CameraColorTexture_TexelSize.y);
+                float2 texelSize = float2(_BlitTexture_TexelSize.x, _BlitTexture_TexelSize.y);
 
                 float2 uvSamples[5];
                 float depthSamples[5];
                 float3 normalSamples[5];
 
-                float4 color = tex2D(_CameraColorTexture , input.texcoord).rgba;
+                //float4 color = tex2D(_BlitTexture , input.texcoord).rgba;
+                float3 color = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, input.texcoord).rgb;
                 //return color;
 
                 uvSamples[0] = input.texcoord;
@@ -158,7 +140,7 @@ Shader "Unlit/PostProcessOutlines"
                 //strength = depthStrength.y;
                 //float strength = depthStrength.x > 0 ?
                 //               (1 - 0.5 * depthStrength.x) : ( 1 + 0.5* normalStrength);
-                float4 finalColor = color * strength;
+                float3 finalColor = color * strength;
                 return float4(finalColor.rgb, 1) ;
 
 

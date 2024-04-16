@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GD.MinMaxSlider;
 
 [CreateAssetMenu(fileName = "RandomWorldTopographyGenerator", menuName = "ScriptableObjects/WorldGeneration/RandomWorldTopographyGenerator", order = 3)]
 public class RandomWorldTopographyGenerator : WorldTopographyGenerator
@@ -13,16 +12,23 @@ public class RandomWorldTopographyGenerator : WorldTopographyGenerator
     public int noiseOctaves = 4;
 
     //Random range properties:
-    [MinMaxSlider(1f,50)]
+    #if UNITY_EDITOR 
+    [MinMax(1f,50)]
+    #endif
     public Vector2 noiseAmplitudeRange;
-
-    [MinMaxSlider(0.01f,2)]
+    #if UNITY_EDITOR 
+    [MinMax(0.01f,2)]
+    #endif
     public Vector2 noiseFrequencyRange;
-    [MinMaxSlider(0.01f,2)]
+    #if UNITY_EDITOR 
+    [MinMax(0.01f,2)]
+    #endif
     public Vector2 noiseLacunarityRange;
-    [MinMaxSlider(0.01f,10)]
+    #if UNITY_EDITOR 
+    [MinMax(0.01f,10)]
+    #endif
     public Vector2 noisePersistenceRange;
-
+    
 
     public override HeightMapGenerator GetHeightMapGenerator(TopographySettings topographySettings)
     {

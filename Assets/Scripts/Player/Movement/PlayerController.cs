@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
     private float playerSpeed = 2.0f;
     [SerializeField]
     private float gravityValue = -9.81f;
+    [SerializeField]
+    private float rotationSpeed = 0.1f;
 
     [SerializeField]
     private LayerMask terrainLayer;
@@ -30,7 +32,7 @@ public class PlayerController : MonoBehaviour
         playerInputActions.Player.Enable();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         Vector3 groundNormal = Vector3.up;
         //if (terrainManager != null)
@@ -61,7 +63,7 @@ public class PlayerController : MonoBehaviour
  
             //transform.rotation = Quaternion.Slerp(transform.rotation, RotToGround*transform.rotation,10);
             Vector3 finaldir = RotToGround * movementDir;
-            transform.rotation = Quaternion.Slerp(transform.rotation, RotToGround * targetRotation, 0.1f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, RotToGround * targetRotation, rotationSpeed);
             
             characterController.Move((finaldir * playerSpeed + Vector3.up * gravityValue) * Time.deltaTime); 
         }
