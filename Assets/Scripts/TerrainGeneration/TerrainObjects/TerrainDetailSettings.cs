@@ -8,12 +8,13 @@ public enum DetailMeshType
     Custom
 }
 
-//add this to the biome generation settings SO of each biome
-
 [CreateAssetMenu(fileName = "DetailSettings", menuName = "ScriptableObjects/WorldGeneration/DetailSettings", order = 10)] 
+
+//THIS SHOULD BE A STRUCT !
 public class TerrainDetailSettings : ScriptableObject
 {
-    public float density = 1f;//amount of grass quads generated per vertex on the terrain chunk mesh
+    //amount of quads generated per vertex on the terrain chunk mesh:
+    public float density = 1f;
     public DetailMeshType meshType = DetailMeshType.Quad;
 
     [Tooltip("This material will override the default material used in the detail rendering")]

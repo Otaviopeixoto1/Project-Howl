@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,18 +18,11 @@ public class WorldGenerator
     public int biomeMapSize;
     public float biomeMapScale = 1f;
     public int biomeGridSize;
-
-
     public BiomeSampler biomeIdSampler;
     public List<BiomeSampler> biomeSamplers; 
     public BiomeLinks biomeLinks; 
 
-    public int subChunkSubdivision;
-
-
-
-    
-
+    public int subChunkLevel;
 
 
     /// <summary>
@@ -48,7 +40,7 @@ public class WorldGenerator
         this.biomeLinks.GenerateLinksFromGrid(); 
 
         GenerateWorldAtlas(worldGenerationSettings);
-        this.subChunkSubdivision = worldGenerationSettings.subChunkSubdivision;
+        this.subChunkLevel = worldGenerationSettings.subChunkLevel;
         //this.detailGenSettings = worldGenerationSettings.GetAllDetailSettings();
     }
 
@@ -63,8 +55,7 @@ public class WorldGenerator
         this.biomeMapSize = worldGenerationSettings.biomeMapSize;
         this.biomeMapScale = worldGenerationSettings.biomeMapScale;
         this.biomeGridSize = worldGenerationSettings.biomeGridSize;
-        this.subChunkSubdivision = worldGenerationSettings.subChunkSubdivision;
-        //this.detailGenSettings = worldGenerationSettings.GetAllDetailSettings();
+        this.subChunkLevel = worldGenerationSettings.subChunkLevel;
         
     }
 
@@ -95,7 +86,6 @@ public class WorldGenerator
                 PrimaryGenerationSettings genSettings = worldGenerationSettings.GetPrimarySettings(cellId);
                 Texture2D baseTexture = genSettings.baseTexture;
                 float scale = genSettings.baseTextureScale;
-
 
                 colormap[x + (textureSize) * y] = baseTexture.GetPixelBilinear(x/scale, y/scale);
             }

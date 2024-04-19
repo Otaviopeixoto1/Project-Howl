@@ -4,13 +4,6 @@ using System;
 using UnityEngine;
 
 
-
-
-
-
-
-
-
 public class TerrainManager : MonoBehaviour
 {  
     private Dictionary<Vector2Int, TerrainChunk> terrainChunks = new Dictionary<Vector2Int, TerrainChunk>();
@@ -95,10 +88,8 @@ public class TerrainManager : MonoBehaviour
         
         Vector2Int viewerChunkCoords = WorldToChunkCoords(viewerWorldPos);
         
-        UpdateVisibleChunks(viewerChunkCoords.x, viewerChunkCoords.y);
+        UpdateVisibleChunks(viewerChunkCoords);
         
-
-
         //automatically loading MapAtlas into the detail material
         Texture2D tex = null;
         byte[] texData;
@@ -133,18 +124,18 @@ public class TerrainManager : MonoBehaviour
         if (Vector3.Distance(viewerWorldPos, lastViewerPos) > thresholdForMeshUpdate * chunkSize * chunkScale)
         {
             lastViewerPos = viewerWorldPos;
-            UpdateVisibleChunks(viewerChunkCoords.x, viewerChunkCoords.y);
+            UpdateVisibleChunks(viewerChunkCoords);
         }
         
         //Update all terrain details
         Vector2Int chunkPos = WorldToChunkCoords(viewerWorldPos);
-        terrainObjectsManager.UpdateObjectChunks(chunkPos,viewerWorldPos, terrainChunks);
+        terrainObjectsManager.UpdateObjectChunks(chunkPos, viewerWorldPos, terrainChunks);
         
         chunkThreadManager.CheckThreads();
     }
 
 
-    public void UpdateVisibleChunks(int currentChunkX, int currentChunkY) 
+    public void UpdateVisibleChunks(Vector2Int currentChunkPos) 
     {
         //All visible chunks end on this list. here we update all of them to check if they are still visible
         for (int i = visibleChunks.Count - 1; i >= 0; i--)
@@ -160,11 +151,20 @@ public class TerrainManager : MonoBehaviour
         int chunkVisibilityRadius = Mathf.FloorToInt(normalizedViewDist);
 
         //Looping through all chunks that should be visible in this frame
+
+        //load chunks in 2x2 grid:
+        // (1,0) (1.1)
+        // (0,0) (1,0)
+        //we still store them in the world coords into the visibleChunks dict but the chunks have to be checked differently
+        
+        // Use floorTOInt on viewerWorldPos and we get the bottom left chunk. Then just sum with the offsets to get the neighbors on the 2x2 grid
+
         for (int dy = -chunkVisibilityRadius; dy <= chunkVisibilityRadius; dy++)
         {
             for (int dx = -chunkVisibilityRadius; dx <= chunkVisibilityRadius; dx++)
             {
-                Vector2Int viewChunkCoord = new Vector2Int(currentChunkX + dx, currentChunkY + dy);
+                
+                Vector2Int viewChunkCoord = new Vector2Int(currentChunkPos.x + dx, currentChunkPos.y + dy);
 
                 if (terrainChunks.ContainsKey(viewChunkCoord))
                 {
@@ -195,12 +195,6 @@ public class TerrainManager : MonoBehaviour
     {
         Vector2Int viewerChunkCoords = WorldToChunkCoords(viewer.position);
         return terrainChunks[viewerChunkCoords];
-    }
-
-    public SubChunk GetCurrentSubChunk(int subdivision)
-    {
-        Vector2Int viewerChunkCoords = WorldToChunkCoords(viewer.position);
-        return terrainChunks[viewerChunkCoords].GetSubChunk(viewer.position, subdivision);
     }
 
 
@@ -235,8 +229,7 @@ public class TerrainManager : MonoBehaviour
         return new Vector2Int(currentChunkX, currentChunkY);
     }
 
-    //return unscaled chunk world coordinate
-    public Vector2 SnapToChunkCoordinates(Vector3 worldPos)
+    public Vector2 SnapToChunk(Vector3 worldPos)
     {
         Vector2Int chunkCoords = WorldToChunkCoords(worldPos);
         return chunkCoords * chunkSize;

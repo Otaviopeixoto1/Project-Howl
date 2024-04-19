@@ -56,13 +56,14 @@ public class ChunkThreadManager
 
 	private void ChunkDataThread(ChunkGenerationThreadData mapData, Action<ChunkData> callback) 
     {
-		ChunkData chunkData = ChunkGenerator.GenerateTerrainChunk(mapData.worldGenerator, 
-                                                                mapData.chunkSize, 
-                                                                mapData.chunkScale, 
-                                                                mapData.chunkPosition,
-                                                                mapData.meshLodBias,
-                                                                mapData.colliderLodBias
-                                                                );
+		ChunkData chunkData = ChunkGenerator.GenerateTerrainChunk(
+            mapData.worldGenerator, 
+            mapData.chunkSize, 
+            mapData.chunkScale, 
+            mapData.chunkPosition,
+            mapData.meshLodBias,
+            mapData.colliderLodBias
+        );
 		
 
 

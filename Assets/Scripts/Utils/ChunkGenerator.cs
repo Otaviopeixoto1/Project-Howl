@@ -1,8 +1,6 @@
 using UnityEngine;
 
 
-
-
 public class MeshData
 {
     public Vector3[] vertices;
@@ -18,8 +16,6 @@ public class MeshData
         uvs = new Vector2[width * height];
         atlasUvs = new Vector2[width * height];
         triangles = new int[(width - 1) * (height - 1) * 6];
-
-        //Debug.Log("total vertices: " + width * height +" total triangles, " + (width - 1) * (height - 1) * 6);
     }
 
     public void AddTriangle(int a, int b, int c)
@@ -50,6 +46,46 @@ public class MeshData
         return mesh;
     }
 
+    public static Mesh CreateQuad(float width = 1f, float height = 1f) {
+        
+        var mesh = new Mesh();
+        float w = width * .5f;
+        float h = height * .5f;
+        var vertices = new Vector3[4] {
+            new Vector3(-w, 0, 0),
+            new Vector3(w, 0, 0),
+            new Vector3(-w, 2*h, 0),
+            new Vector3(w, 2*h, 0)
+        };
+
+        var tris = new int[6] {
+            // lower left triangle
+            0, 2, 1,
+            // lower right triangle
+            2, 3, 1
+        };
+
+        var normals = new Vector3[4] {
+            -Vector3.forward,
+            -Vector3.forward,
+            -Vector3.forward,
+            -Vector3.forward,
+        };
+
+        var uv = new Vector2[4] {
+            new Vector2(0, 0),
+            new Vector2(1, 0),
+            new Vector2(0, 1),
+            new Vector2(1, 1),
+        };
+
+        mesh.vertices = vertices;
+        mesh.triangles = tris;
+        mesh.normals = normals;
+        mesh.uv = uv;
+
+        return mesh;
+    }
 }
 
 
@@ -76,7 +112,6 @@ public struct ChunkData
 
 public static class ChunkGenerator
 {
-
     public static int CalculateLodIncrement(int dim, int lodBias)
     {
         int[] dimDivisors = Divisors.GetDivisorsButN(dim - 1);
@@ -100,6 +135,7 @@ public static class ChunkGenerator
     public static MeshData GenerateRectMesh(MapGenerator sampler, int meshWidth, int meshHeight, float meshScale, int lodBias = 0,bool isThread = false)
     {
         AnimationCurve heightCurve;
+
         if(isThread)
         {
            heightCurve = new AnimationCurve(sampler.samplingCurve.keys);
@@ -108,11 +144,9 @@ public static class ChunkGenerator
         {
             heightCurve = sampler.samplingCurve;
         }
-        
 
         int widthIncrement = CalculateLodIncrement(meshWidth,lodBias);
         int heightIncrement = CalculateLodIncrement(meshHeight,lodBias);
-
 
         int widthVertices = ((meshWidth - 1)/widthIncrement) + 1;
         int heightVertices = ((meshHeight - 1)/heightIncrement) + 1;
@@ -136,7 +170,6 @@ public static class ChunkGenerator
                     meshData.AddTriangle(vertexIndex, vertexIndex + widthVertices, vertexIndex + widthVertices + 1 );
                     meshData.AddTriangle(vertexIndex, vertexIndex + widthVertices + 1, vertexIndex + 1 );
                 }
-
 
                 vertexIndex++;
             }
@@ -169,7 +202,6 @@ public static class ChunkGenerator
                 meshData.vertices[vertexIndex] = (new Vector3(x, sampler.GetHeight(x + sampleOffset.x, y + sampleOffset.y), y) 
                                                 + centerOffset) * meshScale;
                 meshData.uvs[vertexIndex] = new Vector2(x, y)/(float)meshSize;
-                //meshData.atlasUvs[vertexIndex] = new Vector2(((x/(float)meshSize) + sampleOffset.x)/(float)mapSize, ((y/(float)meshSize) + sampleOffset.y)/(float)mapSize);
                 meshData.atlasUvs[vertexIndex] = (meshData.uvs[vertexIndex] + sampleOffset/(float)mapSize - Vector2.one * 0.5f)/(mapChunks);
 
                 if (x < (meshSize - 1) && y < (meshSize - 1))
@@ -178,7 +210,6 @@ public static class ChunkGenerator
                     meshData.AddTriangle(vertexIndex, vertexIndex + vertices + 1, vertexIndex + 1 );
                 }
 
-
                 vertexIndex++;
             }
         }
@@ -186,15 +217,11 @@ public static class ChunkGenerator
         return meshData;
     }
 
-
-
-    //Using WorldSampler as a sampler
-    //- THE SAMPLING HAPPENS IN UNSCALED COORDINATES (IT DOESNT TAKE INTO ACCOUNT THE MESH SCALE USED BY THE CHUNK)
     public static ChunkData GenerateTerrainChunk(WorldGenerator worldGenerator, int chunkSize, float meshScale, Vector2Int sampleOffset, int meshLodBias = 0,int colliderLodBias = 0)
     {
-        ChunkDataTree dataTree = new ChunkDataTree(worldGenerator.subChunkSubdivision);
+        ChunkDataTree dataTree = new ChunkDataTree(worldGenerator.subChunkLevel);
         
-        int subChunkCount = MathMisc.TwoPowX(worldGenerator.subChunkSubdivision);
+        int subChunkCount = MathMisc.TwoPowX(worldGenerator.subChunkLevel);
         int subChunkLength = chunkSize/subChunkCount;
 
         Biomes[] biomeMap = new Biomes[(subChunkCount + 1) * (subChunkCount + 1)];
@@ -208,29 +235,16 @@ public static class ChunkGenerator
         {
             for (int x = startX; x <= startX + chunkSize; x += subChunkLength)
             {
-                //Debug.Log(x/20f + ", " + y/20f );
                 biomeMap[i] = worldGenerator.GetBiome(x,y);
                 i++;
             }
         }
     
-
-        //store all object positions as well as the necessary data to spawn them
-        //THE LEAFS OF THE TREE WILL CONTAIN THE OBJECTS PRESENT IN THEM, DONT SEARCH FROM TOP TO BOTTOM 
-        //SEARCH FOR EMPTY QUADS at the bottom of the tree
-        
-        
-        
         MeshData terrainMesh = GenerateQuadMesh(worldGenerator,chunkSize + 1,meshScale,sampleOffset,meshLodBias);
         MeshData colliderMesh = GenerateQuadMesh(worldGenerator,chunkSize + 1,meshScale,sampleOffset,colliderLodBias);
 
-        
-
         return new ChunkData(terrainMesh, colliderMesh, dataTree, biomeMap);
-        
     }
-
-
 
     // A quicker way to just update the heightmap of the mesh:
     public static Vector3[] CalculateMeshVertices(MapGenerator sampler, int meshWidth, int meshHeight, float meshScale, int lodBias)
@@ -256,7 +270,6 @@ public static class ChunkGenerator
 
         return vertices;
     }
-    
 
     //Deprecated
     public static MeshData GenerateTerrainFromMap(float[,] heightMap, float meshScale)

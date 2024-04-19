@@ -1,7 +1,8 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System;
+using System.Collections.Generic;
+using UnityEngine.UIElements;
+
 
 
 
@@ -152,146 +153,329 @@ public class ChunkDataTree
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 
 
 public class QuadChunk
 {
-    protected List<Vector3> vertices;
-    protected List<Vector3> normals;
-    protected List<Vector2> atlasUVs; 
+    protected ChunkDataTree dataTree; //still needs to be implemented properly
+    protected QuadChunk rootChunk;
+    private Vector2Int index;
+    private int level;
+
+    //vertex cache:
+    protected Vector3[] vertices;
+    //normal cache:
+    protected Vector3[] normals;
+    //uv map cache:
+    protected Vector2[] atlasUVs; 
+    //biome map cache:
+    protected Biomes[] biomeMap;
 
     public int ChunkSize {get; protected set;}
     public float Scale {get; protected set;}
     public Vector2 WorldPosition {get; protected set;}
+    private Vector3 relativePos3D;
     public Bounds Bounds {get; protected set;}
     protected bool isReady = false;
+    
 
-    protected ChunkDataTree dataTree;
-    protected Biomes[] biomeMap;
-
-
-    //gets a subchunk based on world position of this chunk and the provided world position 
-    //the subchunk will contain data interpolated from the current chunk's data
-    public SubChunk GetSubChunk(Vector2 worldPos, int subdivision)
+    public QuadChunk(Vector2Int index, int chunkSize, float chunkScale)
     {
-        Vector2Int subChunkPos = WorldToSubChunkCoords(worldPos, subdivision);
-        int subChunkSize = ChunkSize/MathMisc.TwoPowX(subdivision);
+        this.index = index;
+        this.rootChunk = null;
+        this.level = 0;
 
+        this.ChunkSize = chunkSize;
+        this.Scale = chunkScale;
 
-        return new SubChunk(subChunkPos, subChunkSize, subdivision, this);
+        this.relativePos3D = Vector3.zero;
+
+        //Data tree must be initialized after
     }
 
-    public SubChunk GetSubChunk(Vector3 worldPos, int subdivision)
+    public QuadChunk(Vector2Int index, QuadChunk rootChunk, int level)
     {
-        Vector2Int subChunkPos = WorldToSubChunkCoords(worldPos, subdivision);
-        int subChunkSize = ChunkSize/MathMisc.TwoPowX(subdivision);
+        this.index = index;
+        this.rootChunk = rootChunk;
+        this.level = level;
 
+        if (rootChunk != null)
+        {
+            this.ChunkSize = rootChunk.ChunkSize/MathMisc.TwoPowX(level);
+            this.Scale = rootChunk.Scale;
 
-        return new SubChunk(subChunkPos, subChunkSize, subdivision, this);
+            Vector2 relativePos = ((Vector2)index + Vector2.one * 0.5f) * ChunkSize * Scale 
+                                - Vector2.one * rootChunk.ChunkSize * Scale * 0.5f;
+            this.relativePos3D = new Vector3(relativePos.x, 0, relativePos.y);
+            
+            this.WorldPosition = relativePos + rootChunk.WorldPosition;
+            this.Bounds = new Bounds(new Vector3(WorldPosition.x, 0, WorldPosition.y), new Vector3(1,50,1) * ChunkSize * Scale);
+            
+        }
+    }
+    
+
+    public QuadChunk GetSubChunk(Vector2 worldPos, int level)
+    {
+        Vector2Int subChunkPos = WorldToSubChunkCoords(worldPos, level);
+
+        if (rootChunk != null)
+        {
+            return new QuadChunk(subChunkPos, rootChunk, level);
+        }
+
+        return new QuadChunk(subChunkPos, this, level);
     }
 
-    public ChunkDataTree GetSubDataTree(Vector2Int subChunkPos, int subdivision)
+    public ChunkDataTree GetSubDataTree(Vector2Int subChunkId, int level)
     {
-        Vector2Int startPos = subChunkPos/MathMisc.TwoPowX(subdivision - 1);
+        Vector2Int startPos = subChunkId/MathMisc.TwoPowX(level - 1);
         int startIndex = startPos.x + 2 * startPos.y;
 
         QuadNode currentNode = dataTree.head.children[startIndex];
-        //this is the index of the first node on the tree (a child of the head node)
 
-        for (int i = 1; i <= subdivision - 1; i++)
+        for (int i = 1; i <= level - 1; i++)
         {
-            Vector2Int newPos = subChunkPos/MathMisc.TwoPowX(subdivision - 1 - i);
+            Vector2Int newPos = subChunkId/MathMisc.TwoPowX(level - 1 - i);
             int newIndex = (newPos.x - 2 * startPos.x) + 2 * (newPos.y - 2 * startPos.y);
             startPos = newPos;
 
             currentNode = currentNode.children[newIndex];
-
         }
 
         return new ChunkDataTree(currentNode);
     }
+    public virtual ChunkDataTree GetDataTree()
+    {
+        if (!IsReady())
+        {
+            return null;
+        }
+        if (dataTree == null && rootChunk != null)
+        {
+            dataTree = rootChunk.GetSubDataTree(index, level);
+        }
+
+        return dataTree;
+    }
 
     public virtual Biomes[] GetBiomeMap()
     {
-        return biomeMap;
+        if (!IsReady())
+        {
+            return null;
+        }
+
+        Biomes[] subBiomeMap = new Biomes[4];
+
+        int subChunkCount = MathMisc.TwoPowX(level);
+
+        for (int j = 0; j < 2; j++)
+        {
+            for (int i = 0; i < 2; i++)
+            { 
+                int ind = (index.x + i) + (subChunkCount + 1) * (index.y + j);
+                //Debug.Log(rootChunk.biomeMap[ind]);
+                subBiomeMap[i + 2 * j] = rootChunk.biomeMap[ind];
+            }
+        }/**/
+        return subBiomeMap;
     }
 
-    public virtual ChunkDataTree GetDataTree()
+    public virtual Vector3[] GetVertices()
     {
-        return dataTree;
-    }
-    
-    public virtual List<Vector3> GetVertices()
-    {
+        /*if (vertices != null)
+        {
+            return vertices;
+        }
+        
+        vertices = new List<Vector3>();
+        List<Vector3> mainVertices = parentChunk.GetVertices();
+        //VERTEX POSITIONS ARE GIVEN RELATIVE TO THE PARENT CHUNK ORIGIN
+        //they have to be converted to be relative to the subchunk origin:
+
+        for (int y = position.y * ChunkSize; y < (position.y + 1) * ChunkSize; y++)
+        {
+            for (int x = position.x * ChunkSize; x < (position.x + 1) * ChunkSize; x++)
+            {
+                Vector3 pos = mainVertices[x + (parentChunk.ChunkSize + 1) * y] - relativePos3D;
+                this.vertices.Add(pos);
+            }
+        }*/
         return vertices;
     }
-
-    public virtual List<Vector2> GetAtlasUVs()
-    {
-        return atlasUVs;
-    }
-
-    public virtual List<Vector3> GetNormals()
+    
+    public virtual Vector3[] GetNormals()
     {
         return normals;
     }
 
-    public virtual bool IsReady()
+    public virtual Vector2[] GetAtlasUVs()
     {
-        return isReady;
+        /*if (atlasUVs != null)
+        {
+            return atlasUVs;
+        }
+        
+        atlasUVs = new List<Vector2>();
+        List<Vector2> aUVs = parentChunk.GetAtlasUVs();
+
+        for (int y = position.y * ChunkSize; y < (position.y + 1) * ChunkSize; y++)
+        {
+            for (int x = position.x * ChunkSize; x < (position.x + 1) * ChunkSize; x++)
+            {
+                Vector2 aUV = aUVs[x + (parentChunk.ChunkSize + 1) * y];
+                this.atlasUVs.Add(aUV);
+            }
+        }*/
+        return atlasUVs;
     }
 
-    public Vector2Int WorldToSubChunkCoords(Vector2 wPosition, int subdivision)
+    //Interpolate vertex positions at the (x, y) fractional coordinates (0 < x,y < 1)
+    public Vector3 SamplePosition(float x, float y)
     {
-        Vector2 relativePos = wPosition - WorldPosition + Vector2.one * ChunkSize * Scale/2; 
+        int subChunkLength = MathMisc.TwoPowX(level);
+
+        float _x = x * ChunkSize * subChunkLength;
+        float _y = y * ChunkSize * subChunkLength;
+
+        int x0 = Mathf.Min(rootChunk.ChunkSize - 1, Mathf.Max(  Mathf.FloorToInt(_x), 0 ));
+        int y0 =  Mathf.Min(rootChunk.ChunkSize - 1, Mathf.Max(  Mathf.FloorToInt(_y), 0 ));
+
+        Vector3 v00 = rootChunk.vertices[x0 + (rootChunk.ChunkSize + 1) * y0];
+        Vector3 v10 = rootChunk.vertices[(x0 + 1) + (rootChunk.ChunkSize + 1) * y0];
+        Vector3 v01 = rootChunk.vertices[x0 + (rootChunk.ChunkSize + 1) * (y0 + 1)];
+        Vector3 v11 = rootChunk.vertices[(x0 + 1) + (rootChunk.ChunkSize + 1) * (y0 + 1)];
+        
+
+        float wx = _x - x0;
+        float wy = _y - y0;
+        //VERTEX POSITIONS ARE GIVEN RELATIVE TO THE PARENT CHUNK ORIGIN (they have to be converted by using the chunk coord)
+        return (1-wy)*(1-wx)*v00 + (1-wy)*(wx)*v10 + (wy)*(1-wx)*v01 + (wy)*(wx)*v11 - relativePos3D;
+    }
+
+    //Interpolate the terrain normal at the (x, y) fractional coordinates (0 < x,y < 1)
+    public Vector3 SampleNormal(float x, float y)
+    {
+        int subChunkLength = MathMisc.TwoPowX(level);
+
+        float _x = x * ChunkSize * subChunkLength;
+        float _y = y * ChunkSize * subChunkLength;
+
+        int x0 = Mathf.Min(rootChunk.ChunkSize - 1, Mathf.Max(  Mathf.FloorToInt(_x), 0 ));
+        int y0 =  Mathf.Min(rootChunk.ChunkSize - 1, Mathf.Max(  Mathf.FloorToInt(_y), 0 ));
+
+
+        Vector3 v00 = rootChunk.normals[x0 + (rootChunk.ChunkSize + 1) * y0];
+        Vector3 v10 = rootChunk.normals[(x0 + 1) + (rootChunk.ChunkSize + 1) * y0];
+        Vector3 v01 = rootChunk.normals[x0 + (rootChunk.ChunkSize + 1) * (y0 + 1)];
+        Vector3 v11 = rootChunk.normals[(x0 + 1) + (rootChunk.ChunkSize + 1) * (y0 + 1)];
+        
+
+        float wx = _x - x0;
+        float wy = _y - y0;
+        
+        Vector3 sampledNormal = (1-wy)*(1-wx)*v00 + (1-wy)*(wx)*v10 + (wy)*(1-wx)*v01 + (wy)*(wx)*v11;
+        sampledNormal = sampledNormal.normalized;
+
+        return sampledNormal;
+    }
+
+    //interpolate the terrain atlas UV at the (x, y) fractional coordinates (0 < x,y < 1)
+    public Vector3 SampleAtlasUV(float x, float y)
+    {
+        int subChunkLength = MathMisc.TwoPowX(level);
+
+        float _x = x * ChunkSize * subChunkLength;
+        float _y = y * ChunkSize * subChunkLength;
+
+        int x0 = Mathf.Min(rootChunk.ChunkSize - 1, Mathf.Max(  Mathf.FloorToInt(_x), 0 ));
+        int y0 =  Mathf.Min(rootChunk.ChunkSize - 1, Mathf.Max(  Mathf.FloorToInt(_y), 0 ));
+
+
+        Vector2 v00 = rootChunk.atlasUVs[x0 + (rootChunk.ChunkSize + 1) * y0];
+        Vector2 v10 = rootChunk.atlasUVs[(x0 + 1) + (rootChunk.ChunkSize + 1) * y0];
+        Vector2 v01 = rootChunk.atlasUVs[x0 + (rootChunk.ChunkSize + 1) * (y0 + 1)];
+        Vector2 v11 = rootChunk.atlasUVs[(x0 + 1) + (rootChunk.ChunkSize + 1) * (y0 + 1)];
+        
+
+        float wx = _x - x0;
+        float wy = _y - y0;
+        
+        Vector2 sampledAUV = (1-wy)*(1-wx)*v00 + (1-wy)*(wx)*v10 + (wy)*(1-wx)*v01 + (wy)*(wx)*v11;
+
+        return sampledAUV;
+    }
+
+    public virtual bool IsReady()
+    {
+        if (rootChunk != null)
+        {
+            return rootChunk.isReady;
+        }
+        return isReady;
+    }
+    
+    public static Vector2 GlobalSubChunkToWorldCoords(Vector2 gSubChunkCoords, int level, int subChunkSize)
+    {
+        return (gSubChunkCoords - (MathMisc.TwoPowX(level - 1) - 0.5f) *  Vector2.one) * subChunkSize;
+    }
+    
+    public Vector2Int WorldToSubChunkCoords(Vector2 wPosition, int level)
+    {
+        Vector2 relativePos = wPosition - WorldPosition + Vector2.one * ChunkSize * Scale * 0.5f; 
         Vector2Int subChunkPos = Vector2Int.zero;
 
-        int subChunkSize = ChunkSize/MathMisc.TwoPowX(subdivision);
+        int subChunkSize = ChunkSize/MathMisc.TwoPowX(level);
 
         subChunkPos.x = Mathf.FloorToInt((relativePos.x/subChunkSize));
         subChunkPos.y = Mathf.FloorToInt((relativePos.y/subChunkSize));
         return subChunkPos;
     }
 
-    public Vector2Int WorldToSubChunkCoords(Vector3 wPosition, int subdivision)
+    public Vector2Int WorldToSubChunkCoords(Vector3 wPosition, int level)
     {
         Vector2 relativePos = new Vector2(wPosition.x, wPosition.z) - WorldPosition + Vector2.one * ChunkSize * Scale/2; 
         Vector2Int subChunkPos = Vector2Int.zero;
 
-        int subChunkSize = ChunkSize/MathMisc.TwoPowX(subdivision);
+        int subChunkSize = ChunkSize/MathMisc.TwoPowX(level);
 
         subChunkPos.x = Mathf.FloorToInt((relativePos.x/subChunkSize));
         subChunkPos.y = Mathf.FloorToInt((relativePos.y/subChunkSize));
         return subChunkPos;
     }
 
-    public Vector2Int WorldToGlobalSubChunkCoords(Vector2 wPosition, int subdivision)
+    public Vector2Int WorldToGlobalSubChunkCoords(Vector2 wPosition, int level)
     {
         Vector2 position = wPosition + Vector2.one * ChunkSize * Scale/2; 
         Vector2Int subChunkPos = Vector2Int.zero;
 
-        int subChunkSize = ChunkSize/MathMisc.TwoPowX(subdivision);
+        int subChunkSize = ChunkSize/MathMisc.TwoPowX(level);
 
         subChunkPos.x = Mathf.FloorToInt((position.x/subChunkSize));
         subChunkPos.y = Mathf.FloorToInt((position.y/subChunkSize));
         return subChunkPos;
     }
 
-    public Vector2Int WorldToGlobalSubChunkCoords(Vector3 wPosition, int subdivision)
+    public Vector2Int WorldToGlobalSubChunkCoords(Vector3 wPosition, int level)
     {
         Vector2 position = new Vector2(wPosition.x, wPosition.z) + Vector2.one * ChunkSize * Scale/2; 
         Vector2Int subChunkPos = Vector2Int.zero;
 
-        int subChunkSize = ChunkSize/MathMisc.TwoPowX(subdivision);
+        int subChunkSize = ChunkSize/MathMisc.TwoPowX(level);
 
         subChunkPos.x = Mathf.FloorToInt((position.x/subChunkSize));
         subChunkPos.y = Mathf.FloorToInt((position.y/subChunkSize));
         return subChunkPos;
     }
 
-    public static Vector2Int GlobalSubChunkToChunkCoords(Vector2Int globalSubChunkCoords, int subdivision)
+    public static Vector2Int GlobalSubChunkToChunkCoords(Vector2Int globalSubChunkCoords, int level)
     {
-        Vector2Int chunkCoords = globalSubChunkCoords / MathMisc.TwoPowX(subdivision);
+        Vector2Int chunkCoords = globalSubChunkCoords / MathMisc.TwoPowX(level);
 
         return chunkCoords;
     }
@@ -310,13 +494,10 @@ public class TerrainChunk : QuadChunk
     private MeshFilter meshFilter;
     private MeshCollider meshCollider;
 
-    
 
-    public TerrainChunk(Vector2Int position, ChunkGenerationThreadData mapData, Transform parent, Material material, ChunkThreadManager threadManager)
+    public TerrainChunk(Vector2Int position, ChunkGenerationThreadData mapData, Transform parent, Material material, ChunkThreadManager threadManager) 
+    : base(Vector2Int.zero, mapData.chunkSize, mapData.chunkScale)
     {
-        this.ChunkSize = mapData.chunkSize;
-        this.Scale = mapData.chunkScale;
-
         this.WorldPosition = ((Vector2)position) * ChunkSize * Scale;
         this.Bounds = new Bounds(WorldPosition, Vector2.one * ChunkSize * Scale);
 
@@ -329,14 +510,10 @@ public class TerrainChunk : QuadChunk
         meshCollider.cookingOptions = MeshColliderCookingOptions.UseFastMidphase;
         meshRenderer.material = material; 
 
-        //debugTexture = CreateDebugTexture(mapData.sampler);
-
         Vector3 worldPositionV3 = new Vector3(WorldPosition.x, 0, WorldPosition.y);
 
         chunkObject.transform.position = worldPositionV3;
         chunkObject.transform.parent = parent;
-
-        //SetVisible(false);
         
         threadManager.RequestChunkData(mapData, OnChunkDataReceived);
     }
@@ -345,6 +522,9 @@ public class TerrainChunk : QuadChunk
     {                  
         isReady = true;                         
         meshFilter.mesh = chunkData.meshData.CreateMesh();
+        vertices = chunkData.meshData.vertices;
+        normals = meshFilter.mesh.normals;
+        atlasUVs = chunkData.meshData.atlasUvs;
 
         //only set chunk collider for the closest subchunks to the player. Never set it like this
         meshCollider.sharedMesh = chunkData.colliderData.CreateMesh(skipNormals:true);
@@ -373,11 +553,12 @@ public class TerrainChunk : QuadChunk
         chunkObject.SetActive(visible);
         if (!visible)
         {
-            vertices?.Clear();
-            normals?.Clear();
-            atlasUVs?.Clear();
+            Array.Clear(vertices, 0, vertices.Length);
+            Array.Clear(normals, 0, normals.Length);
+            Array.Clear(atlasUVs, 0, atlasUVs.Length);
             vertices = null;
             normals = null;
+            atlasUVs = null;
         }
     }
 
@@ -386,64 +567,45 @@ public class TerrainChunk : QuadChunk
         return chunkObject.activeSelf;
     }
 
-    public override List<Vector3> GetVertices()
+    public override Vector3[] GetVertices()
     {
         if (vertices == null)
         {
-            vertices = new List<Vector3>();
-            meshFilter.mesh.GetVertices(vertices);
+            vertices = meshFilter.mesh.vertices;
         }
         
         return vertices;
     }
 
-    public override List<Vector3> GetNormals()
+    public override Vector3[] GetNormals()
     {
         if (normals == null)
         {
-            normals = new List<Vector3>();
-            meshFilter.mesh.GetNormals(normals);
+            normals = meshFilter.mesh.normals;
         }
         
         return normals;
     }
 
-    public override List<Vector2> GetAtlasUVs()
+    public override Vector2[] GetAtlasUVs()
     {
         if (atlasUVs == null)
         {
-            atlasUVs = new List<Vector2>();
-            meshFilter.mesh.GetUVs(3, atlasUVs);
+            atlasUVs = meshFilter.mesh.uv3;
+            //meshFilter.mesh.GetUVs(3, atlasUVs);
         }
         
         return atlasUVs;
     }
-    
-    public Texture2D CreateDebugTexture(WorldGenerator sampler)
-    {
-        Texture2D tex = new Texture2D(ChunkSize + 1, ChunkSize + 1);
-        Color[] colors = new Color[(ChunkSize + 1) * (ChunkSize + 1)];
-
-        for (int y = 0; y <= ChunkSize; y += 1)
-        {
-            for (int x = 0; x <= ChunkSize; x += 1)
-            {
-                colors[x + y * (ChunkSize + 1)] = sampler.GetColor((x + WorldPosition.x)/Scale, (y + WorldPosition.y)/Scale);
-            }
-        }
-        tex.SetPixels(colors);
-        tex.Apply();
-
-        return tex;
-    }
-
 }
 
 
-
+////////////////////////////////////////////////////////////////////////////////
+// THIS CLASS IS UNNECESSARY ! REMOVE IT AND ADD ITS FUNCTIONS ON OTHER PLACES
+////////////////////////////////////////////////////////////////////////////////
 
 //subchunks will contain data for interpolating and generating dense point clouds for specific terrain sections
-public class SubChunk : QuadChunk
+/*public class SubChunk : QuadChunk
 {
     private QuadChunk parentChunk;
 
@@ -453,12 +615,12 @@ public class SubChunk : QuadChunk
     //world position of this chunk relative to the center(origin) of the parent chunk
     private Vector3 relativePos3D;
 
-    private int subdivision;
+    private int level;
 
 
-    public SubChunk(Vector2Int position, int size, int subdivision, QuadChunk parentChunk)
+    public SubChunk(Vector2Int position, int size, int level, QuadChunk parentChunk)
     {
-        this.subdivision = subdivision;
+        this.level = level;
         this.parentChunk = parentChunk;
         this.position = position;
         this.ChunkSize = size;
@@ -468,8 +630,8 @@ public class SubChunk : QuadChunk
 
         this.Scale = parentChunk.Scale;
 
-        Vector2 relativePos = ((Vector2)position + Vector2.one * 0.5f ) * size * Scale 
-                            - Vector2.one * parentChunkSize * Scale/2;
+        Vector2 relativePos = ((Vector2)position + Vector2.one * 0.5f) * size * Scale 
+                                - Vector2.one * parentChunkSize * Scale * 0.5f;
 
         this.relativePos3D = new Vector3(relativePos.x, 0, relativePos.y);
 
@@ -483,7 +645,7 @@ public class SubChunk : QuadChunk
     {
         if (dataTree == null)
         {
-            dataTree = parentChunk.GetSubDataTree(position, subdivision);
+            dataTree = parentChunk.GetSubDataTree(position, level);
             return dataTree;
         }
         else
@@ -546,7 +708,7 @@ public class SubChunk : QuadChunk
         Biomes[] biomeMap = parentChunk.GetBiomeMap();
         Biomes[] subBiomeMap = new Biomes[4];
 
-        int subChunkCount = MathMisc.TwoPowX(subdivision);
+        int subChunkCount = MathMisc.TwoPowX(level);
 
         for (int j = 0; j < 2; j++)
         {
@@ -565,22 +727,18 @@ public class SubChunk : QuadChunk
     {
         return parentChunk.IsReady();
     }
-
-    public static Vector2 GlobalSubChunkToWorldCoords(Vector2 gSubChunkCoords, int subdivision, int subChunkSize)
+    
+    public static Vector2 GlobalSubChunkToWorldCoords(Vector2 gSubChunkCoords, int level, int subChunkSize)
     {
-        return (gSubChunkCoords - (MathMisc.TwoPowX(subdivision - 1) - 0.5f) *  Vector2.one) * subChunkSize;
+        return (gSubChunkCoords - (MathMisc.TwoPowX(level - 1) - 0.5f) *  Vector2.one) * subChunkSize;
     }
 
-    //Interpolate vertex positions based on the input fractional coordinates 
+    //Interpolate vertex positions at the (x, y) fractional coordinates (0 < x,y < 1)
     public Vector3 SamplePosition(float x, float y)
     {
-        //vertices start at position * chunkSize and end at (position + Vector2Int.one) * chunkSize
-        //the input position will be translated to chunk position by doing: 
-        //chunkPos = (position + fracPos) * 30 (as long as fracPos is between 0 and 1)
-
         List<Vector3> chunkVertices = parentChunk.GetVertices();
 
-        int subChunkLength = MathMisc.TwoPowX(subdivision);
+        int subChunkLength = MathMisc.TwoPowX(level);
 
         float _x = ( x) * ChunkSize * subChunkLength;
         float _y = ( y) * ChunkSize * subChunkLength;
@@ -601,16 +759,12 @@ public class SubChunk : QuadChunk
         return (1-wy)*(1-wx)*v00 + (1-wy)*(wx)*v10 + (wy)*(1-wx)*v01 + (wy)*(wx)*v11 - relativePos3D;
     }
 
-    //Interpolate the terrain normal based on the input fractional coordinates 
+    //Interpolate the terrain normal at the (x, y) fractional coordinates (0 < x,y < 1)
     public Vector3 SampleNormal(float x, float y)
     {
-        //vertices start at position * chunkSize and end at (position + Vector2Int.one) * chunkSize
-        //the input position will be translated to chunk position by doing: 
-        //chunkPos = (position + fracPos) * 30 (as long as fracPos is between 0 and 1)
-
         List<Vector3> chunkNormals = parentChunk.GetNormals();
 
-        int subChunkLength = MathMisc.TwoPowX(subdivision);
+        int subChunkLength = MathMisc.TwoPowX(level);
 
         float _x = ( x) * ChunkSize * subChunkLength;
         float _y = ( y) * ChunkSize * subChunkLength;
@@ -634,16 +788,12 @@ public class SubChunk : QuadChunk
         return sampledNormal;
     }
 
-    //interpolate the terrain atlas UV at (x, y)
+    //interpolate the terrain atlas UV at the (x, y) fractional coordinates (0 < x,y < 1)
     public Vector3 SampleAtlasUV(float x, float y)
     {
-        //vertices start at position * chunkSize and end at (position + Vector2Int.one) * chunkSize
-        //the input position will be translated to chunk position by doing: 
-        //chunkPos = (position + fracPos) * 30 (as long as fracPos is between 0 and 1)
-
         List<Vector2> chunkAUVs = parentChunk.GetAtlasUVs();
 
-        int subChunkLength = MathMisc.TwoPowX(subdivision);
+        int subChunkLength = MathMisc.TwoPowX(level);
 
         float _x = ( x) * ChunkSize * subChunkLength;
         float _y = ( y) * ChunkSize * subChunkLength;
@@ -668,4 +818,4 @@ public class SubChunk : QuadChunk
 
 
 
-}
+}*/

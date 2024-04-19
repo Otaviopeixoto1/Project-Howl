@@ -16,7 +16,7 @@ public class DetailChunk
     private ComputeBuffer argsBuffer;
     private Mesh mesh;
     private Bounds bounds;
-    private SubChunk subChunk;
+    private QuadChunk subChunk;
 
     private bool hasDetails = true;
 
@@ -41,18 +41,11 @@ public class DetailChunk
         }
     }
     
-
-    //Use a terrainDetailsSettings to initialize this.
-    /*
-    DETAIL SETTING SHOULD ONLY AFFECT THE BUFFER INITIALIZATION, unless we are overriding the detail material !! 
-    
-    EVERYTHING ELSE SHOULD WORK THE SAME
-    */
-    public DetailChunk(Material material, Vector2 atlasSize, SubChunk subChunk, Dictionary<Biomes, TerrainDetailSettings> biomeDetails)
+    public DetailChunk(Material material, Vector2 atlasSize, QuadChunk subChunk, Dictionary<Biomes, TerrainDetailSettings> biomeDetails)
     {
         this.material = material;
         this.atlasSize = atlasSize;
-        this.mesh = CreateQuad(0.6f, 0.6f);
+        this.mesh = MeshData.CreateQuad(0.6f, 0.6f);
         this.subChunk = subChunk;
         this.bounds = subChunk.Bounds;
         this.propertyBlock = new MaterialPropertyBlock();
@@ -65,13 +58,18 @@ public class DetailChunk
         }
     }
 
+
+
+
+
     //Currently only gets a 2x2 grid of details. Improve this: 
     // -Store every biome present in chunk in list of unique biomes
     // -Create a list of every possible terrain detail setting based on the present biomes
-    // -Sample and interpolate the original biome map when build subchunk and instance details based
-    //  on the biome sampled
-    // -THE SUBCHUNK SHOULD CONTAIN BIOME INFO AS WELL
-    private List<TerrainDetailSettings> GetDetailsSettings(SubChunk subChunk, Dictionary<Biomes, TerrainDetailSettings> biomeDetails)
+
+    //
+    // NULL REF ON BIOME MAP. SEE QuadChunk class
+    //
+    private List<TerrainDetailSettings> GetDetailsSettings(QuadChunk subChunk, Dictionary<Biomes, TerrainDetailSettings> biomeDetails)
     {
         Biomes[] biomeMap = subChunk.GetBiomeMap();
 
@@ -96,9 +94,8 @@ public class DetailChunk
             hasDetails = false;
             return;
         }
-        
-        QuadNode headNode = subChunk.GetDataTree().head;
 
+        QuadNode headNode = subChunk.GetDataTree().head; // must set data tree of the chunk
         List<QuadNode> emptyNodes = new List<QuadNode>();
         Queue<QuadNode> nodeQueue = new Queue<QuadNode>();
 
@@ -132,10 +129,18 @@ public class DetailChunk
         List<DetailMeshProperties> meshProperties = new List<DetailMeshProperties>();
         int subChunkSize = subChunk.ChunkSize;
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////
-        // Search for biomes with bfs and add all biome chunks in a dict
-        // Then fill each biome patch individually
-        /////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // on GPU
+        // ->SHIP THE POSITIONS TO THE GPU AND SAMPLE THE BIOME TEXTURE THERE. Then we can decide what detail will be used
+        // -unify all detail settings into one buffer and send to this compute (? maybe cpu is better for random functions)
+        // -We only send positions and atlas offset into the draw call
+        // -variable density will still be a problem to solve !
+        //
+        // or on CPU
+        // -use one specific density for every possible biome inside the quad (this will be based on the sampling of
+        // biomes in each quad corner, similar to marching squares)
+        // -sample the quad with this density and only add details where the biome matches
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         foreach (QuadNode emptyNode in emptyNodes)
         {
@@ -228,50 +233,4 @@ public class DetailChunk
         argsBuffer?.Release();
         argsBuffer = null;
     }
-
-
-    // Create a quad mesh
-    private Mesh CreateQuad(float width = 1f, float height = 1f) {
-        
-        var mesh = new Mesh();
-        float w = width * .5f;
-        float h = height * .5f;
-        var vertices = new Vector3[4] {
-            new Vector3(-w, 0, 0),
-            new Vector3(w, 0, 0),
-            new Vector3(-w, 2*h, 0),
-            new Vector3(w, 2*h, 0)
-        };
-
-        var tris = new int[6] {
-            // lower left triangle
-            0, 2, 1,
-            // lower right triangle
-            2, 3, 1
-        };
-
-        var normals = new Vector3[4] {
-            -Vector3.forward,
-            -Vector3.forward,
-            -Vector3.forward,
-            -Vector3.forward,
-        };
-
-        var uv = new Vector2[4] {
-            new Vector2(0, 0),
-            new Vector2(1, 0),
-            new Vector2(0, 1),
-            new Vector2(1, 1),
-        };
-
-        mesh.vertices = vertices;
-        mesh.triangles = tris;
-        mesh.normals = normals;
-        mesh.uv = uv;
-
-        return mesh;
-    }
-
-
-
 }

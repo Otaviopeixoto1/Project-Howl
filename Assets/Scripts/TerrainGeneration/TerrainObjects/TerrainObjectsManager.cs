@@ -16,7 +16,7 @@ public class TerrainObjectsManager
     private Vector2Int currentChunkPos;
     private Vector2Int currentSubChunkPos; //used to check if the player moved 
 
-    private int subChunkSubdivision;
+    private int subChunkLevel;
 
     private DetailChunk[] detailChunks;
 
@@ -28,7 +28,7 @@ public class TerrainObjectsManager
 
     public TerrainObjectsManager(DetailGenerationSettings detailGenerationSettings, Texture2D atlasTexture)
     {
-        this.subChunkSubdivision = detailGenerationSettings.subChunkSubdivision;
+        this.subChunkLevel = detailGenerationSettings.subChunkLevel;
         this.detailMaterial = detailGenerationSettings.defaultDetailMaterial;
         
         this.detailMaterial.SetTexture("_MapAtlas", atlasTexture);
@@ -48,7 +48,7 @@ public class TerrainObjectsManager
     public void UpdateObjectChunks(Vector2Int chunkPos, Vector2 viewerWorldPos, Dictionary<Vector2Int,TerrainChunk> terrainChunks)
     {   
         currentChunk = terrainChunks[chunkPos];
-        Vector2Int subChunkPos = currentChunk.WorldToGlobalSubChunkCoords(viewerWorldPos, subChunkSubdivision);
+        Vector2Int subChunkPos = currentChunk.WorldToGlobalSubChunkCoords(viewerWorldPos, subChunkLevel);
 
         DrawDetails();
 
@@ -106,14 +106,17 @@ public class TerrainObjectsManager
                 }
 
                 Vector2Int nSubChunkPos = new Vector2Int(currentSubChunkPos.x + x, currentSubChunkPos.y + y);
-                Vector2Int nChunkPos = TerrainChunk.GlobalSubChunkToChunkCoords(nSubChunkPos, subChunkSubdivision);
+                //
+                //          change these function names !!!
+                //
+                Vector2Int nChunkPos = TerrainChunk.GlobalSubChunkToChunkCoords(nSubChunkPos, subChunkLevel);
                 
                 TerrainChunk nChunk = terrainChunks[nChunkPos];
 
-                int subChunkSize =  currentChunk.ChunkSize/MathMisc.TwoPowX(subChunkSubdivision);
-                Vector2 nSubChunkWorldPos = SubChunk.GlobalSubChunkToWorldCoords(nSubChunkPos, subChunkSubdivision, subChunkSize);
+                int subChunkSize =  currentChunk.ChunkSize/MathMisc.TwoPowX(subChunkLevel);
+                Vector2 nSubChunkWorldPos = QuadChunk.GlobalSubChunkToWorldCoords(nSubChunkPos, subChunkLevel, subChunkSize);
 
-                SubChunk nSubChunk = nChunk.GetSubChunk(nSubChunkWorldPos, subChunkSubdivision);
+                QuadChunk nSubChunk = nChunk.GetSubChunk(nSubChunkWorldPos, subChunkLevel);
                 
                 detailChunks[index] = new DetailChunk(detailMaterial, atlasSize, nSubChunk, biomeDetails);
             }

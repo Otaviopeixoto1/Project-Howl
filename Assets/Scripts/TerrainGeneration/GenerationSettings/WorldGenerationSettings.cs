@@ -8,18 +8,17 @@ public enum WorldMapType
     Random, //Randomly assigns biomes in a biomeGridSize x biomeGridSize grid
 }
 
-// RENAME: DETAILGENERATION SETTINGS
 public struct DetailGenerationSettings
 {
     public readonly Material defaultDetailMaterial;
-    public readonly int subChunkSubdivision;
+    public readonly int subChunkLevel;
     public readonly Texture2D detailAtlas;
     public readonly Dictionary<Biomes, TerrainDetailSettings> biomeDetails;
     
-    public DetailGenerationSettings(Material defaultDetailMaterial, int subChunkSubdivision, Texture2D detailAtlas, Dictionary<Biomes, TerrainDetailSettings> biomeDetails)
+    public DetailGenerationSettings(Material defaultDetailMaterial, int subChunkLevel, Texture2D detailAtlas, Dictionary<Biomes, TerrainDetailSettings> biomeDetails)
     {
         this.defaultDetailMaterial = defaultDetailMaterial;
-        this.subChunkSubdivision = subChunkSubdivision;
+        this.subChunkLevel = subChunkLevel;
         this.detailAtlas = detailAtlas;
         this.biomeDetails = biomeDetails;
     }
@@ -56,7 +55,7 @@ public class WorldGenerationSettings : ScriptableObject
     private BiomeSettings[] worldSettings;
 
     [Header("Detail Generation Settings")]
-    public int subChunkSubdivision = 3;
+    public int subChunkLevel = 3;
     public int detailAtlasWidth = 4;
     public Texture2D detailAtlas;
     public Material defaultDetailMaterial;
@@ -206,7 +205,7 @@ public class WorldGenerationSettings : ScriptableObject
 
     public DetailGenerationSettings GetDetailGenerationSettings()
     {
-        return new DetailGenerationSettings(defaultDetailMaterial, subChunkSubdivision, detailAtlas, GetBiomeDetails());
+        return new DetailGenerationSettings(defaultDetailMaterial, subChunkLevel, detailAtlas, GetBiomeDetails());
     }
 
     
