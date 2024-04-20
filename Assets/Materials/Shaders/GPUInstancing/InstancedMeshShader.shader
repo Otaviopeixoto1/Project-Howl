@@ -110,7 +110,6 @@ Shader "Custom/InstancedIndirect"
             {
                 //USE THE COORDINATE OF THE CENTER OF THE QUAD FOR THE ENTIRE SHADOW SAMPLING
                 // SAMPLE THIS IN THE VERTEX SHADER
-
                 float4 shadowCoord = TransformWorldToShadowCoord(i.interpPositionWS);
                 Light mainLight = GetMainLight(shadowCoord); 
                 float4 lightColor = float4( mainLight.color.rgb,1);

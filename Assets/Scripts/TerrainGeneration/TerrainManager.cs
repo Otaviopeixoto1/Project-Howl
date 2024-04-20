@@ -129,7 +129,7 @@ public class TerrainManager : MonoBehaviour
         
         //Update all terrain details
         Vector2Int chunkPos = WorldToChunkCoords(viewerWorldPos);
-        terrainObjectsManager.UpdateObjectChunks(chunkPos, viewerWorldPos, terrainChunks);
+        terrainObjectsManager.UpdateObjectChunks(terrainChunks[chunkPos], viewerWorldPos, terrainChunks);
         
         chunkThreadManager.CheckThreads();
     }

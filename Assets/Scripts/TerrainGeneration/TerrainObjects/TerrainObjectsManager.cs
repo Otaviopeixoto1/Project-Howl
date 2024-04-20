@@ -13,8 +13,9 @@ public class TerrainObject
 public class TerrainObjectsManager
 {
     private TerrainChunk currentChunk;
-    private Vector2Int currentChunkPos;
-    private Vector2Int currentSubChunkPos; //used to check if the player moved 
+    private Vector2Int currentSubChunkPos; 
+    private Vector2 curretViewerPos;//used to check if the player moved 
+    int subChunkSize;
 
     private int subChunkLevel;
 
@@ -45,25 +46,29 @@ public class TerrainObjectsManager
 
 
     //Called every frame to draw the terrain details and check if we need to generate new chunks
-    public void UpdateObjectChunks(Vector2Int chunkPos, Vector2 viewerWorldPos, Dictionary<Vector2Int,TerrainChunk> terrainChunks)
+    public void UpdateObjectChunks(TerrainChunk currentChunk, Vector2 viewerWorldPos, Dictionary<Vector2Int,TerrainChunk> terrainChunks)
     {   
-        currentChunk = terrainChunks[chunkPos];
-        Vector2Int subChunkPos = currentChunk.WorldToGlobalSubChunkCoords(viewerWorldPos, subChunkLevel);
+        this.currentChunk = currentChunk;
+        subChunkSize = currentChunk.ChunkSize / MathMisc.TwoPowX(subChunkLevel);
 
         DrawDetails();
 
-        if (subChunkPos == currentSubChunkPos)
+        Vector2 displacement = viewerWorldPos - curretViewerPos;
+        Vector2Int subChunkDisplacement = Vector2Int.zero;
+        
+        subChunkDisplacement.x = Mathf.FloorToInt(displacement.x/subChunkSize);
+        subChunkDisplacement.y = Mathf.FloorToInt(displacement.y/subChunkSize);
+
+        if (subChunkDisplacement == Vector2Int.zero)
         {
             return;
         }   
-        //If both tests passed, the player has moved enough and the chunks being rendered have to be updated
-        
-        Vector2Int globalSubChunkDisplacement = subChunkPos - currentSubChunkPos;
+        curretViewerPos.x = Mathf.FloorToInt(viewerWorldPos.x/subChunkSize) * subChunkSize; //snap to subchunk coords
+        curretViewerPos.y = Mathf.FloorToInt(viewerWorldPos.y/subChunkSize) * subChunkSize;
 
-        currentChunkPos = chunkPos;
-        currentSubChunkPos = subChunkPos;
+        currentSubChunkPos = currentChunk.WorldToSubChunkCoords(viewerWorldPos, subChunkLevel);
 
-        UpdateDetailChunks(globalSubChunkDisplacement,terrainChunks);
+        UpdateDetailChunks(subChunkDisplacement,terrainChunks);
     }
     
 
@@ -106,17 +111,15 @@ public class TerrainObjectsManager
                 }
 
                 Vector2Int nSubChunkPos = new Vector2Int(currentSubChunkPos.x + x, currentSubChunkPos.y + y);
-                //
-                //          change these function names !!!
-                //
-                Vector2Int nChunkPos = TerrainChunk.GlobalSubChunkToChunkCoords(nSubChunkPos, subChunkLevel);
+                Vector2Int nChunkDisplacement = Vector2Int.zero;
+                nChunkDisplacement.x = Mathf.FloorToInt(nSubChunkPos.x / (float)MathMisc.TwoPowX(subChunkLevel));
+                nChunkDisplacement.y = Mathf.FloorToInt(nSubChunkPos.y / (float)MathMisc.TwoPowX(subChunkLevel));
                 
-                TerrainChunk nChunk = terrainChunks[nChunkPos];
-
-                int subChunkSize =  currentChunk.ChunkSize/MathMisc.TwoPowX(subChunkLevel);
-                Vector2 nSubChunkWorldPos = QuadChunk.GlobalSubChunkToWorldCoords(nSubChunkPos, subChunkLevel, subChunkSize);
-
-                QuadChunk nSubChunk = nChunk.GetSubChunk(nSubChunkWorldPos, subChunkLevel);
+                TerrainChunk nChunk = terrainChunks[currentChunk.Position + nChunkDisplacement];
+                
+                Vector2Int nSubChunkLocalPos = nSubChunkPos - nChunkDisplacement * MathMisc.TwoPowX(subChunkLevel);
+                Debug.Log(nSubChunkLocalPos);
+                QuadChunk nSubChunk = nChunk.GetSubChunk(nSubChunkLocalPos, subChunkLevel);
                 
                 detailChunks[index] = new DetailChunk(detailMaterial, atlasSize, nSubChunk, biomeDetails);
             }
