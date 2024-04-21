@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEditor.EditorTools;
 
 
 public class TerrainManager : MonoBehaviour
@@ -43,7 +44,11 @@ public class TerrainManager : MonoBehaviour
     [SerializeField]
     private int chunkColliderLodBias = 6;
     [SerializeField]
-    private float normalizedViewDist = 1.2f;
+    [Range(0.01f,10)]
+    [Tooltip("Radius of visibility for the chunks in normalized units (1/chunkSize)")]
+    private float viewRadius = 1.2f;
+
+    private static readonly float sqrt2 = (float)Math.Sqrt(2);
 
 
 
@@ -128,8 +133,7 @@ public class TerrainManager : MonoBehaviour
         }
         
         //Update all terrain details
-        Vector2Int chunkPos = WorldToChunkCoords(viewerWorldPos);
-        terrainObjectsManager.UpdateObjectChunks(terrainChunks[chunkPos], viewerWorldPos, terrainChunks);
+        terrainObjectsManager.UpdateObjectChunks(terrainChunks[viewerChunkCoords], viewerWorldPos, terrainChunks);
         
         chunkThreadManager.CheckThreads();
     }
@@ -137,34 +141,31 @@ public class TerrainManager : MonoBehaviour
 
     public void UpdateVisibleChunks(Vector2Int currentChunkPos) 
     {
-        //All visible chunks end on this list. here we update all of them to check if they are still visible
+        Vector2Int startChunk = Vector2Int.zero;
+        startChunk.x = Mathf.FloorToInt(viewerWorldPos.x/(chunkSize * chunkScale));
+        startChunk.y = Mathf.FloorToInt(viewerWorldPos.y/(chunkSize * chunkScale));
+
+        
+        //All visible chunks end on this list. here we update all of them and remove the non visible ones
         for (int i = visibleChunks.Count - 1; i >= 0; i--)
         {
-            visibleChunks[i].Update(viewerWorldPos, chunkSize * normalizedViewDist);
+            visibleChunks[i].Update((startChunk + Vector2.one * sqrt2 * 0.5f) * chunkSize * chunkScale, chunkSize * chunkScale * sqrt2 * 0.5f * viewRadius);
             if (!visibleChunks[i].IsVisible())
             {
                 //chunks that just turned invisible are removed from visibleChunks
                 visibleChunks.RemoveAt(i);
             }
         }
-
-        int chunkVisibilityRadius = Mathf.FloorToInt(normalizedViewDist);
-
-        //Looping through all chunks that should be visible in this frame
-
-        //load chunks in 2x2 grid:
-        // (1,0) (1.1)
-        // (0,0) (1,0)
-        //we still store them in the world coords into the visibleChunks dict but the chunks have to be checked differently
         
-        // Use floorTOInt on viewerWorldPos and we get the bottom left chunk. Then just sum with the offsets to get the neighbors on the 2x2 grid
+        int chunkViewRange = Mathf.FloorToInt(viewRadius);
 
-        for (int dy = -chunkVisibilityRadius; dy <= chunkVisibilityRadius; dy++)
+        //Looping through all chunks that HAVE to be visible in this frame
+        for (int dy = 1 - chunkViewRange; dy <= chunkViewRange; dy++)
         {
-            for (int dx = -chunkVisibilityRadius; dx <= chunkVisibilityRadius; dx++)
+            for (int dx = 1 - chunkViewRange; dx <= chunkViewRange; dx++)
             {
                 
-                Vector2Int viewChunkCoord = new Vector2Int(currentChunkPos.x + dx, currentChunkPos.y + dy);
+                Vector2Int viewChunkCoord = new Vector2Int(startChunk.x + dx, startChunk.y + dy);
 
                 if (terrainChunks.ContainsKey(viewChunkCoord))
                 {
@@ -188,9 +189,6 @@ public class TerrainManager : MonoBehaviour
         }
     }
 
-
-
-
     public TerrainChunk GetCurrentChunk()
     {
         Vector2Int viewerChunkCoords = WorldToChunkCoords(viewer.position);
@@ -203,19 +201,6 @@ public class TerrainManager : MonoBehaviour
         return visibleChunks;
     }
 
-    public Vector2Int WorldToGridCoords(Vector2 worldPos)
-    {
-        int currentChunkX = Mathf.RoundToInt(worldPos.x/(chunkScale));
-        int currentChunkY = Mathf.RoundToInt(worldPos.y/(chunkScale));
-        return new Vector2Int(currentChunkX, currentChunkY);
-    }
-    
-    public Vector2Int WorldToGridCoords(Vector3 worldPos)
-    {
-        int currentChunkX = Mathf.RoundToInt(worldPos.x/(chunkScale));
-        int currentChunkY = Mathf.RoundToInt(worldPos.z/(chunkScale));
-        return new Vector2Int(currentChunkX, currentChunkY);
-    }
     public Vector2Int WorldToChunkCoords(Vector2 worldPos)
     {
         int currentChunkX = Mathf.RoundToInt(worldPos.x/(chunkSize * chunkScale));

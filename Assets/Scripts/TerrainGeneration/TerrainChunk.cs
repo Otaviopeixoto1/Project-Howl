@@ -498,10 +498,14 @@ public class TerrainChunk : QuadChunk
 
     public void Update(Vector2 viewerWorldPos, float maxViewDistance) 
     {
-        //viewer distance from the edge of the chunk:
-        float viewerDistance = GetBoundsDistance(viewerWorldPos); 
+        //distance from the edge of the chunk:
+        //float distance = GetBoundsDistance(viewerWorldPos); 
+
+        //distance from the center of the chunk:
+        float distance = (WorldPosition - viewerWorldPos).sqrMagnitude;
+
         
-        bool visible = viewerDistance <= maxViewDistance * Scale;
+        bool visible = distance <= maxViewDistance;
         SetVisible(visible); 
         //Only destroy the chunks that are actualy very far (probably wont be rendered)
     }

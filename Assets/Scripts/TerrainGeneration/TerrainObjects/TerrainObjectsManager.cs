@@ -68,7 +68,7 @@ public class TerrainObjectsManager
 
         currentSubChunkPos = currentChunk.WorldToSubChunkCoords(viewerWorldPos, subChunkLevel);
 
-        UpdateDetailChunks(subChunkDisplacement,terrainChunks);
+        UpdateDetailChunks(subChunkDisplacement, terrainChunks);
     }
     
 
@@ -118,7 +118,6 @@ public class TerrainObjectsManager
                 TerrainChunk nChunk = terrainChunks[currentChunk.Position + nChunkDisplacement];
                 
                 Vector2Int nSubChunkLocalPos = nSubChunkPos - nChunkDisplacement * MathMisc.TwoPowX(subChunkLevel);
-                Debug.Log(nSubChunkLocalPos);
                 QuadChunk nSubChunk = nChunk.GetSubChunk(nSubChunkLocalPos, subChunkLevel);
                 
                 detailChunks[index] = new DetailChunk(detailMaterial, atlasSize, nSubChunk, biomeDetails);
