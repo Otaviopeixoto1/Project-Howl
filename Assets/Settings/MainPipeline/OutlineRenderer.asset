@@ -135,5 +135,5 @@ MonoBehaviour:
   _event: 400
   Settings:
     OutlineShader: {fileID: 4800000, guid: 2eadaa83fbbfb60b5b632193b0bc28b6, type: 3}
-    DepthRange: {x: 0.0065165157, y: 0.032659907}
+    DepthRange: {x: 0.019615425, y: 0.036340103}
     NormalRange: {x: 0.02866695, y: 0.08541331}
