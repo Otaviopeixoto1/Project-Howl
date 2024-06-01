@@ -25,7 +25,7 @@ Shader "CustomRenderTexture/Simple"
        {
            CGPROGRAM
            #include "UnityCustomRenderTexture.cginc"
-           #include "Assets/Materials/Shaders/ShaderIncludes/noiseSimplex.cginc"
+           #include "Assets/Data/Shaders/ShaderIncludes/noiseSimplex.cginc"
             
            #pragma vertex CustomRenderTextureVertexShader
            #pragma fragment frag
