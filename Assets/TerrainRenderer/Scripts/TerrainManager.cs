@@ -144,7 +144,6 @@ public class TerrainManager : MonoBehaviour
         Vector2Int startChunk = Vector2Int.zero;
         startChunk.x = Mathf.FloorToInt(viewerWorldPos.x/(chunkSize * chunkScale));
         startChunk.y = Mathf.FloorToInt(viewerWorldPos.y/(chunkSize * chunkScale));
-
         
         //All visible chunks end on this list. here we update all of them and remove the non visible ones
         for (int i = visibleChunks.Count - 1; i >= 0; i--)

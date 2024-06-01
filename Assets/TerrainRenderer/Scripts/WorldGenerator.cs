@@ -74,14 +74,15 @@ public class WorldGenerator
         Texture2D atlasTexture = new Texture2D(textureSize, textureSize);
         Color[] colormap = new Color[(textureSize) * (textureSize)];
 
-        ///////////////////////////////////////////
-        //increase the resolution !!
-        ///////////////////////////////////////////
-
         for (int y = 0; y < textureSize; y++)
         {
             for (int x = 0; x < textureSize; x++)
             {
+                ///////////////////////////////////////////////////////////////////////////////
+                //sum nearby biome textures to form transition zones
+                //later this can be evolved by conditionally checking the neighbouring biomes
+                //and using a specific texture for trasition between them
+                ///////////////////////////////////////////////////////////////////////////
                 int cellId = BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x * textureScale,y * textureScale).r, biomeGridSize);
                 PrimaryGenerationSettings genSettings = worldGenerationSettings.GetPrimarySettings(cellId);
                 Texture2D baseTexture = genSettings.baseTexture;

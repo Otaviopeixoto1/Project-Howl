@@ -4,22 +4,17 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField]
-    private Animator characterAnimator;
+    
     private CharacterController characterController;
     private PlayerInputActions playerInputActions;
 
     private Vector3 movementDir = Vector3.forward;
 
-    [SerializeField]
-    private float playerSpeed = 2.0f;
-    [SerializeField]
-    private float gravityValue = -9.81f;
-    [SerializeField]
-    private float rotationSpeed = 0.1f;
+    [SerializeField] private float playerSpeed = 2.0f;
+    [SerializeField] private float gravityValue = -9.81f;
+    [SerializeField] private float rotationSpeed = 0.1f;
 
-    [SerializeField]
-    private LayerMask terrainLayer;
+    [SerializeField] private LayerMask terrainLayer;
 
 
     //[SerializeField]
@@ -55,7 +50,6 @@ public class PlayerController : MonoBehaviour
         if (inputDir != Vector2.zero)
         {
             movementDir = new Vector3(inputDir.x,0,inputDir.y);
-            characterAnimator.SetBool("isMoving",true);
 
             // Rotation needed to align the object's forward vector with the target direction
             Quaternion targetRotation = Quaternion.LookRotation(movementDir, transform.up);
@@ -70,7 +64,6 @@ public class PlayerController : MonoBehaviour
         else
         {
             characterController.Move(Vector3.up * gravityValue * Time.deltaTime); 
-            characterAnimator.SetBool("isMoving",false);
         }
         
 

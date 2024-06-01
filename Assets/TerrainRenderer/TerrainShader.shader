@@ -1,4 +1,3 @@
-
 // ----------------------------------------------------------------------------------------------------------
 // The terrain using this shader wont appear on the depthNormals prepass, its only rendered on the final pass
 // This is NECESSARY for good outlines
@@ -43,7 +42,7 @@ Shader "TerrainShader"
         ENDHLSL
 
         ZWrite On 
-        Cull Back 
+        Cull Off 
         ZTest LEqual
         
         Pass

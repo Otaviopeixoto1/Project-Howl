@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CloudShadowMaterial
-  m_Shader: {fileID: 4800000, guid: 766f1adbf206c4142bac0ee0f6970310, type: 3}
+  m_Name: TerrainMaterial
+  m_Shader: {fileID: 4800000, guid: 679e2c2086e74967d802156467f0b78f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -23,27 +23,31 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _ColorRamp:
-        m_Texture: {fileID: 2800000, guid: 5c4d954e02e49d08c8c0cbdd1dc44cc0, type: 3}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Tex:
+    - _DetailTex:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _colorRamp:
+        m_Texture: {fileID: 2800000, guid: 5c4d954e02e49d08c8c0cbdd1dc44cc0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Amplitude: 0.68
-    - _Density: 0.439
-    - _DispersionSpeed: 0.02
-    - _Frequency: 23.9
-    - _Lacunarity: 0.5
-    - _Octaves: 3
-    - _Persistence: 2
-    - _windSpeed: 0.457
+    - _Cull: 2
+    - _Cutoff: 0.333
+    - _WindQuality: 0
+    - _ambientLightBias: 0.526
+    - _lightIntensityBias: 0.111
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Offset: {r: 3.358677, g: 1.9153409, b: 0, a: 0}
-    - _WindDirection: {r: 1, g: 1, b: 0.5, a: 1}
+    - _HueVariation: {r: 1, g: 0.5, b: 0, a: 0.1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

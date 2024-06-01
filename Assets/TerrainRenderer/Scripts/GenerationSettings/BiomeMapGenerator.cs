@@ -116,8 +116,6 @@ public class BiomeMapGenerator : MapGenerator
         }
 
         fullBiomeMap.SetPixels(colorMap);
-        //fullBiomeMap.filterMode = FilterMode.Point; 
-        //fullBiomeMap.wrapMode = TextureWrapMode.Clamp; 
 
         noiseGenerator.SetModifiedCellularReturnType(modCellularReturnType);
 

@@ -32,7 +32,7 @@ public class OutlinePass : ScriptableRenderPass
         base.OnCameraSetup(cmd, ref renderingData);
 
         var colorDesc = renderingData.cameraData.cameraTargetDescriptor;
-        colorDesc.depthBufferBits = 0; // must set to 0 to specify a color target
+        colorDesc.depthBufferBits = 0; // must set to 0 to specify a color only target
         // to use a different format, set .colorFormat or .graphicsFormat
 
         //setup the temporary render target used for blitting
@@ -72,10 +72,10 @@ public class OutlinePass : ScriptableRenderPass
         if (m_Material == null) return;
         
         CommandBuffer cb = CommandBufferPool.Get(name: "OutlinePass");
-        m_Material.SetFloat(dLowerID,settings.DepthRange.x);
-        m_Material.SetFloat(dUpperID,settings.DepthRange.y);
-        m_Material.SetFloat(nLowerID,settings.NormalRange.x);
-        m_Material.SetFloat(nUpperID,settings.NormalRange.y);
+        m_Material.SetFloat(dLowerID, settings.DepthRange.x);
+        m_Material.SetFloat(dUpperID, settings.DepthRange.y);
+        m_Material.SetFloat(nLowerID, settings.NormalRange.x);
+        m_Material.SetFloat(nUpperID, settings.NormalRange.y);
 
 
 

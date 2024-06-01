@@ -352,15 +352,10 @@ public class QuadChunk
         int x0 = Mathf.Min(rootChunk.ChunkSize - 1, Mathf.Max(Mathf.FloorToInt(_x), 0));
         int y0 =  Mathf.Min(rootChunk.ChunkSize - 1, Mathf.Max(Mathf.FloorToInt(_y), 0));
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // WHEN CHUNKS BECOME INVISIBLE, THEIR VERTEX DATA GETS DELETED AND THIS CAUSES NULL REFS
-        //////////////////////////////////////////////////////////////////////////////////////////
-
         Vector3 v00 = rootChunk.vertices[x0 + (rootChunk.ChunkSize + 1) * y0];
         Vector3 v10 = rootChunk.vertices[(x0 + 1) + (rootChunk.ChunkSize + 1) * y0];
         Vector3 v01 = rootChunk.vertices[x0 + (rootChunk.ChunkSize + 1) * (y0 + 1)];
         Vector3 v11 = rootChunk.vertices[(x0 + 1) + (rootChunk.ChunkSize + 1) * (y0 + 1)];
-        
 
         float wx = _x - x0;
         float wy = _y - y0;
@@ -379,12 +374,10 @@ public class QuadChunk
         int x0 = Mathf.Min(rootChunk.ChunkSize - 1, Mathf.Max(  Mathf.FloorToInt(_x), 0 ));
         int y0 =  Mathf.Min(rootChunk.ChunkSize - 1, Mathf.Max(  Mathf.FloorToInt(_y), 0 ));
 
-
         Vector3 v00 = rootChunk.normals[x0 + (rootChunk.ChunkSize + 1) * y0];
         Vector3 v10 = rootChunk.normals[(x0 + 1) + (rootChunk.ChunkSize + 1) * y0];
         Vector3 v01 = rootChunk.normals[x0 + (rootChunk.ChunkSize + 1) * (y0 + 1)];
         Vector3 v11 = rootChunk.normals[(x0 + 1) + (rootChunk.ChunkSize + 1) * (y0 + 1)];
-        
 
         float wx = _x - x0;
         float wy = _y - y0;
@@ -406,12 +399,10 @@ public class QuadChunk
         int x0 = Mathf.Min(rootChunk.ChunkSize - 1, Mathf.Max(  Mathf.FloorToInt(_x), 0 ));
         int y0 =  Mathf.Min(rootChunk.ChunkSize - 1, Mathf.Max(  Mathf.FloorToInt(_y), 0 ));
 
-
         Vector2 v00 = rootChunk.atlasUVs[x0 + (rootChunk.ChunkSize + 1) * y0];
         Vector2 v10 = rootChunk.atlasUVs[(x0 + 1) + (rootChunk.ChunkSize + 1) * y0];
         Vector2 v01 = rootChunk.atlasUVs[x0 + (rootChunk.ChunkSize + 1) * (y0 + 1)];
         Vector2 v11 = rootChunk.atlasUVs[(x0 + 1) + (rootChunk.ChunkSize + 1) * (y0 + 1)];
-        
 
         float wx = _x - x0;
         float wy = _y - y0;

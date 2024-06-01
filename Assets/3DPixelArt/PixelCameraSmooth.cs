@@ -15,6 +15,6 @@ public class PixelCameraSmooth : MonoBehaviour
     }
     public void SetPixelOffset(Vector2 offset)
     {
-        transform.localPosition = cameraCenter - new Vector3(offset.x * 16/9f , offset.y,0);
+        transform.localPosition = cameraCenter - new Vector3(offset.x * 16.0f/9.0f, offset.y, 0);
     }
 }
