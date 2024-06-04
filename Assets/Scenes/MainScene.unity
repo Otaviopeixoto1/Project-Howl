@@ -221,7 +221,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &324677536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -425,6 +425,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e8cbb9d573ce86c99ba7a268575abfd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pixelSnap: 1
+  cameraSmooth: 1
   target: {fileID: 1586094604}
   pixelSmoother: {fileID: 779841917}
   renderResolution: {x: 640, y: 360}
@@ -954,7 +956,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 670579f1ef16cc925becfc2a6b751b1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerSpeed: 50
+  playerSpeed: 5
   gravityValue: -9.81
   rotationSpeed: 0.1
   terrainLayer:

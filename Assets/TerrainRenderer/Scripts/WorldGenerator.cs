@@ -173,41 +173,6 @@ public class WorldGenerator
 
         return finalColor;
     }
-
-    public Color GetColor(float _x, float _y)
-    {
-        float x = biomeMapScale * _x;
-        float y = biomeMapScale * _y;
-
-        if (x < 0 || y < 0 || x > biomeMapSize || y > biomeMapSize)
-        {
-            return Color.black;
-        }
-
-        int cellId = BiomeMapGenerator.DecodeCellIndex(biomeIdSampler.SampleBiomeNearest(x,y).r, biomeGridSize);
-
-
-        BiomeSampler biomeSampler = biomeSamplers[cellId];
-        float cellValue = biomeSampler.SampleBiome(x,y).r;
-        Color finalColor = biomeSampler.displayColor * cellValue;
-        float totalValue = cellValue;
-
-        
-        if (cellValue < 0.9)
-        {
-            foreach (int neighbourId in biomeLinks.GetLinks(cellId))
-            {
-                BiomeSampler neighbourSampler = biomeSamplers[neighbourId];
-                float nCellValue = neighbourSampler.SampleBiome(x,y).r;
-                Color nColor = neighbourSampler.displayColor * nCellValue;
-                totalValue += nCellValue;
-                finalColor += nColor;
-            }
-        }
-        finalColor /= (totalValue + 0.001f); 
-
-        return finalColor;
-    }
     
     public Biomes GetBiome(float _x, float _y) 
     {

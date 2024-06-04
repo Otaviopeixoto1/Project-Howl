@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee49998674ffdce9aaaac934cab329be, type: 3}
+  m_Name: DisplayForestSettings
+  m_EditorClassIdentifier: 
+  biome: 0
+  baseTexture: {fileID: 2800000, guid: 6a3eb310dc4a3367fa4590a9efabae65, type: 3}
+  baseTextureScale: 19
+  heightMapScale: 3.87
+  baseMaxHeight: 1.7
+  noiseOctaves: 4
+  noiseFrequencyRange: {x: 0.01, y: 0.11600716}
+  noiseLacunarityRange: {x: 0.24243084, y: 0.4924308}
+  noisePersistenceRange: {x: 6.06, y: 10}
+  terrainDetailSettings: {fileID: 11400000, guid: 0a4409063a60616cb88470da141239ee,
+    type: 2}
