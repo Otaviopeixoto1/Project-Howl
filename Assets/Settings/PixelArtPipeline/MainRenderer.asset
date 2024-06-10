@@ -1,5 +1,25 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-3130596275754499924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b60037a3cc4d80bec8ab36e1afec1e35, type: 3}
+  m_Name: VolumetricLightsRenderFeature
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  _event: 500
+  Settings:
+    shader: {fileID: 4800000, guid: f9944f2248206ee71be5b46329278a8d, type: 3}
+    sampleRange: {x: 0.41627383, y: 0.91627383}
+    sampleCount: 10
+    intensity: 0.2
+    fadeStrength: 1
 --- !u!114 &-2002093445430389425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52,7 +72,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: de640fe3d0db1804a85f9fc8f5cadab6, type: 3}
-  m_Name: OutlineRenderer
+  m_Name: MainRenderer
   m_EditorClassIdentifier: 
   debugShaders:
     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7,
@@ -76,7 +96,8 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: 4444978653875668579}
   - {fileID: -2002093445430389425}
-  m_RendererFeatureMap: 6306740289bcaf3d4fd5fb719e2237e4
+  - {fileID: -3130596275754499924}
+  m_RendererFeatureMap: 6306740289bcaf3d4fd5fb719e2237e4ac007e1846e38dd4
   m_UseNativeRenderPass: 1
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}

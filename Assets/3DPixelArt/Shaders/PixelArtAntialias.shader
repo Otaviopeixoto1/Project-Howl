@@ -41,7 +41,7 @@ Shader "Hidden/PixelArtAntialias"
 
             fixed4 frag (Interpolators i) : SV_Target
             {
-                //return float4(1,1, 0, 1);
+                //return tex2D(_MainTex, i.uv);
                 float2 boxSize = clamp(fwidth(i.uv) * _MainTex_TexelSize.zw, 1e-5, 1);
 
                 float2 tx = i.uv * _MainTex_TexelSize.zw - 0.5 * boxSize;

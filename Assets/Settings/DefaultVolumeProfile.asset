@@ -254,6 +254,34 @@ MonoBehaviour:
   bladeRotation:
     m_OverrideState: 1
     m_Value: 0
+--- !u!114 &-6932767577152448757
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b910d70303a04c4aecb3f5d8f477cf, type: 3}
+  m_Name: GodrayVolumeComponent
+  m_EditorClassIdentifier: 
+  active: 1
+  isActive:
+    m_OverrideState: 1
+    m_Value: 1
+  samples:
+    m_OverrideState: 1
+    m_Value: 20
+  start:
+    m_OverrideState: 1
+    m_Value: 0.5
+  end:
+    m_OverrideState: 1
+    m_Value: 0.8
+  intensity:
+    m_OverrideState: 1
+    m_Value: 0.2
 --- !u!114 &-6250079141793365611
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -538,6 +566,7 @@ MonoBehaviour:
   - {fileID: -5548628830868745774}
   - {fileID: -729187492941925589}
   - {fileID: -1915577053758190625}
+  - {fileID: -6932767577152448757}
 --- !u!114 &1877769964970050088
 MonoBehaviour:
   m_ObjectHideFlags: 3

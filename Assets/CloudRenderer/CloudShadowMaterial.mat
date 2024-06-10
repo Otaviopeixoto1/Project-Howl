@@ -34,12 +34,13 @@ Material:
     m_Ints: []
     m_Floats:
     - _Amplitude: 0.68
-    - _Density: 0.439
-    - _DispersionSpeed: 0.02
-    - _Frequency: 23.9
-    - _Lacunarity: 0.5
-    - _Octaves: 3
-    - _Persistence: 2
+    - _Density: 0.554
+    - _DispersionSpeed: 0.407
+    - _Frequency: 22.6
+    - _Lacunarity: 0.47
+    - _Octaves: 4
+    - _Opacity: 0.278
+    - _Persistence: 1.56
     - _windSpeed: 0.457
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}

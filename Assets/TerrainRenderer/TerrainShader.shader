@@ -122,8 +122,7 @@ Shader "TerrainShader"
                 float4 shadowCoord = TransformWorldToShadowCoord(i.positionWS);
                 Light mainLight = GetMainLight(shadowCoord); //light data with shadows  
 
-
-                half4 lightColor = half4( mainLight.color.rgb,1);
+                half4 lightColor = half4(mainLight.color.rgb,1);
 
                 #if defined(_LIGHT_COOKIES)
                     // cloud light cookie
@@ -131,9 +130,6 @@ Shader "TerrainShader"
                     lightColor *= cookieColor;
                 #endif
                 
-
-
-      
 
                 float toonLighting =  tex2D(_colorRamp, float2(i.lightIntensity,0)) + 0.5;
 

@@ -45,7 +45,7 @@ public class MeshData
 
         return mesh;
     }
-
+    
     public static Mesh CreateQuad(float width = 1f, float height = 1f) {
         
         var mesh = new Mesh();

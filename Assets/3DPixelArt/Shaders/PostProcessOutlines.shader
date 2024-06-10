@@ -1,4 +1,4 @@
-Shader "Unlit/PostProcessOutlines"
+Shader "Blit/PostProcessOutlines"
 {
     
     Properties
@@ -17,10 +17,7 @@ Shader "Unlit/PostProcessOutlines"
             "RenderType" = "Opaque" 
             "RenderingPipeline" = "UniversalPipeline"
         }
-        ZWrite Off Cull Back ZTest LEqual // if somethins is supposed to be drawn in front of the screen, this has to
-                                          // be LEqual instead of Always 
-        
-        
+        ZWrite Off Cull Back ZTest LEqual 
 
         Pass
         {

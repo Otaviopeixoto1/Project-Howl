@@ -6,10 +6,8 @@ using UnityEngine;
 [RequireComponent(typeof(Light))]
 public class CloudManager : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject viewer;
-    [SerializeField]
-    private Material cloudRenderMaterial;
+    [SerializeField] private GameObject viewer;
+    [SerializeField] private Material cloudRenderMaterial;
 
     private Light mainLight;
     private Vector2 cloudTileSize; //Size of the cloud texture in world units
@@ -37,6 +35,7 @@ public class CloudManager : MonoBehaviour
         Vector3 lightSpacePosition = transform.InverseTransformPoint(viewer.transform.position);
         lightSpacePosition.z = 0;
 
+        cloudRenderMaterial.SetMatrix("_lightMatrix", mainLight.transform.worldToLocalMatrix);
 
         float distanceSqr = cookieBounds.SqrDistance(lightSpacePosition);
         if (distanceSqr >  1)

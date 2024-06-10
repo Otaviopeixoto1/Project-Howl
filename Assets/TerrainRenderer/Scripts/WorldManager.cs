@@ -35,6 +35,8 @@ public class WorldManager : MonoBehaviour
     /// <summary>
     /// Instances a BiomeMapGenerator and bakes the cell distance fields into separate BiomeSamplers
     /// </summary>
+
+    //*************this is the world generator's responsability ******
     public void GenerateBiomeMap()
     {
         Debug.Log("Generating Biome Map");

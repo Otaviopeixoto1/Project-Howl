@@ -15,6 +15,7 @@ public class WorldSamplerDisplay : MonoBehaviour
     [SerializeField] private MeshRenderer displayRenderer;
     [SerializeField] private MeshFilter displayFilter;
     [SerializeField] private Material displayMaterial;
+    
 
     private WorldManager worldManager;
 

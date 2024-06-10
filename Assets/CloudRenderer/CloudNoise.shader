@@ -1,4 +1,4 @@
-Shader "CustomRenderTexture/Simple"
+Shader "Custom/Cloud Noise"
 {
     Properties
     {
@@ -13,6 +13,7 @@ Shader "CustomRenderTexture/Simple"
         _Lacunarity("Lacunarity", Range(0.01,10)) = 2 
         _Persistence("Persistence", Range(0.01, 2)) = 0.5 
         _Density ("Cloud Density", Range(0,1)) = 0.9
+        _Opacity ("Cloud Opacity", Range(0,1)) = 0.9
         _DispersionSpeed ("Dispersion Speed", Range(0,1)) = 0.5 
     }
  
@@ -42,8 +43,10 @@ Shader "CustomRenderTexture/Simple"
            float4 _WindDirection;
            float _windSpeed;
            float _Density;
+           float _Opacity;
            float _DispersionSpeed;
            float4 _Offset;
+           float4x4 _lightMatrix;
  
            float4 frag(v2f_customrendertexture IN) : COLOR
            {
@@ -67,17 +70,15 @@ Shader "CustomRenderTexture/Simple"
                 for (int i = 0; i < octaves; i++) 
                 {
                     maxValue += amplitude;
-                    noiseValue += amplitude * snoise(float3(coords * frequency  , time * _DispersionSpeed));
+                    noiseValue += amplitude * snoise(mul(_lightMatrix, float4(coords * frequency, time * 0.1f * _DispersionSpeed, 0.0)).xyz);
                     frequency *= lacunarity;
                     amplitude *= persistence;
                 }
                 noiseValue /= maxValue;
                 
-                float cloudNoise = (( _Density + noiseValue)) ;
-                //the step function causes the cloud movement to look weird. Adjust it to make the clouds smoother
-                //add some smooth edges to the clouds defined by cloudNoise
-                //make a color ramp for the clouds !
-                return  tex2D(_ColorRamp, float2(1.0f - cloudNoise,0));
+                float cloudNoise = (( 2.0 * _Density - 1.0 + noiseValue)) ;
+                
+                return  tex2D(_ColorRamp, float2(max(1.0f - cloudNoise, 1.0f - _Opacity),0));
            }
            ENDCG
         }

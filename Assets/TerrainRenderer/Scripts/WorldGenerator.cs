@@ -64,6 +64,9 @@ public class WorldGenerator
     /// <summary>
     /// Generates a texture map of the world
     /// </summary>
+    //////////////////////////////////////////////
+    /////// REMOVE AND CALCULATE IN SHADER
+    /////////////////////////////////////////////
     private void GenerateWorldAtlas(WorldGenerationSettings worldGenerationSettings)
     {
         int textureSize = worldGenerationSettings.biomeTextureSize;
