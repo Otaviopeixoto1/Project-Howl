@@ -456,7 +456,7 @@ public class TerrainChunk : QuadChunk
         this.Bounds = new Bounds(WorldPosition, Vector2.one * ChunkSize * Scale);
 
         chunkObject = new GameObject("Terrain Chunk");
-        chunkObject.layer = 6; //terrain layer
+        chunkObject.layer = 7; //terrain layer
 
         meshRenderer = chunkObject.AddComponent<MeshRenderer>();
         meshFilter = chunkObject.AddComponent<MeshFilter>();
