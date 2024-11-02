@@ -30,6 +30,8 @@ Shader "Blit/GodraysPass"
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _SHADOWS_SOFT
 
+            #pragma multi_compile SAMPLES_10 SAMPLES_30 SAMPLES_50
+
             // The Blit.hlsl file provides the vertex shader (Vert),
             // input structure (Attributes) and output strucutre (Varyings)
             #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
@@ -37,29 +39,33 @@ Shader "Blit/GodraysPass"
             //Utilities for sampling camera depth texture:
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
             
+            //TEXTURE2D_SHADOW(_MainLightShadowmapTexture);
             sampler2D _cloudNoiseTex;
             sampler2D sceneDepth;
+            sampler2D ditherTex;
 
             float intensity;
             float4x4 inverseVPMatrix; 
             float4 cameraDir;
-            float4 planeNormal;
             float4 planeCenter;
             float planeOffset;
             float planeSeparation;
             float fadeStrength;
-            float samples;
+            float opacityMultiplier;
 
             float4 frag(Varyings input) : SV_Target
             {
                 float2 uv = input.texcoord;
                 
+                int2 interleavedCoord = (floor(uv * _BlitTexture_TexelSize.zw)) % 4;
+                float ditherOffset =  tex2D(ditherTex, interleavedCoord/4.0f).a;
+
                 //////////////////////////////////////////////////
                 //return tex2D(sceneDepth, uv );
                 //////////////////////////////////////////////////
+                
+                float4 sceneColor = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, uv).rgba;
 
-                float4 color = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, uv).rgba;
-                float3 normal = (planeNormal.xyz);
                 float2 ndcCoord = 2 * (uv) - 1.0;
 
                 #if UNITY_UV_STARTS_AT_TOP
@@ -75,83 +81,64 @@ Shader "Blit/GodraysPass"
                     // Adjust z to match NDC for OpenGL
                     float depth = lerp(UNITY_NEAR_CLIP_VALUE, 1, SampleSceneDepth(uv));
                 #endif
-
-                float3 sceneCoord = ComputeWorldSpacePosition(uv, depth, inverseVPMatrix);
-                //return float4(depth,0,0,1);
-
+                
+                Light mainLight = GetMainLight(); //light data with shadows  
+                float3 lightDir = mainLight.direction.xyz;
+                float3 tangent = cross(lightDir.xyz, -cameraDir.xyz); 
+                float3 normal = normalize(cross(tangent, lightDir)); 
                 float4 worldCoord = mul(inverseVPMatrix, float4(ndcCoord.x, ndcCoord.y, z, 1));
                 float t = dot((worldCoord.xyz - planeCenter.xyz), normal) / (dot(cameraDir.xyz, normal));
-                worldCoord -= cameraDir * t;
+                worldCoord -= cameraDir * (t + ditherOffset * planeSeparation);
 
+                float3 sceneCoord = ComputeWorldSpacePosition(uv, depth, inverseVPMatrix);
+                float sceneDepthDif = dot(sceneCoord - worldCoord.xyz, cameraDir.xyz);
 
-                Light mainLight = GetMainLight(); //light data with shadows  
-                float4 lightColor = float4(mainLight.color.rgb,1);
-                float4 accum = float4(0,0,0,1);
-                float depthDif = dot(sceneCoord - worldCoord, cameraDir);
                 
-                /////////////////////////////////////////////////////////////
-                /*
-                float2 suv = ComputeLightCookieUVDirectional(_MainLightWorldToLight, worldCoord, float4(1, 1, 0, 0), URP_TEXTURE_WRAP_MODE_NONE);
-                float4 cNoise = tex2D(_cloudNoiseTex, suv); //suv
-                
-                //return dot(cNoise.gb, cNoise.gb);                                                  // divide the gradient components by the cloud tile size components, then do rsqrt
-                float rgmod = rsqrt(dot(cNoise.gb, cNoise.gb)); //150 = cloud cookie tile size assumed to be uniform (replace with the actual variable)
-                float sdf = min(1.0, abs(cNoise.r - 0.01) * rgmod); //10.0 is the maximum march distance
-                
-                */
-                /////////////////////////////////////////////////////////////
+                #if defined(_LIGHT_COOKIES)  
 
-                #if defined(_LIGHT_COOKIES)                
-                    for (float i = 0.0; i < samples; i++) // i< samples
-                    {   
-                        /*
-                        worldCoord += cameraDir * sdf; //march
-
-                        //suv = ComputeLightCookieUVDirectional(_MainLightWorldToLight, worldCoord, float4(1, 1, 0, 0), URP_TEXTURE_WRAP_MODE_NONE);
-                        //float res = tex2D(_cloudNoiseTex, suv); // use saturate(SampleMainLightCookie(worldCoord) - 0.3f)
-                        
-                        accum.rgb = saturate(SampleMainLightCookie(worldCoord) - 0.3f).rgb;
-                        //accum.r = res;
-                        return accum;
-                        
-                        //accum = max(accum, float4(cloudShadowAttenuation * shadowAttenuation * depthFade, 0) ); */
-
-
-
-                        //Problem: the current terrain doesnt render into depth buffer.
-                        //There must be two copies of depth: one before and one after rendering the terrain
-                        
-                        /**/
-                        //this formula + the max or add mode still makes an ugly gradient on screen. 
-                        //The falloff gradient must be smoother
-                        //float depthFade = smoothstep(0.0, 1.0, (depthDif/100.0f) * fadeStrength); 
-                        //Other options:
-                        //float depthFade = 1.0f - fadeStrength * exp(-max(0.0, depthDif/10.0f));
-                        float depthFade = 1.0f - pow(saturate(1 - depthDif/100.0f), 1.0/fadeStrength);
-
-                        float4 shadowCoord = TransformWorldToShadowCoord(worldCoord);
-                        Light L = GetMainLight(shadowCoord); //light data with shadows 
-                        float shadowAttenuation = L.shadowAttenuation;
-                        float3 cloudShadowAttenuation = saturate(SampleMainLightCookie(worldCoord) - 0.3f);
-
-                        //accum += float4(cloudShadowAttenuation * shadowAttenuation * depthFade, 0) ;
-                        accum = max(accum, float4(cloudShadowAttenuation * shadowAttenuation * depthFade, 0) ); 
-                        //DO max based on depth as well. IT CAN SOLVE SOME PROBLEMS
-                        
-                        
-                        worldCoord += cameraDir * planeSeparation;
-                        depthDif -= planeSeparation;
-                    }
-                    
+                #if defined(SAMPLES_50)
+                const float samples = 50.0f; 
+                #elif defined(SAMPLES_30)
+                const float samples = 30.0f; 
+                #else
+                const float samples = 10.0f; 
                 #endif
                 
-            
-                //float LdotV = saturate(0.5 * (dot(-cameraDir, mainLight.direction) + 1));
-                float4 mapped = 1.0 - exp(-lightColor * accum * intensity * 2.0);
+
                 
-                //float4 mapped = lightColor * accum * intensity;
-                return (mapped + 1.0f) * color;
-                return (mapped);
+                float4 lightColor = float4(mainLight.color.rgb * intensity  * 10.0f / samples, 1);
+                //float4 lightColor = float4(1,1,0, 1);
+                float4 accum = float4(sceneColor.rgb, 1);
+
+                [unroll]
+                for (float i = 0.0; i < samples; i++) 
+                {   
+                    float4 shadowCoord = TransformWorldToShadowCoord(worldCoord.xyz);
+                    float lightSpaceDepth = SAMPLE_TEXTURE2D(_MainLightShadowmapTexture, sampler_LinearClamp, shadowCoord.xy).r;
+                    float depthDif = shadowCoord.z - lightSpaceDepth ;
+                    float depthFade = 1.0f - pow(saturate(1 - depthDif * 10), 10.0/fadeStrength);
+
+                    float3 cloudShadowAttenuation = saturate(SampleMainLightCookie(worldCoord.xyz) - 0.7f);
+                                    
+                                    //if the plane is behind the scene dont count the ray
+                    float rayAlpha = (sceneDepthDif < 0) ? 0 : (cloudShadowAttenuation.r * opacityMultiplier * 0.05f);
+
+                    //float alpha = rayAlpha + accum.a * (1-rayAlpha);
+                    //accum.rgb = (lightColor.rgb * rayAlpha + accum.rgb * accum.a * (1-rayAlpha))/alpha;
+                    //accum.a = alpha;
+                    accum = float4(lightColor.rgb * (depthFade * rayAlpha) + accum.rgb * (1-rayAlpha), rayAlpha + accum.a * (1-rayAlpha) );
+                    
+                    worldCoord -= cameraDir * planeSeparation;
+                    sceneDepthDif += planeSeparation;
+                }
+
+                return float4(accum.rgb, 1);
+                #endif
+                
+                return sceneColor;
+                
+
+                
             }
             ENDHLSL
         }

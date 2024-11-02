@@ -27,7 +27,7 @@ MonoBehaviour:
   - {fileID: 4444978653875668579}
   - {fileID: 1298016689525247601}
   m_RendererFeatureMap: 6306740289bcaf3d714eae4b4d7b0312
-  m_UseNativeRenderPass: 1
+  m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
   shaders:
@@ -82,10 +82,12 @@ MonoBehaviour:
   Settings:
     volumeMarchShader: {fileID: 0}
     godrayShader: {fileID: 4800000, guid: f9944f2248206ee71be5b46329278a8d, type: 3}
-    sampleRange: {x: 0.39512193, y: 0.89512193}
-    sampleCount: 10
-    intensity: 0.2
-    fadeStrength: 1
+    ditherPattern: {fileID: 2800000, guid: 4be875551a75459018926b41d58f2242, type: 3}
+    samplesCount: 10
+    sampleRange: {x: 0.060034253, y: 0.40026644}
+    intensity: 1.9
+    opacity: 0.2
+    fadeStrength: 0
 --- !u!114 &4444978653875668579
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99,8 +101,9 @@ MonoBehaviour:
   m_Name: OutlineRendererFeature
   m_EditorClassIdentifier: 
   m_Active: 1
-  _event: 400
-  Settings:
+  _event: 600
+  settings:
     OutlineShader: {fileID: 4800000, guid: 2eadaa83fbbfb60b5b632193b0bc28b6, type: 3}
-    DepthRange: {x: 0.019615425, y: 0.036340103}
-    NormalRange: {x: 0.02866695, y: 0.08541331}
+    strengthMultiplier: 0.5
+    DepthRange: {x: 0.017142, y: 0.02638871}
+    NormalRange: {x: 0.65555334, y: 1.0262691}

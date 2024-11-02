@@ -13,10 +13,15 @@ public class OutlinePass : ScriptableRenderPass
     OutlineSettings settings;
 
     //RTHandle m_CameraColorTarget; //(color buffer) output target
-    static int dLowerID = Shader.PropertyToID("_DLower");
-    static int dUpperID = Shader.PropertyToID("_DUpper");
-    static int nLowerID = Shader.PropertyToID("_NLower");
-    static int nUpperID = Shader.PropertyToID("_NUpper");
+    static int 
+        strMultiplierId = Shader.PropertyToID("strengthMultiplier"),
+        dLowerID = Shader.PropertyToID("_DLower"),
+        dUpperID = Shader.PropertyToID("_DUpper"),
+        nLowerID = Shader.PropertyToID("_NLower"),
+        nUpperID = Shader.PropertyToID("_NUpper"),
+        viewDirID = Shader.PropertyToID("viewDirection"),
+        viewUpDirID = Shader.PropertyToID("viewUpDirection"),
+        viewRightDirID = Shader.PropertyToID("viewRightDirection");
 
 
 
@@ -56,11 +61,25 @@ public class OutlinePass : ScriptableRenderPass
                 Object.DestroyImmediate(m_Material);
             }
         #else
-                    Object.Destroy(material);
+                    Object.Destroy(m_Material);
         #endif
 
         //Debug.Log("releasing");
         rtTemp?.Release();
+    }
+
+    private void UpdateParameters(Camera camera)
+    {
+        m_Material.SetFloat(strMultiplierId, settings.strengthMultiplier);
+        m_Material.SetFloat(dLowerID, settings.DepthRange.x);
+        m_Material.SetFloat(dUpperID, settings.DepthRange.y);
+        m_Material.SetFloat(nLowerID, settings.NormalRange.x);
+        m_Material.SetFloat(nUpperID, settings.NormalRange.y);
+
+        m_Material.SetVector(viewDirID, camera.transform.forward);
+        m_Material.SetVector(viewUpDirID, camera.transform.up);
+        m_Material.SetVector(viewRightDirID, camera.transform.right);
+        
     }
 
 
@@ -72,18 +91,15 @@ public class OutlinePass : ScriptableRenderPass
         if (m_Material == null) return;
         
         CommandBuffer cb = CommandBufferPool.Get(name: "OutlinePass");
-        m_Material.SetFloat(dLowerID, settings.DepthRange.x);
-        m_Material.SetFloat(dUpperID, settings.DepthRange.y);
-        m_Material.SetFloat(nLowerID, settings.NormalRange.x);
-        m_Material.SetFloat(nUpperID, settings.NormalRange.y);
+        UpdateParameters(camera);
 
 
 
 
         using (new ProfilingScope(cb, m_ProfilingSampler)) 
         {
-            context.ExecuteCommandBuffer(cb);
-            cb.Clear();
+            //context.ExecuteCommandBuffer(cb);
+            //cb.Clear();
             /*
             Note : always ExecuteCommandBuffer at least once before using
             ScriptableRenderContext functions (e.g. DrawRenderers) even if you 

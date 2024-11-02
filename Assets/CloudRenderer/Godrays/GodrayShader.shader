@@ -64,7 +64,7 @@ Shader "Custom/InstancedMSMesh"
 
             struct Interpolators
             {
-                float2 uv : TEXCOORD0;
+                //float2 uv : TEXCOORD0;
                 float4 positionWS : TEXCOORD1;
                 float4 color : TEXCOORD2;
                 float3 normal : TEXCOORD3;

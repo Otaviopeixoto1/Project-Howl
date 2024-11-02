@@ -272,7 +272,7 @@ MonoBehaviour:
     m_Value: 1
   samples:
     m_OverrideState: 1
-    m_Value: 20
+    m_Value: 10
   start:
     m_OverrideState: 1
     m_Value: 0.5
@@ -280,6 +280,9 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 0.8
   intensity:
+    m_OverrideState: 1
+    m_Value: 0.2
+  opacity:
     m_OverrideState: 1
     m_Value: 0.2
   fadeStrength:

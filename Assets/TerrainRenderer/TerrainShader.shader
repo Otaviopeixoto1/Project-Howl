@@ -131,7 +131,7 @@ Shader "TerrainShader"
                 #endif
                 
 
-                float toonLighting =  tex2D(_colorRamp, float2(i.lightIntensity,0)) + 0.5;
+                float toonLighting =  tex2D(_colorRamp, float2(i.lightIntensity,0)).r + 0.5;
 
                 half4 col = tex2D(_MainTex, i.atlasUV);
                 //return half4(i.atlasUV,0,1);

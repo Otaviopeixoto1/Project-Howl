@@ -33,7 +33,7 @@ Shader "Unlit/CloudColorShader"
            {
                 //return tex2D(_MainTex, IN.localTexcoord.xy).rrrr;
                 float cloudNoise = tex2D(_MainTex, IN.localTexcoord.xy).r;
-                cloudNoise = (( 2.0 * _Density - 1.0 + cloudNoise));
+                cloudNoise = (( 2.0f * _Density - 1.0f + cloudNoise));
                 
                 float4 cloudColor = tex2D(_ColorRamp, float2(max(1.0f - cloudNoise, 1.0f - _Opacity),0));
 

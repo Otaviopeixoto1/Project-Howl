@@ -1,26 +1,33 @@
 using System;
 using UnityEngine;
 using UnityEditor;
-using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using UnityEngine.Rendering.Universal.Internal;
 
 
+
+public enum VolumetricLightSamples
+{
+    Samples_10 = 10,
+    Samples_30 = 30,
+    Samples_50 = 50
+}
 
 [Serializable]
 public class GodraySettings
 {
-    public ComputeShader volumeMarchShader;
     public Shader godrayShader;
+
+    public Texture2D ditherPattern;
+    public VolumetricLightSamples samplesCount = VolumetricLightSamples.Samples_10;
 
     #if UNITY_EDITOR 
     [MinMax(0f,1f)]
     #endif
     public Vector2 sampleRange = new Vector2(0.5f,1.0f);
 
-    [Range(1,50)] public int sampleCount = 10;
 
     [Range(0,10)] public float intensity = 0.2f;
+    [Range(0,1.0f)] public float opacity = 0.2f;
     [Range(0, 10)] public float fadeStrength = 1.0f;
 }
 
@@ -36,7 +43,7 @@ public class VolumetricLightsRenderFeature : ScriptableRendererFeature
 
     public override void Create()
     {
-        if (m_Material == null && Settings.godrayShader != null)
+        if (Settings.godrayShader != null)
         {
             m_Material = new Material(Settings.godrayShader); 
         }

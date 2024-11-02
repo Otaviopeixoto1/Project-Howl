@@ -57,7 +57,10 @@ Shader "Custom/CloudNoise"
                 float lacunarity = _Lacunarity;
                 float persistence = _Persistence;
                 
+                //
                 //TRANSFORM UVS HERE WITHOUT TRANSFORMING OFFSET
+                //THIS IS LIGHT SPACE COORDS. THE NOISE MUST BE SAMPLED IN WORLD SPACE
+                //
                 float2 coords = IN.localTexcoord.xy + _Offset.xy;
 
                 float maxValue = 0;

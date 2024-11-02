@@ -4,28 +4,33 @@ using UnityEngine;
 using UnityEditor;
 
 
+
+
 public class GodrayPass : ScriptableRenderPass
 {
     private RTHandle rtTempAccumulation;
-    
     private ProfilingSampler m_ProfilingSampler;
     
     private Material m_Material;
-    
-    private Light mainLight;
     private GodraySettings settings;
 
-    
+    const string 
+            k_Samples10 = "SAMPLES_10",
+            k_Samples30 = "SAMPLES_30",
+            k_Samples50 = "SAMPLES_50";
 
-    int 
-        sampleCountId = Shader.PropertyToID("samples"),
+    string prevSampleMode = k_Samples10;
+
+    static int 
         fadeStrengthId = Shader.PropertyToID("fadeStrength"),
+        opacityId = Shader.PropertyToID("opacityMultiplier"),
         intensityId = Shader.PropertyToID("intensity"),
         planeOffsetId = Shader.PropertyToID("planeOffset"),
-        planeNormalId = Shader.PropertyToID("planeNormal"),
         planeCenterId = Shader.PropertyToID("planeCenter"),
         planeSeparationId = Shader.PropertyToID("planeSeparation"),
         cameraDirId = Shader.PropertyToID("cameraDir"),
+
+        ditherTexId = Shader.PropertyToID("ditherTex"),
 
         // TEST
         sceneDepthId = Shader.PropertyToID("sceneDepth"),
@@ -34,12 +39,14 @@ public class GodrayPass : ScriptableRenderPass
         inverseVPMatrixId = Shader.PropertyToID("inverseVPMatrix"); 
 
 
+
+
+
     public GodrayPass(Material material, GodraySettings settings)
     {
         m_Material = material;
         this.settings = settings;
-        mainLight = RenderSettings.sun;
-        
+
         //Set the _mainLightShadowmapTexture with the new name: "shadowMap"
         //settings.volumeMarchShader.SetTextureFromGlobal(0, "shadowMap", "_MainLightShadowmapTexture");
 
@@ -68,7 +75,6 @@ public class GodrayPass : ScriptableRenderPass
     //clean-up allocated RTHandle
     public void Dispose() 
     {
-        /*
         #if UNITY_EDITOR
             if (EditorApplication.isPlaying)
             {
@@ -80,7 +86,7 @@ public class GodrayPass : ScriptableRenderPass
             }
         #else
             Object.Destroy(m_Material);
-        #endif*/
+        #endif
 
         rtTempAccumulation?.Release();
     }
@@ -93,9 +99,33 @@ public class GodrayPass : ScriptableRenderPass
         float end = volumeComponent.end.overrideState ? volumeComponent.end.value : settings.sampleRange.y;
         float intensity = volumeComponent.intensity.overrideState ? volumeComponent.intensity.value : settings.intensity;
         float fadeStrength = volumeComponent.fadeStrength.overrideState ? volumeComponent.fadeStrength.value : settings.fadeStrength;
-        int sampleCount = volumeComponent.samples.overrideState ? volumeComponent.samples.value : settings.sampleCount;
+        float opacity = volumeComponent.fadeStrength.overrideState ? volumeComponent.opacity.value : settings.opacity;
+        VolumetricLightSamples sampleCount = volumeComponent.samples.overrideState ? volumeComponent.samples.value : settings.samplesCount;
 
-        m_Material.SetFloat(sampleCountId, sampleCount);
+        m_Material.SetTexture(ditherTexId, settings.ditherPattern);
+        m_Material.SetFloat(opacityId, opacity);
+
+        string sampleMode = "";
+        switch (sampleCount)
+        {
+            case VolumetricLightSamples.Samples_50:
+                sampleMode = k_Samples50;
+                break;
+            case VolumetricLightSamples.Samples_30:
+                sampleMode = k_Samples30;
+                break;
+            case VolumetricLightSamples.Samples_10:
+                sampleMode = k_Samples10;
+                break;
+        }
+
+        if (sampleMode != prevSampleMode)
+            m_Material.DisableKeyword(prevSampleMode);
+
+        m_Material.EnableKeyword(sampleMode);
+        prevSampleMode = sampleMode;
+
+
         m_Material.SetFloat(fadeStrengthId, fadeStrength);
         m_Material.SetFloat(intensityId, intensity);
 
@@ -103,17 +133,13 @@ public class GodrayPass : ScriptableRenderPass
         Matrix4x4 VPMatrix = GL.GetGPUProjectionMatrix(camera.projectionMatrix, true) * camera.worldToCameraMatrix;
         m_Material.SetMatrix(inverseVPMatrixId, VPMatrix.inverse); 
         
-        Vector3 lightDir = mainLight.transform.forward;
-        Vector3 tangent = Vector3.Cross(lightDir, -camera.transform.forward); 
-        Vector3 normal = Vector3.Cross(tangent, lightDir); 
         m_Material.SetVector(cameraDirId, camera.transform.forward);
-        m_Material.SetVector(planeNormalId, normal.normalized);
 
-        float planeDistance = start * (camera.farClipPlane - camera.nearClipPlane) + camera.nearClipPlane;
+        float planeDistance = end * (camera.farClipPlane - camera.nearClipPlane) + camera.nearClipPlane;
         Vector3 planeCenter = camera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, planeDistance));
-        float planeSeparation = (end - start) * (camera.farClipPlane - camera.nearClipPlane)/sampleCount;
+        float planeSeparation = (end - start) * (camera.farClipPlane - camera.nearClipPlane)/(float)sampleCount;
 
-        m_Material.SetFloat(planeOffsetId, start); 
+        m_Material.SetFloat(planeOffsetId, end); 
         m_Material.SetFloat(planeSeparationId, planeSeparation); 
         m_Material.SetVector(planeCenterId, planeCenter);
     }
@@ -132,15 +158,15 @@ public class GodrayPass : ScriptableRenderPass
 
         using (new ProfilingScope(cmd, m_ProfilingSampler)) 
         {
-            context.ExecuteCommandBuffer(cmd);
-            cmd.Clear();
+            //context.ExecuteCommandBuffer(cmd);
+            //cmd.Clear();
             
             RTHandle rtCamera = renderingData.cameraData.renderer.cameraColorTargetHandle;
             
             //DEPTH **BUFFER** CAN BE ACQUIRED HERE FROM THIS HANDLE:
             RTHandle rtDepth = renderingData.cameraData.renderer.cameraDepthTargetHandle;
             m_Material.SetTexture(sceneDepthId, rtDepth);
-
+            
             
             
 

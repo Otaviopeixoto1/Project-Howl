@@ -18,19 +18,22 @@ MonoBehaviour:
     m_Value: 1
   samples:
     m_OverrideState: 1
-    m_Value: 10
+    m_Value: 30
   start:
     m_OverrideState: 1
-    m_Value: 0.35
+    m_Value: 0.3
   end:
     m_OverrideState: 1
-    m_Value: 0.45
+    m_Value: 0.496
   intensity:
     m_OverrideState: 1
     m_Value: 10
+  opacity:
+    m_OverrideState: 1
+    m_Value: 0.769
   fadeStrength:
     m_OverrideState: 1
-    m_Value: 2.09
+    m_Value: 0.3
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

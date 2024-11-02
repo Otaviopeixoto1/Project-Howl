@@ -101,7 +101,6 @@ public class CloudManager : MonoBehaviour
             cloudCookieTexture.filterMode = FilterMode.Point;
             cloudCookieTexture.material = cloudCookieMaterial;
             cloudCookieTexture.updateMode = CustomRenderTextureUpdateMode.Realtime;
-
             mainLight.cookie = cloudCookieTexture;
 
             UpdateParameters();
@@ -190,8 +189,10 @@ public class CloudManager : MonoBehaviour
 
     void OnDestroy()
     {
-        cloudNoiseTexture.Release();
-        cloudCookieTexture.Release();
+        if(cloudNoiseTexture != null)
+            cloudNoiseTexture.Release();
+        if(cloudCookieTexture != null)
+            cloudCookieTexture.Release();
         Destroy(cloudNoiseMaterial);
         Destroy(cloudCookieMaterial);
     }

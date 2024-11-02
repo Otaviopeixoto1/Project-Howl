@@ -93,7 +93,7 @@ Shader "Custom/InstancedIndirect"
 
                 //o.vertex = TransformObjectToHClip(pos.xyz);
                                     //TransformObjectToHClip UnityObjectToClipPos(pos)
-                o.centerPositionWS = TransformObjectToWorld(mul(_Properties[instanceID].mat, float4(0,0,0,1)));
+                o.centerPositionWS = TransformObjectToWorld(mul(_Properties[instanceID].mat, float4(0,0,0,1)).xyz);
                 o.uv = _Properties[instanceID].offsetScale.xy + (i.uv * _Properties[instanceID].offsetScale.zw);
                 o.auv = _Properties[instanceID].atlasUV;
 
@@ -126,7 +126,7 @@ Shader "Custom/InstancedIndirect"
                 clip(tex.a - 0.01);
                 float4 col = tex2D(_MapAtlas, i.auv);
 
-                float toonLighting =  tex2D(_colorRamp, float2(i.lightIntensity,0)) + 0.5;
+                float toonLighting =  tex2D(_colorRamp, float2(i.lightIntensity,0)).r + 0.5;
 
                 float shadowAttenuation = mainLight.shadowAttenuation;
                 
