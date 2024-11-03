@@ -14,5 +14,6 @@ public class GodrayVolumeComponent : VolumeComponent
     public ClampedFloatParameter end = new ClampedFloatParameter(0.8f, 0, 1);  
     public ClampedFloatParameter intensity = new ClampedFloatParameter(0.2f, 0.0f, 10.0f);
     public ClampedFloatParameter opacity = new ClampedFloatParameter(0.2f, 0.0f, 1.0f);
+    public ClampedFloatParameter exposure = new ClampedFloatParameter(0, 1.0f, 10.0f);
     public ClampedFloatParameter fadeStrength = new ClampedFloatParameter(1.0f, 0.0f, 10.0f);
 }

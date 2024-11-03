@@ -285,6 +285,9 @@ MonoBehaviour:
   opacity:
     m_OverrideState: 1
     m_Value: 0.2
+  exposure:
+    m_OverrideState: 0
+    m_Value: 0
   fadeStrength:
     m_OverrideState: 1
     m_Value: 1
@@ -303,7 +306,7 @@ MonoBehaviour:
   active: 1
   color:
     m_OverrideState: 1
-    m_Value: {r: 0, g: 0, b: 0, a: 1}
+    m_Value: {r: 0.97147584, g: 0.9653842, b: 0.9653842, a: 1}
   center:
     m_OverrideState: 1
     m_Value: {x: 0.5, y: 0.5}
@@ -312,7 +315,7 @@ MonoBehaviour:
     m_Value: 0
   smoothness:
     m_OverrideState: 1
-    m_Value: 0.2
+    m_Value: 0.754
   rounded:
     m_OverrideState: 1
     m_Value: 0

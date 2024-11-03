@@ -80,9 +80,9 @@ MonoBehaviour:
   m_Active: 1
   _event: 500
   Settings:
-    volumeMarchShader: {fileID: 0}
     godrayShader: {fileID: 4800000, guid: f9944f2248206ee71be5b46329278a8d, type: 3}
-    ditherPattern: {fileID: 2800000, guid: 4be875551a75459018926b41d58f2242, type: 3}
+    blurShader: {fileID: 4800000, guid: ef63b90fca5904729bff494b77915098, type: 3}
+    ditherPattern: {fileID: 2800000, guid: 7153c0835b780130aa6c0af6927c2da4, type: 3}
     samplesCount: 10
     sampleRange: {x: 0.060034253, y: 0.40026644}
     intensity: 1.9
